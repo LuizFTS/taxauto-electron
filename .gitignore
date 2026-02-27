@@ -1,0 +1,43 @@
+# --- Sistema e IDEs ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.angular/
+.gemini/
+
+# --- Node / Angular / Electron ---
+node_modules/
+dist/
+tmp/
+out/
+.npm
+npm-debug.log*
+
+# --- Python ---
+# Ambiente virtual (venv)
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# --- Electron Packaging ---
+# Pasta gerada quando você empacota o app para .exe ou .app
+release/
+build/
+*.exe
+*.dmg
+*.app
+
+# --- Firebase ---
+# Ignora logs e configurações locais do Firebase
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+
+# --- Logs de Erro ---
+logs
+*.log

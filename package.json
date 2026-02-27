@@ -1,0 +1,24 @@
+{
+  "name": "taxauto-electron",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "ng": "npm --prefix app-desktop run",
+    "angular-start": "npm --prefix app-desktop start",
+    "angular-build": "npm --prefix app-desktop run build -- --base-href ./",
+    "electron-start": "wait-on http://localhost:4200 && electron .",
+    "dev": "concurrently \"npm run angular-start\" \"npm run electron-start\"",
+    "install-all": "npm install && npm install --prefix app-desktop"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "electron": "^40.6.1",
+    "electron-is-dev": "^3.0.1",
+    "wait-on": "^9.0.4"
+  }
+}
