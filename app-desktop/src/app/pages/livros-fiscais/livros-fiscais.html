@@ -1,0 +1,85 @@
+<div class="livros-fiscais-container">
+  <form [formGroup]="form" class="form-container">
+    <!-- Seção 1: Parâmetros -->
+    <div class="card-section">
+      <h3 class="section-title">Parâmetros</h3>
+
+      <div class="parameters-row">
+        <div class="field-group">
+          <label class="field-label" for="tipoLivroSelect">Tipo de Livro</label>
+          <div class="custom-select-wrapper">
+            <select
+              id="tipoLivroSelect"
+              formControlName="tipoLivro"
+              class="custom-input custom-select"
+            >
+              <option *ngFor="let tipo of tiposLivro" [value]="tipo">
+                {{ tipo }}
+              </option>
+            </select>
+            <mat-icon>keyboard_arrow_down</mat-icon>
+          </div>
+        </div>
+
+        <div class="field-group date-group">
+          <label class="field-label">Período</label>
+          <div class="date-range-container" formGroupName="periodo">
+            <input
+              type="text"
+              maxlength="10"
+              (input)="onDateInput($event)"
+              (input)="onStartInput($event, endInput)"
+              formControlName="start"
+              class="custom-input date-input"
+              #startInput
+            />
+            <span class="date-separator">até</span>
+            <input
+              type="text"
+              maxlength="10"
+              (input)="onDateInput($event)"
+              formControlName="end"
+              class="custom-input date-input"
+              #endInput
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção 2: Entidades e Abrangência -->
+    <div class="card-section">
+      <h3 class="section-title">Entidades e Abrangência</h3>
+
+      <div class="entities-box">
+        <div class="entities-info">
+          <h4>Selecionar Filiais e Grupos</h4>
+          <span class="selected-count">12 filiais selecionadas</span>
+        </div>
+        <button type="button" class="custom-btn custom-btn-outline">CONFIGURAR</button>
+      </div>
+    </div>
+
+    <!-- Seção 3: Seleção de Tarefas -->
+    <div class="card-section">
+      <h3 class="section-title">Seleção de Tarefas</h3>
+
+      <div class="tasks-row" formArrayName="tarefas">
+        <div
+          *ngFor="let tarefa of tarefasDisponiveis; let i = index"
+          class="task-pill"
+          [class.selected]="isTarefaSelected(i)"
+          (click)="toggleTarefa(i)"
+        >
+          <span>{{ tarefa.nome }}</span>
+        </div>
+        <!-- Ações -->
+        <div class="actions-row">
+          <button type="button" class="custom-btn custom-btn-primary" (click)="executar()">
+            Executar
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

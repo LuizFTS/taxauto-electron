@@ -1,0 +1,41 @@
+.topbar {
+  display: flex;
+  height: 28px;
+  background-color: oklch(96.7% 0.001 286.375);
+  justify-content: flex-end;
+
+  &__drag-region {
+    flex: 1;
+    height: 100%;
+    -webkit-app-region: drag;
+  }
+
+  &__window__buttons {
+    display: flex;
+    gap: 0px;
+    -webkit-app-region: no-drag;
+
+    &__button {
+      height: 28px;
+      width: 60px;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: oklch(27.4% 0.006 286.033);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      &:hover {
+        color: oklch(27.4% 0.006 286.033);
+        background-color: oklch(87.1% 0.006 286.286);
+      }
+
+      mat-icon {
+        line-height: 24px;
+        font-size: 18px;
+      }
+    }
+  }
+}
