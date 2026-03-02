@@ -1,0 +1,12 @@
+@if (modal(); as config) {
+  <div class="app-modal__backdrop" (click)="backdropClick(config.options?.closeOnBackdrop)">
+    <div class="app-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <button class="app-modal__close" (click)="close()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <div class="app-modal__content">
+        <ng-container *ngComponentOutlet="config.component; inputs: config.data"></ng-container>
+      </div>
+    </div>
+  </div>
+}

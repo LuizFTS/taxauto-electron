@@ -1,4 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  type AfterViewInit,
+  type ElementRef,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -7,20 +14,27 @@ import {
   FormArray,
   FormControl,
 } from '@angular/forms';
-import { MatIcon } from '@angular/material/icon';
+import { ModalService } from '../../services/modal.service';
+import { FiliaisModal } from './components/filiais-modal/filiais-modal';
+import { Button } from '../../components/button/button';
+import { Select } from '../../components/select/select';
 
 @Component({
   selector: 'app-livros-fiscais',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatIcon],
+  imports: [CommonModule, ReactiveFormsModule, Button, Select],
   templateUrl: './livros-fiscais.html',
   styleUrl: './livros-fiscais.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LivrosFiscais {
   private fb = inject(FormBuilder);
+  private modalService = inject(ModalService);
 
-  tiposLivro = ['Entrada', 'Saída'];
+  tiposLivro = [
+    { value: 1, label: 'Entrada' },
+    { value: 2, label: 'Saída' },
+  ];
   tarefasDisponiveis = [
     { id: 'atualizar', nome: 'Atualizar livro' },
     { id: 'abrir', nome: 'Abrir livro' },
@@ -112,6 +126,17 @@ export class LivrosFiscais {
     }
 
     input.value = value;
+  }
+
+  openFiliaisModal() {
+    console.log('openFiliaisModal');
+    this.modalService.open({
+      component: FiliaisModal,
+      data: {
+        title: 'Something',
+        subtitle: 'Selecione as filiais',
+      },
+    });
   }
 
   private formatDate(date: Date): string {

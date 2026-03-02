@@ -1,0 +1,12 @@
+<button
+  class="app-btn"
+  [class.app-btn--solid]="variant === 'solid'"
+  [class.app-btn--outline]="variant === 'outline'"
+  [class.app-btn--sm]="size === 'sm'"
+  [class.app-btn--md]="size === 'md'"
+  [class.app-btn--lg]="size === 'lg'"
+  [disabled]="disabled"
+  [attr.type]="type"
+>
+  <ng-content></ng-content>
+</button>

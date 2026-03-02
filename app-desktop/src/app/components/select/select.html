@@ -1,0 +1,40 @@
+<div
+  class="app-select"
+  [class.app-select--open]="isOpen()"
+  [class.app-select--disabled]="disabled()"
+>
+  <button type="button" class="app-select__trigger" tabindex="0" #selectTrigger (click)="toggle()">
+    <span class="app-select__value">
+      @if (selectedOption()) {
+        {{ selectedOption()!.label }}
+      } @else {
+        <span class="app-select__placeholder">
+          {{ placeholder }}
+        </span>
+      }
+    </span>
+
+    <span class="app-select__arrow"></span>
+  </button>
+
+  @if (isOpen()) {
+    <div class="app-select__dropdown" role="listbox">
+      @for (option of options; track option.value) {
+        <div
+          class="app-select__option"
+          role="option"
+          [attr.aria-selected]="option.value === _value()"
+          [class.app-select__option--selected]="option.value === _value()"
+          [class.app-select__option--focused]="focusedIndex() === $index"
+          (click)="select(option)"
+          (keydown.enter)="select(option)"
+          (keydown.arrowdown)="onArrowDown($event)"
+          (keydown.arrowup)="onArrowUp($event)"
+          (mouseenter)="focusedIndex.set($index)"
+        >
+          {{ option.label }}
+        </div>
+      }
+    </div>
+  }
+</div>

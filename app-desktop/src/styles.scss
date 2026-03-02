@@ -62,11 +62,6 @@ input[type='number']::-webkit-inner-spin-button {
   margin: 0;
 }
 
-/* Para o Firefox */
-input[type='number'] {
-  -moz-appearance: textfield;
-}
-
 icon {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
@@ -100,4 +95,21 @@ body {
 
 ul {
   list-style: none;
+  padding: 0;
+}
+
+/* &:focus-visible {
+    outline: 2px solid $brand;
+    outline-offset: 1px;
+  }
+ */
+*:focus,
+input:focus,
+button:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid color-mix(in oklab, oklch(55% 0.22 260), transparent);
+  //border-color: oklch(55% 0.22 260);
+  // outline: none;
+  box-shadow: 0 0 2px 1px color-mix(in oklab, oklch(55% 0.22 260 / 20%));
 }
