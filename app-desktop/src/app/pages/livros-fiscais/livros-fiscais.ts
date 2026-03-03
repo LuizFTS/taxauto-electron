@@ -134,9 +134,12 @@ export class LivrosFiscais {
     this.modalService.open({
       component: FiliaisModal,
       data: {
-        title: 'Something',
-        subtitle: 'Selecione as filiais',
-      },
+        title: 'Seleção de filiais',
+        subtitle: 'Selecione os grupos ou filiais individuais para execução',
+        onConfirm: (branches: string[]) => {
+          console.log('Selected branches from modal:', branches);
+        },
+      } as Partial<FiliaisModal>,
     });
   }
 
