@@ -39,7 +39,8 @@ export class LivrosFiscais {
     { id: 'atualizar', nome: 'Atualizar livro' },
     { id: 'abrir', nome: 'Abrir livro' },
     { id: 'fechar', nome: 'Fechar livro' },
-    { id: 'salvar', nome: 'Salvar planilha' },
+    { id: 'salvar_excel', nome: 'Salvar planilha' },
+    { id: 'salvar_pdf', nome: 'Salvar PDF' },
   ];
 
   startDate = '';
