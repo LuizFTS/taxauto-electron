@@ -26,8 +26,8 @@
 
 .app-modal {
   position: relative;
-  width: min(600px, 90vw);
   max-height: 90vh;
+  width: fit-content;
 
   background-color: #ffffff;
   border-radius: 12px;
@@ -87,6 +87,12 @@
 
   &:active {
     transform: scale(0.95);
+  }
+
+  & mat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
