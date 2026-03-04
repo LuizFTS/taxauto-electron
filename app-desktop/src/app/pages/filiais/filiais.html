@@ -1,1 +1,270 @@
-<p>filiais works!</p>
+<div class="page-container">
+  <div class="surface-card">
+    <!-- Header: Tabs and Search/Action -->
+    <div class="card-header">
+      <div class="tabs">
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'Empresas'"
+          (click)="setActiveTab('Empresas')"
+        >
+          Empresas
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'Filiais'"
+          (click)="setActiveTab('Filiais')"
+        >
+          Filiais
+        </button>
+      </div>
+
+      <div class="header-actions">
+        <div class="search-box">
+          <mat-icon>search</mat-icon>
+          <input
+            type="text"
+            [placeholder]="'Buscar ' + (activeTab === 'Empresas' ? 'empresa' : 'filial') + '...'"
+            [value]="searchQuery"
+            (input)="updateSearch($event)"
+          />
+        </div>
+
+        <app-button variant="solid" (click)="startCreate()">
+          <span class="btn-content">
+            <mat-icon>add</mat-icon>
+            Adicionar {{ activeTab === 'Empresas' ? 'Empresa' : 'Filial' }}
+          </span>
+        </app-button>
+      </div>
+    </div>
+
+    <!-- Table Canvas -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ activeTab === 'Empresas' ? 'Número da Empresa' : 'Número da Filial' }}</th>
+            <th>{{ activeTab === 'Empresas' ? 'Nome da Empresa' : 'Nome da Filial' }}</th>
+            <th *ngIf="activeTab === 'Filiais'">Empresa Parente</th>
+            <th>Status</th>
+            <th class="actions-col">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Create Row (Inline) -->
+          <tr *ngIf="isCreating" class="editing-row">
+            <td>
+              <input
+                type="text"
+                class="inline-input"
+                placeholder="Número"
+                [value]="newRowData.numero"
+                (input)="updateCreateField('numero', $event)"
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                class="inline-input"
+                placeholder="Nome"
+                [value]="newRowData.nome"
+                (input)="updateCreateField('nome', $event)"
+              />
+            </td>
+            <td *ngIf="activeTab === 'Filiais'">
+              <select
+                class="inline-select"
+                [value]="$any(newRowData).empresaId"
+                (change)="updateCreateField('empresaId', $event)"
+              >
+                <option *ngFor="let emp of empresas" [value]="emp.id">{{ emp.nome }}</option>
+              </select>
+            </td>
+            <td>
+              <select
+                class="inline-select"
+                [value]="newRowData.status"
+                (change)="updateCreateField('status', $event)"
+              >
+                <option value="Ativo">Ativo</option>
+                <option value="Inativo">Inativo</option>
+              </select>
+            </td>
+            <td class="actions-col">
+              <button class="action-btn save" (click)="saveCreate()" title="Salvar">
+                <mat-icon>check</mat-icon>
+              </button>
+              <button class="action-btn cancel" (click)="cancelCreate()" title="Cancelar">
+                <mat-icon>close</mat-icon>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Data Rows: EMPRESAS -->
+          <ng-container *ngIf="activeTab === 'Empresas'">
+            <tr *ngFor="let item of filteredEmpresas" [class.is-editing]="editingRows[item.id]">
+              <!-- Static View -->
+              <ng-container *ngIf="!editingRows[item.id]">
+                <td>{{ item.numero }}</td>
+                <td>{{ item.nome }}</td>
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.ativo]="item.status === 'Ativo'"
+                    [class.inativo]="item.status === 'Inativo'"
+                  >
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td class="actions-col">
+                  <button class="action-btn" (click)="startEdit(item)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button class="action-btn delete" (click)="deleteRow(item.id)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <!-- Edit View -->
+              <ng-container *ngIf="editingRows[item.id]">
+                <td>
+                  <input
+                    type="text"
+                    class="inline-input"
+                    [value]="editingRows[item.id].numero"
+                    (input)="updateEditField(item.id, 'numero', $event)"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    class="inline-input"
+                    [value]="editingRows[item.id].nome"
+                    (input)="updateEditField(item.id, 'nome', $event)"
+                  />
+                </td>
+                <td>
+                  <select
+                    class="inline-select"
+                    [value]="editingRows[item.id].status"
+                    (change)="updateEditField(item.id, 'status', $event)"
+                  >
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                  </select>
+                </td>
+                <td class="actions-col">
+                  <button class="action-btn save" (click)="saveEdit(item.id)">
+                    <mat-icon>check</mat-icon>
+                  </button>
+                  <button class="action-btn cancel" (click)="cancelEdit(item.id)">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+            </tr>
+          </ng-container>
+
+          <!-- Data Rows: FILIAIS -->
+          <ng-container *ngIf="activeTab === 'Filiais'">
+            <tr *ngFor="let item of filteredFiliais" [class.is-editing]="editingRows[item.id]">
+              <!-- Static View -->
+              <ng-container *ngIf="!editingRows[item.id]">
+                <td>{{ item.numero }}</td>
+                <td>{{ item.nome }}</td>
+                <td>
+                  <span class="text-muted">
+                    <!-- quick helper to find parent name safely -->
+                    {{ empresas.length ? empresas[0].nome : item.empresaId }}
+                  </span>
+                </td>
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.ativo]="item.status === 'Ativo'"
+                    [class.inativo]="item.status === 'Inativo'"
+                  >
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td class="actions-col">
+                  <button class="action-btn" (click)="startEdit(item)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button class="action-btn delete" (click)="deleteRow(item.id)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <!-- Edit View -->
+              <ng-container *ngIf="editingRows[item.id]">
+                <td>
+                  <input
+                    type="text"
+                    class="inline-input"
+                    [value]="editingRows[item.id].numero"
+                    (input)="updateEditField(item.id, 'numero', $event)"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    class="inline-input"
+                    [value]="editingRows[item.id].nome"
+                    (input)="updateEditField(item.id, 'nome', $event)"
+                  />
+                </td>
+                <td>
+                  <select
+                    class="inline-select"
+                    [value]="$any(editingRows[item.id]).empresaId"
+                    (change)="updateEditField(item.id, 'empresaId', $event)"
+                  >
+                    <option *ngFor="let emp of empresas" [value]="emp.id">{{ emp.nome }}</option>
+                  </select>
+                </td>
+                <td>
+                  <select
+                    class="inline-select"
+                    [value]="editingRows[item.id].status"
+                    (change)="updateEditField(item.id, 'status', $event)"
+                  >
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                  </select>
+                </td>
+                <td class="actions-col">
+                  <button class="action-btn save" (click)="saveEdit(item.id)">
+                    <mat-icon>check</mat-icon>
+                  </button>
+                  <button class="action-btn cancel" (click)="cancelEdit(item.id)">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer Summary -->
+    <div class="card-footer">
+      <span class="summary-text" *ngIf="activeTab === 'Empresas'">
+        Mostrando {{ filteredEmpresas.length }} resultados
+      </span>
+      <span class="summary-text" *ngIf="activeTab === 'Filiais'">
+        Mostrando {{ filteredFiliais.length }} resultados
+      </span>
+
+      <!-- Placeholder Pagination -->
+      <div class="pagination">
+        <button class="page-btn" disabled><mat-icon>chevron_left</mat-icon></button>
+        <button class="page-btn"><mat-icon>chevron_right</mat-icon></button>
+      </div>
+    </div>
+  </div>
+</div>

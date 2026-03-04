@@ -1,0 +1,299 @@
+/* Intent: Admin managing their business hierarchy (Empresas -> Filiais). Needs clarity, fast scanning, and obvious states.
+   Palette: Muted blue and crisp white for structure, soft green/gray for status.
+   Depth: Light shadows (layered approach) to pull the table up from the canvas background.
+   Surfaces: Page canvas is slightly off-white var(--mat-sys-surface), card is pure #ffffff.
+   Typography: Roboto blocky system font.
+   Spacing: Base 4px.
+*/
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.page-container {
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Surface Elevation */
+.surface-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+/* Header & Tabs */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.tabs {
+  display: flex;
+  gap: 24px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 8px 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b; /* Muted slate */
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #0f172a; /* Darker on hover */
+  }
+
+  &.active {
+    color: #4361ee; /* Primary accent */
+  }
+
+  &.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #4361ee;
+    border-radius: 2px 2px 0 0;
+  }
+}
+
+/* Actions */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  icon {
+    position: absolute;
+    left: 12px;
+    font-size: 20px;
+    color: #94a3b8;
+    pointer-events: none;
+  }
+
+  input {
+    padding: 8px 12px 8px 40px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 6px;
+    font-size: 14px;
+    color: #0f172a;
+    width: 250px;
+    transition: all 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: #4361ee;
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    }
+
+    &::placeholder {
+      color: #94a3b8;
+    }
+  }
+}
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  icon {
+    font-size: 18px;
+  }
+}
+
+/* Table Canvas */
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  padding: 16px 32px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+td {
+  font-size: 14px;
+  color: #0f172a;
+  padding: 16px 32px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  vertical-align: middle;
+}
+
+tbody tr {
+  transition: background-color 0.15s ease;
+
+  &:hover:not(.is-editing) {
+    background-color: #f8fafc;
+  }
+}
+
+tr.is-editing,
+tr.editing-row {
+  background-color: #f0f4ff; /* soft highlight when editing/creating */
+}
+
+/* Columns */
+.actions-col {
+  width: 100px;
+  text-align: right;
+  padding-right: 32px;
+}
+
+.text-muted {
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+
+  &.ativo {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+
+  &.inativo {
+    background-color: #f1f5f9;
+    color: #475569;
+  }
+}
+
+/* Action Buttons within table */
+.action-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  color: #64748b;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 4px;
+  transition: all 0.2s;
+
+  icon {
+    font-size: 18px;
+  }
+
+  &:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
+  }
+
+  &.delete:hover {
+    background-color: #fee2e2;
+    color: #ef4444;
+  }
+
+  &.save {
+    color: #16a34a;
+    &:hover {
+      background-color: #dcfce7;
+    }
+  }
+
+  &.cancel {
+    color: #ef4444;
+    &:hover {
+      background-color: #fee2e2;
+    }
+  }
+}
+
+/* Inline Editing Controls */
+.inline-input,
+.inline-select {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #0f172a;
+
+  &:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.1);
+  }
+}
+
+/* Footer Summary */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background-color: #fafbfc;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.summary-text {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.pagination {
+  display: flex;
+  gap: 8px;
+
+  .page-btn {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    icon {
+      font-size: 18px;
+    }
+
+    &:hover:not([disabled]) {
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+
+    &[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
