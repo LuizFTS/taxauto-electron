@@ -1,1 +1,295 @@
-<p>apuracao works!</p>
+<div class="page-header">
+  <h1 class="page-title">Apuração de ICMS</h1>
+</div>
+
+<!-- ── Seleção de Período ─────────────────────────────────────────────────── -->
+<section class="card">
+  <h2 class="card__title">Período de Apuração</h2>
+
+  <div class="periodo-selectors">
+    <div class="field-group">
+      <label class="field-label">Mês</label>
+      <select class="field-select" [(ngModel)]="mesSelecionado" (ngModelChange)="onPeriodoChange()">
+        <option *ngFor="let m of meses" [value]="m.valor">{{ m.label }}</option>
+      </select>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Ano</label>
+      <select class="field-select" [(ngModel)]="anoSelecionado" (ngModelChange)="onPeriodoChange()">
+        <option *ngFor="let a of anos" [value]="a">{{ a }}</option>
+      </select>
+    </div>
+
+    <div class="periodo-badge" *ngIf="periodoSelecionado">
+      <span class="badge badge--ok">
+        <span class="badge__dot"></span>
+        Período cadastrado
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Período não existe ─────────────────────────────────────────────────── -->
+<section class="card card--empty" *ngIf="!carregandoPeriodos && !periodoSelecionado">
+  <div class="empty-state">
+    <div class="empty-state__icon">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="4" width="18" height="18" rx="2" stroke="#9ab0c4" stroke-width="1.5" />
+        <path
+          d="M8 2v4M16 2v4M3 10h18"
+          stroke="#9ab0c4"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+        <path d="M12 14v4M10 16h4" stroke="#9ab0c4" stroke-width="1.5" stroke-linecap="round" />
+      </svg>
+    </div>
+    <p class="empty-state__title">Período {{ mesLabel }} / {{ anoSelecionado }} não cadastrado</p>
+    <p class="empty-state__desc">
+      Crie o período para gerar as pastas de importação no seu workspace.
+    </p>
+    <button class="btn btn--primary" (click)="abrirModalCriar()">Criar Período</button>
+  </div>
+</section>
+
+<!-- ── Arquivos do Período ────────────────────────────────────────────────── -->
+<ng-container *ngIf="periodoSelecionado">
+  <!-- Barra de ações -->
+  <div class="action-bar">
+    <div class="action-bar__info">
+      <span class="period-label">{{ mesLabel }} / {{ anoSelecionado }}</span>
+      <span class="status-pill status-pill--{{ periodoSelecionado.status.toLowerCase() }}">
+        {{ periodoSelecionado.status }}
+      </span>
+    </div>
+    <div class="action-bar__actions">
+      <button class="btn btn--ghost" (click)="validarArquivos()" [disabled]="validando">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M20 6L9 17l-5-5"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        {{ validando ? 'Validando...' : 'Validar Arquivos' }}
+      </button>
+      <button class="btn btn--ghost" (click)="carregarArquivos()" [disabled]="carregandoArquivos">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        Atualizar
+      </button>
+    </div>
+  </div>
+
+  <!-- Resumo de status -->
+  <div class="status-summary" *ngIf="arquivos.length > 0">
+    <div class="summary-item summary-item--ok">
+      <span class="summary-count">{{ totalOk }}</span>
+      <span class="summary-label">Arquivos OK</span>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-item summary-item--fail" *ngIf="totalFail > 0">
+      <span class="summary-count">{{ totalFail }}</span>
+      <span class="summary-label">Com Erro</span>
+    </div>
+    <div class="summary-item summary-item--neutral" *ngIf="totalFail === 0">
+      <span class="summary-count">0</span>
+      <span class="summary-label">Erros</span>
+    </div>
+  </div>
+
+  <!-- Loading skeleton -->
+  <div class="card" *ngIf="carregandoArquivos">
+    <div class="skeleton-list">
+      <div class="skeleton-row" *ngFor="let i of [1, 2, 3, 4, 5]"></div>
+    </div>
+  </div>
+
+  <!-- Tabela de arquivos obrigatórios -->
+  <section class="card" *ngIf="!carregandoArquivos && arquivos.length > 0">
+    <h2 class="card__title">
+      Arquivos Obrigatórios
+      <span class="card__badge">{{ arquivosObrigatorios.length }}</span>
+    </h2>
+
+    <div class="arquivo-list">
+      <div
+        class="arquivo-row"
+        *ngFor="let arquivo of arquivosObrigatorios; trackBy: trackByTipo"
+        [class.arquivo-row--ok]="arquivo.status === 'OK'"
+        [class.arquivo-row--fail]="arquivo.status === 'FAIL'"
+        [class.arquivo-row--ausente]="arquivo.status === 'AUSENTE'"
+      >
+        <div class="arquivo-row__status">
+          <!-- OK -->
+          <span class="status-icon status-icon--ok" *ngIf="arquivo.status === 'OK'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M20 6L9 17l-5-5"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          </span>
+          <!-- FAIL -->
+          <span class="status-icon status-icon--fail" *ngIf="arquivo.status === 'FAIL'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M18 6L6 18M6 6l12 12"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          </span>
+          <!-- AUSENTE / PENDENTE -->
+          <span
+            class="status-icon status-icon--ausente"
+            *ngIf="arquivo.status === 'AUSENTE' || arquivo.status === 'PENDENTE'"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" />
+              <path
+                d="M12 8v4M12 16h.01"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </span>
+        </div>
+
+        <div class="arquivo-row__info">
+          <span class="arquivo-row__tipo">{{ arquivo.label }}</span>
+          <span class="arquivo-row__nome" *ngIf="arquivo.nome_arquivo">
+            {{ arquivo.nome_arquivo }}
+          </span>
+          <span class="arquivo-row__nome arquivo-row__nome--vazio" *ngIf="!arquivo.nome_arquivo">
+            Nenhum arquivo encontrado
+          </span>
+        </div>
+
+        <div class="arquivo-row__meta">
+          <span class="arquivo-row__linhas" *ngIf="arquivo.total_linhas">
+            {{ arquivo.total_linhas | number }} linhas
+          </span>
+          <span class="arquivo-row__tag arquivo-row__tag--obrigatorio"> Obrigatório </span>
+        </div>
+
+        <div class="arquivo-row__erro" *ngIf="arquivo.erro_mensagem">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#e05c5c" stroke-width="2" />
+            <path d="M12 8v4M12 16h.01" stroke="#e05c5c" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          {{ arquivo.erro_mensagem }}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabela de arquivos opcionais -->
+  <section class="card" *ngIf="!carregandoArquivos && arquivosOpcionais.length > 0">
+    <h2 class="card__title">
+      Arquivos Opcionais
+      <span class="card__badge">{{ arquivosOpcionais.length }}</span>
+    </h2>
+
+    <div class="arquivo-list arquivo-list--opcional">
+      <div
+        class="arquivo-row"
+        *ngFor="let arquivo of arquivosOpcionais; trackBy: trackByTipo"
+        [class.arquivo-row--ok]="arquivo.status === 'OK'"
+        [class.arquivo-row--fail]="arquivo.status === 'FAIL'"
+      >
+        <div class="arquivo-row__status">
+          <span class="status-icon status-icon--ok" *ngIf="arquivo.status === 'OK'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M20 6L9 17l-5-5"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          </span>
+          <span class="status-icon status-icon--fail" *ngIf="arquivo.status === 'FAIL'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M18 6L6 18M6 6l12 12"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          </span>
+          <span
+            class="status-icon status-icon--neutral"
+            *ngIf="arquivo.status === 'AUSENTE' || arquivo.status === 'PENDENTE'"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </span>
+        </div>
+
+        <div class="arquivo-row__info">
+          <span class="arquivo-row__tipo">{{ arquivo.label }}</span>
+          <span class="arquivo-row__nome" *ngIf="arquivo.nome_arquivo">{{
+            arquivo.nome_arquivo
+          }}</span>
+          <span class="arquivo-row__nome arquivo-row__nome--vazio" *ngIf="!arquivo.nome_arquivo">
+            Não informado
+          </span>
+        </div>
+
+        <div class="arquivo-row__meta">
+          <span class="arquivo-row__linhas" *ngIf="arquivo.total_linhas">
+            {{ arquivo.total_linhas | number }} linhas
+          </span>
+          <span class="arquivo-row__tag">Opcional</span>
+        </div>
+
+        <div class="arquivo-row__erro" *ngIf="arquivo.erro_mensagem">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#e05c5c" stroke-width="2" />
+            <path d="M12 8v4M12 16h.01" stroke="#e05c5c" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          {{ arquivo.erro_mensagem }}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Botão Executar -->
+  <div class="execute-bar">
+    <p class="execute-bar__hint" *ngIf="!podExecutar">
+      Adicione os arquivos obrigatórios e valide antes de executar.
+    </p>
+    <button class="btn btn--execute" [disabled]="!podExecutar" (click)="executar()">
+      Executar Apuração
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M5 3l14 9-14 9V3z" fill="currentColor" />
+      </svg>
+    </button>
+  </div>
+</ng-container>
+
+<!-- ── Modal Criar Período ────────────────────────────────────────────────── -->
+<app-periodo-criar-modal
+  *ngIf="mostrarModalCriar"
+  [ano]="anoSelecionado"
+  [mes]="mesSelecionado"
+  (periodoCreated)="onPeriodoCriado($event)"
+  (closed)="onModalFechado()"
+/>

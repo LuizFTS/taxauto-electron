@@ -1,0 +1,491 @@
+// ── Page header ───────────────────────────────────────────────────────────
+.page-header {
+  margin-bottom: 20px;
+}
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a2535;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+// ── Card base ─────────────────────────────────────────────────────────────
+.card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.07),
+    0 1px 2px rgba(0, 0, 0, 0.04);
+
+  &__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a2535;
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: #edf1f5;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #5a7490;
+  }
+
+  &--empty {
+    padding: 48px 24px;
+  }
+}
+
+// ── Period selectors ──────────────────────────────────────────────────────
+.periodo-selectors {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b8299;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.field-select {
+  height: 38px;
+  padding: 0 32px 0 12px;
+  border: 1px solid #dde4eb;
+  border-radius: 6px;
+  background: #fff
+    url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b8299' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat right 12px center;
+  appearance: none;
+  font-size: 14px;
+  color: #1a2535;
+  cursor: pointer;
+  min-width: 150px;
+
+  &:focus {
+    outline: none;
+    border-color: #5b9bd5;
+    box-shadow: 0 0 0 3px rgba(91, 155, 213, 0.12);
+  }
+}
+
+.periodo-badge {
+  padding-bottom: 6px;
+}
+
+// ── Badges ────────────────────────────────────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &--ok {
+    background: #e8f5ee;
+    color: #2d7a4a;
+  }
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
+
+// ── Empty state ────────────────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+
+  &__icon {
+    opacity: 0.6;
+    margin-bottom: 4px;
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #3d5268;
+    margin: 0;
+  }
+
+  &__desc {
+    font-size: 13px;
+    color: #8099af;
+    margin: 0;
+    max-width: 340px;
+    line-height: 1.6;
+  }
+}
+
+// ── Action bar ────────────────────────────────────────────────────────────
+.action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+
+  &__info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.period-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a2535;
+}
+
+// Status pill
+.status-pill {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+
+  &--criado {
+    background: #edf1f5;
+    color: #5a7490;
+  }
+  &--importado {
+    background: #e3f0fb;
+    color: #2668a6;
+  }
+  &--processando {
+    background: #fff3dc;
+    color: #8a5a00;
+  }
+  &--concluido {
+    background: #e8f5ee;
+    color: #2d7a4a;
+  }
+  &--erro {
+    background: #fde8e8;
+    color: #b53030;
+  }
+}
+
+// ── Status summary ─────────────────────────────────────────────────────────
+.status-summary {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 16px;
+  padding: 14px 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+}
+
+.summary-item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.summary-count {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+
+  .summary-item--ok & {
+    color: #2d7a4a;
+  }
+  .summary-item--fail & {
+    color: #b53030;
+  }
+  .summary-item--neutral & {
+    color: #8099af;
+  }
+}
+
+.summary-label {
+  font-size: 12px;
+  color: #8099af;
+  font-weight: 500;
+}
+
+.summary-divider {
+  width: 1px;
+  height: 24px;
+  background: #dde4eb;
+}
+
+// ── Arquivo list ───────────────────────────────────────────────────────────
+.arquivo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.arquivo-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 0 12px;
+  padding: 11px 12px;
+  border-radius: 6px;
+  background: #fafbfc;
+  border: 1px solid transparent;
+  transition: background 0.12s;
+
+  &:hover {
+    background: #f4f6f9;
+  }
+
+  &--ok {
+    border-color: #c8e6d3;
+    background: #f4fbf6;
+  }
+
+  &--fail {
+    border-color: #f5c6c6;
+    background: #fff7f7;
+  }
+
+  &--ausente {
+    background: #fafbfc;
+    border-color: #e8ecf0;
+  }
+
+  &__status {
+    grid-row: 1;
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__info {
+    grid-row: 1;
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__meta {
+    grid-row: 1;
+    grid-column: 3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__erro {
+    grid-row: 2;
+    grid-column: 2 / 5;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #b53030;
+    padding-top: 4px;
+  }
+
+  &__tipo {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2535;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__nome {
+    font-size: 12px;
+    color: #5a7490;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &--vazio {
+      color: #a0b4c4;
+      font-style: italic;
+    }
+  }
+
+  &__linhas {
+    font-size: 12px;
+    color: #8099af;
+    white-space: nowrap;
+  }
+
+  &__tag {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #edf1f5;
+    color: #6b8299;
+    white-space: nowrap;
+
+    &--obrigatorio {
+      background: #e3f0fb;
+      color: #2668a6;
+    }
+  }
+}
+
+// ── Status icons ───────────────────────────────────────────────────────────
+.status-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &--ok {
+    background: #d4f0df;
+    color: #2d7a4a;
+  }
+  &--fail {
+    background: #fdd8d8;
+    color: #b53030;
+  }
+  &--ausente {
+    background: #fff3dc;
+    color: #8a5a00;
+  }
+  &--neutral {
+    background: #edf1f5;
+    color: #8099af;
+  }
+}
+
+// ── Skeleton loading ───────────────────────────────────────────────────────
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.skeleton-row {
+  height: 44px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f0f2f5 25%, #e6eaef 50%, #f0f2f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// ── Execute bar ────────────────────────────────────────────────────────────
+.execute-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 16px 0 8px;
+
+  &__hint {
+    font-size: 12px;
+    color: #8099af;
+    margin: 0;
+  }
+}
+
+// ── Buttons ────────────────────────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.1s,
+    opacity 0.15s;
+  font-family: inherit;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  &:not(:disabled):active {
+    transform: translateY(1px);
+  }
+
+  &--primary {
+    background: #1a2535;
+    color: #fff;
+    &:not(:disabled):hover {
+      background: #243448;
+    }
+  }
+
+  &--ghost {
+    background: #edf1f5;
+    color: #3d5268;
+    &:not(:disabled):hover {
+      background: #e0e7ef;
+    }
+  }
+
+  &--execute {
+    background: #1a2535;
+    color: #fff;
+    padding: 10px 22px;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(26, 37, 53, 0.25);
+
+    &:not(:disabled):hover {
+      background: #243448;
+      box-shadow: 0 4px 12px rgba(26, 37, 53, 0.3);
+    }
+  }
+}
