@@ -1,47 +1,85 @@
-from fastapi import FastAPI, Depends
-import uvicorn
-import asyncio
+
+import logging
+import sys
 from contextlib import asynccontextmanager
 
-from api.routers import automation
-from api.dependencies.auth import verify_token
-from infrastructure.database.local_db import engine
-from infrastructure.database.init_db import init_models
-import sys
+import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from infrastructure.config.settings import settings
+from infrastructure.database.sqlite_connection import run_migrations
+
+from api.routes import periodo_routes
+
+
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+
+logging.basicConfig(
+    level=logging.DEBUG if settings.DEBUG else logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+logger = logging.getLogger(__name__)
+
 
 # Lifecycle events to setup the SQLite db before accepting traffic
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Initializing Database...")
-    await init_models(engine)
-    print("Database Initialized.")
-    yield
-    print("Shutting down Application...")
-    # Add cleanup resources if needed (browser closing, etc)
-    
-app = FastAPI(title="TaxAuto Python Automation Backend", lifespan=lifespan)
+    logger.info("Iniciando %s v%s", settings.APP_NAME, settings.APP_VERSION)
+    logger.info("Banco de dados: %s", settings.DATABASE_PATH)
+    logger.info("Workspace: %s", settings.WORKSPACE_ROOT)
 
-# Mount Routers - Globally protected by auth token verification
-app.include_router(
-    automation.router, 
-    dependencies=[Depends(verify_token)]
+    await run_migrations()
+
+    yield
+
+    logger.info("Encerrando aplicação.")
+  
+# ---------------------------------------------------------------------------
+# App
+# ---------------------------------------------------------------------------
+
+app = FastAPI(
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    description="Backend local para apuração de ICMS.",
+    lifespan=lifespan,
 )
 
-@app.get("/health", tags=["System"])
+# CORS — permite requisições do Electron (localhost)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200", "http://localhost:*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ---------------------------------------------------------------------------
+# Routers
+# ---------------------------------------------------------------------------
+#app.include_router(automation.router)
+app.include_router(periodo_routes.router, prefix="/api/v1")
+
+@app.get("/health", tags=["Sistema"])
 async def health_check():
-    """
-    Called by Electron to check if the backend is ready
-    """
-    return {"status": "healthy"}
+    return {
+        "status": "ok",
+        "app": settings.APP_NAME,
+        "version": settings.APP_VERSION,
+    }
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    # Electron passes --port dynamically, or fallback to dev port
-    port = 8000
-    if "--port" in sys.argv:
-        try:
-            port_index = sys.argv.index("--port") + 1
-            port = int(sys.argv[port_index])
-        except (ValueError, IndexError):
-            pass
-
-    uvicorn.run("main:app", host="127.0.0.1", port=port, reload=False)
+    uvicorn.run(
+        "main:app",
+        host=settings.HOST,
+        port=settings.PORT,
+        reload=settings.DEBUG,
+    )
