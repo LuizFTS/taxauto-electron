@@ -4,6 +4,9 @@ import { WindowLayout } from './layouts/window-layout/window-layout';
 import { LivrosFiscais } from './pages/livros-fiscais/livros-fiscais';
 import { Filiais } from './pages/filiais/filiais';
 import { Apuracao } from './pages/apuracao/apuracao';
+import { Processamento } from './pages/apuracao/components/processamento/processamento';
+import { Resultado } from './pages/apuracao/components/resultado/resultado';
+import { Difal } from './pages/difal/difal';
 
 export const routes: Routes = [
   {
@@ -23,8 +26,22 @@ export const routes: Routes = [
         component: Filiais,
       },
       {
+        path: 'difal',
+        component: Difal,
+      },
+      {
         path: 'apuracao',
         component: Apuracao,
+        children: [
+          {
+            path: 'processamento/:id',
+            component: Processamento,
+          },
+          {
+            path: 'resultado/:id',
+            component: Resultado,
+          },
+        ],
       },
     ],
   },
