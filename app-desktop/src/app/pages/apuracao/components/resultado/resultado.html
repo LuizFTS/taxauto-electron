@@ -1,0 +1,186 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <button class="btn-back" (click)="novaApuracao()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M19 12H5M12 5l-7 7 7 7"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      Nova Apuração
+    </button>
+    <h1 class="page-title">Resultado da Apuração</h1>
+  </div>
+  <button
+    class="btn btn--export"
+    (click)="exportar()"
+    [disabled]="exportando || resultados.length === 0"
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 3v13M7 11l5 5 5-5"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path d="M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+    </svg>
+    {{ exportando ? 'Exportando...' : 'Exportar Excel' }}
+  </button>
+</div>
+
+<!-- Sumário -->
+<div class="summary-strip" *ngIf="!carregando && resultados.length > 0">
+  <div class="summary-card">
+    <span class="summary-card__value">{{ resultados.length }}</span>
+    <span class="summary-card__label">Filiais apuradas</span>
+  </div>
+  <div class="summary-card summary-card--recolher">
+    <span class="summary-card__value">
+      {{ totalRecolher | currency: 'BRL' : 'symbol' : '1.2-2' }}
+    </span>
+    <span class="summary-card__label">Total a recolher</span>
+  </div>
+  <div class="summary-card summary-card--credor">
+    <span class="summary-card__value">{{ totalCredores }}</span>
+    <span class="summary-card__label">Com saldo credor</span>
+  </div>
+</div>
+
+<!-- Loading -->
+<div class="card" *ngIf="carregando">
+  <div class="skeleton-list">
+    <div class="skeleton-row" *ngFor="let i of [1, 2, 3, 4, 5, 6]"></div>
+  </div>
+</div>
+
+<!-- Tabela de resultados -->
+<div class="card card--table" *ngIf="!carregando && resultados.length > 0">
+  <table class="result-table">
+    <thead>
+      <tr>
+        <th>Filial</th>
+        <th>UF</th>
+        <th class="col-num">Total Créditos</th>
+        <th class="col-num">Total Débitos</th>
+        <th class="col-num">Saldo Credor</th>
+        <th class="col-num">ICMS a Recolher</th>
+        <th class="col-status">Status</th>
+        <th class="col-action"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let r of resultados; trackBy: trackByCodigo"
+        [class.row--credor]="r.saldo_credor > 0"
+        [class.row--erro]="r.status === 'ERRO'"
+      >
+        <td class="cell-filial">
+          <span class="filial-codigo">{{ r.filial_codigo }}</span>
+          <span class="filial-nome">{{ r.filial_nome }}</span>
+        </td>
+        <td>
+          <span class="uf-badge">{{ r.uf }}</span>
+        </td>
+        <td class="col-num text-green">
+          {{ r.total_creditos | currency: 'BRL' : 'symbol' : '1.2-2' }}
+        </td>
+        <td class="col-num text-red">
+          {{ r.total_debitos | currency: 'BRL' : 'symbol' : '1.2-2' }}
+        </td>
+        <td class="col-num">
+          <span [class.text-green]="r.saldo_credor > 0">
+            {{ r.saldo_credor | currency: 'BRL' : 'symbol' : '1.2-2' }}
+          </span>
+        </td>
+        <td class="col-num">
+          <span class="recolher-val" [class.recolher-val--alto]="r.icms_a_recolher > 10000">
+            {{ r.icms_a_recolher | currency: 'BRL' : 'symbol' : '1.2-2' }}
+          </span>
+        </td>
+        <td class="col-status">
+          <span
+            class="status-chip"
+            [class.status-chip--ok]="r.status === 'OK'"
+            [class.status-chip--erro]="r.status === 'ERRO'"
+            [class.status-chip--pendente]="r.status === 'PENDENTE'"
+          >
+            {{ r.status }}
+          </span>
+        </td>
+        <td class="col-action">
+          <button class="btn-detail" (click)="verDetalhe(r)">Detalhes</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Empty -->
+<div class="card card--empty" *ngIf="!carregando && resultados.length === 0">
+  <p class="empty-msg">Nenhum resultado encontrado para este período.</p>
+</div>
+
+<!-- Modal de detalhe da filial -->
+<ng-container *ngIf="filialDetalhe">
+  <div class="modal-backdrop" (click)="fecharDetalhe()"></div>
+  <div class="modal-detail">
+    <div class="modal-detail__header">
+      <div>
+        <h3 class="modal-detail__title">{{ filialDetalhe.filial_nome }}</h3>
+        <p class="modal-detail__sub">
+          {{ filialDetalhe.filial_codigo }} · {{ filialDetalhe.uf }} ·
+          {{ filialDetalhe.periodo_chave }}
+        </p>
+      </div>
+      <button class="btn-icon" (click)="fecharDetalhe()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M18 6L6 18M6 6l12 12"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-detail__body">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span class="detail-item__label">Total Créditos</span>
+          <span class="detail-item__value text-green">
+            {{ filialDetalhe.total_creditos | currency: 'BRL' : 'symbol' : '1.2-2' }}
+          </span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-item__label">Total Débitos</span>
+          <span class="detail-item__value text-red">
+            {{ filialDetalhe.total_debitos | currency: 'BRL' : 'symbol' : '1.2-2' }}
+          </span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-item__label">Saldo Credor</span>
+          <span class="detail-item__value">
+            {{ filialDetalhe.saldo_credor | currency: 'BRL' : 'symbol' : '1.2-2' }}
+          </span>
+        </div>
+        <div class="detail-item detail-item--highlight">
+          <span class="detail-item__label">ICMS a Recolher</span>
+          <span class="detail-item__value detail-item__value--big">
+            {{ filialDetalhe.icms_a_recolher | currency: 'BRL' : 'symbol' : '1.2-2' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-detail__footer">
+      <button class="btn btn--ghost" (click)="fecharDetalhe()">Fechar</button>
+      <button class="btn btn--primary" (click)="exportar()">Exportar Excel</button>
+    </div>
+  </div>
+</ng-container>
