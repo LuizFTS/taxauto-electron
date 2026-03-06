@@ -2,7 +2,7 @@ import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalService } from '../../../../services/modal.service';
-import { ElectronService, Branch, BranchGroup } from '../../../../services/electron.services';
+import { ElectronService, Branch, BranchGroup } from '../../../../services/electron.service';
 
 @Component({
   standalone: true,
