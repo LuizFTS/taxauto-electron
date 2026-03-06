@@ -1,0 +1,202 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 18, 28, 0.45);
+  z-index: 100;
+  animation: fadeIn 0.15s ease;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  width: 460px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(10, 18, 28, 0.25);
+  animation: slideUp 0.2s ease;
+  font-family: 'Segoe UI', sans-serif;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #edf1f5;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a2535;
+    margin: 0;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: #8099af;
+    display: flex;
+    border-radius: 4px;
+    transition:
+      color 0.12s,
+      background 0.12s;
+    &:hover {
+      color: #1a2535;
+      background: #edf1f5;
+    }
+  }
+
+  &__body {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__footer {
+    padding: 16px 24px;
+    border-top: 1px solid #edf1f5;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+}
+
+.period-preview {
+  text-align: center;
+  padding: 16px;
+  background: #f4f6f9;
+  border-radius: 8px;
+
+  &__value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a2535;
+  }
+}
+
+.info-box {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #e8f2fb;
+  border-radius: 8px;
+  border: 1px solid #bdd8f0;
+
+  &__icon {
+    color: #2668a6;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  &__title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #2668a6;
+    margin: 0 0 6px;
+  }
+
+  &__path {
+    display: block;
+    font-size: 12px;
+    color: #1a2535;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    font-family: 'Consolas', monospace;
+  }
+
+  &__desc {
+    font-size: 12px;
+    color: #3d6b8f;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.error-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #fff2f2;
+  border: 1px solid #f5c6c6;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #b53030;
+}
+
+// Buttons (local copy)
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: inherit;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: #1a2535;
+    color: #fff;
+    &:not(:disabled):hover {
+      background: #243448;
+    }
+  }
+
+  &--ghost {
+    background: #edf1f5;
+    color: #3d5268;
+    &:not(:disabled):hover {
+      background: #e0e7ef;
+    }
+  }
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slideUp {
+  from {
+    transform: translate(-50%, -46%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
