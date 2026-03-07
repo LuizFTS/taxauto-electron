@@ -1,7 +1,9 @@
-import aiosqlite
 import logging
-from infrastructure.config.settings import settings
 from contextlib import asynccontextmanager
+
+import aiosqlite
+
+from core.config.settings import settings
 
 logger = logging.getLogger(__name__)
 

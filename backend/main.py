@@ -1,4 +1,3 @@
-
 import logging
 import sys
 from contextlib import asynccontextmanager
@@ -7,11 +6,10 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from infrastructure.config.settings import settings
-from infrastructure.database.sqlite_connection import run_migrations
-
-from api.routes import periodo_routes
-
+from core.config.settings import settings
+from core.database.connection import run_migrations
+from modules.automation.presentation.routes import livros_fiscais_routes
+from modules.data_process.presentation.routes import periodo_routes
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -37,7 +35,8 @@ async def lifespan(app: FastAPI):
     yield
 
     logger.info("Encerrando aplicação.")
-  
+
+
 # ---------------------------------------------------------------------------
 # App
 # ---------------------------------------------------------------------------
@@ -61,8 +60,10 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 # Routers
 # ---------------------------------------------------------------------------
-#app.include_router(automation.router)
+# app.include_router(automation.router)
 app.include_router(periodo_routes.router, prefix="/api/v1")
+app.include_router(livros_fiscais_routes.router, prefix="/api/v1")
+
 
 @app.get("/health", tags=["Sistema"])
 async def health_check():
@@ -71,6 +72,7 @@ async def health_check():
         "app": settings.APP_NAME,
         "version": settings.APP_VERSION,
     }
+
 
 # ---------------------------------------------------------------------------
 # Entry point
