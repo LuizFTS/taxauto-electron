@@ -14,15 +14,45 @@ out/
 .npm
 npm-debug.log*
 
-# --- Python ---
-# Ambiente virtual (venv)
-venv/
-.venv/
-env/
+# Python
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
 *.py[cod]
-*$py.class
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment variables
+.env
+.env.*
+
+# Build / dist
+build/
+dist/
+*.egg-info/
+
+# Python caches
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Node (if electron project is in same repo)
+node_modules/
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 
 # --- Electron Packaging ---
 # Pasta gerada quando você empacota o app para .exe ou .app
@@ -31,12 +61,6 @@ build/
 *.exe
 *.dmg
 *.app
-
-# --- Firebase ---
-# Ignora logs e configurações locais do Firebase
-.firebase/
-firebase-debug.log*
-firestore-debug.log*
 
 # --- Logs de Erro ---
 logs
