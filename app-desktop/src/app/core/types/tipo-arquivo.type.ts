@@ -1,0 +1,11 @@
+export type TipoArquivo =
+  | 'LIVRO_ENTRADA'
+  | 'LIVRO_SAIDA'
+  | 'DIFAL'
+  | 'ST'
+  | 'ESTORNO_CREDITO'
+  | 'ESTORNO_MERCADORIA_DETERIORADA'
+  | 'FOT'
+  | 'FRETE_ENTRADA'
+  | 'FRETE_SAIDA'
+  | 'INEXIGIBILIDADE';

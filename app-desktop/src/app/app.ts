@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
-import { Modal } from './components/modal/modal';
+import { Modal } from './shared/components/modal/modal';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +8,7 @@ import { Modal } from './components/modal/modal';
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('app-desktop');
 
   constructor(private readonly router: Router) {}
