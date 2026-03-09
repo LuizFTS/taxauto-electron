@@ -6,8 +6,8 @@ from modules.automation.automations.livros_fiscais.services.close_book_service i
     CloseBookService,
 )
 from modules.automation.automations.livros_fiscais.services.open_book_service import OpenBookService
-from modules.automation.automations.livros_fiscais.services.refresh_book_service import (
-    RefreshBookService,
+from modules.automation.automations.livros_fiscais.services.update_book_service import (
+    UpdateBookService,
 )
 from modules.automation.automations.livros_fiscais.state.book_state_service import BookStateService
 
@@ -22,70 +22,40 @@ class LivrosFiscaisOrchestrator:
         self.book_state = BookStateService()
 
         self.open_book = OpenBookService()
-        self.refresh_book = RefreshBookService()
+        self.update_book = UpdateBookService()
         self.close_book = CloseBookService()
 
     def execute(self, dto):
         print("[ORCHESTRATOR] Starting Livros Fiscais automation")
         self.session.open()
 
-        self.navigator.execute(self.session)
+        self.navigator.execute()
 
         for filial in dto.filiais:
             print(f"[ORCHESTRATOR] Processing filial {filial}")
             is_open = self.book_state.is_open(
-                self.session,
+                dto.book_type,
                 filial,
-                dto.book_type
-            )
+                dto.start_date
+                )
 
             if is_open:
 
-                if dto.tasks.refresh_book:
-                    self.refresh_book.execute(
-                        self.session,
-                        filial,
-                        dto.book_type,
-                        dto.start_date,
-                        dto.end_date
-                    )
+                if dto.tasks.update_book:
+                    self.update_book.execute()
 
                 if dto.tasks.close_book:
-                    self.close_book.execute(
-                        self.session,
-                        filial,
-                        dto.book_type,
-                        dto.start_date,
-                        dto.end_date
-                    )
+                    self.close_book.execute()
 
             else:
 
                 if dto.tasks.open_book:
-                    self.open_book.execute(
-                        self.session,
-                        filial,
-                        dto.book_type,
-                        dto.start_date,
-                        dto.end_date
-                    )
+                    self.open_book.execute()
 
-                if dto.tasks.refresh_book:
-                    self.refresh_book.execute(
-                        self.session,
-                        filial,
-                        dto.book_type,
-                        dto.start_date,
-                        dto.end_date
-                    )
+                if dto.tasks.update_book:
+                    self.update_book.execute()
 
                 if dto.tasks.close_book:
-                    self.close_book.execute(
-                        self.session,
-                        filial,
-                        dto.book_type,
-                        dto.start_date,
-                        dto.end_date
-                    )
+                    self.close_book.execute()
 
         return {"status": "finished"}
