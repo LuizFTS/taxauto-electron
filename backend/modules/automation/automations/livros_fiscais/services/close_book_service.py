@@ -1,5 +1,13 @@
+import nazm as a
+import nazm.capture as c
+
 class CloseBookService:
 
-    def execute(self, session, filial, book_type, start_date, end_date):
-        print(f"[SERVICE] CLOSE BOOK | filial={filial}")
-        pass
+    def execute(self):
+        t = c.load_templates()
+        print("[SERVICE] CLOSE BOOK |")
+
+        a.click(t.binoculos, 965, 163)
+        a.press('tab')
+        a.wait_cursor_normal()
+        a.press('space')
