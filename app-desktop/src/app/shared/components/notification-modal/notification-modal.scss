@@ -1,0 +1,76 @@
+.notification-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  min-width: 300px;
+}
+
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.icon-success {
+  background-color: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+}
+
+.icon-error {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+}
+
+.icon-alert {
+  background-color: rgba(241, 196, 15, 0.1);
+  color: #f39c12;
+}
+
+.icon-confirmation {
+  background-color: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+}
+
+.content-container {
+  margin-bottom: 24px;
+
+  .title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+
+  .message {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+
+  app-button {
+    flex: 1;
+    max-width: 150px;
+  }
+}

@@ -1,0 +1,21 @@
+<div class="notification-modal" [ngClass]="type">
+  <div class="icon-container" [ngClass]="iconClass">
+    <mat-icon>{{ icon }}</mat-icon>
+  </div>
+
+  <div class="content-container">
+    <h2 class="title">{{ title }}</h2>
+    <p class="message">{{ message }}</p>
+  </div>
+
+  <div class="actions">
+    @if (type === 'confirmation') {
+      <app-button variant="outline" size="md" (click)="handleCancel()">
+        {{ cancelText }}
+      </app-button>
+    }
+    <app-button variant="solid" size="md" (click)="handleConfirm()">
+      {{ confirmText }}
+    </app-button>
+  </div>
+</div>
