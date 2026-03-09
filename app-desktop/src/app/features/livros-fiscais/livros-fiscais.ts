@@ -1,4 +1,10 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -7,9 +13,10 @@ import {
   FormArray,
   FormControl,
 } from '@angular/forms';
-import { ModalService } from '../../core';
+import { ModalService, NotificationService } from '../../core';
 import { FiliaisModal } from './components/filiais-modal/filiais-modal';
 import { Button, Select } from '../../shared';
+import { LivrosFiscaisService } from '../../core/services/api/automation/livros-fiscais.service';
 
 @Component({
   selector: 'app-livros-fiscais',
@@ -22,6 +29,9 @@ import { Button, Select } from '../../shared';
 export class LivrosFiscais implements OnInit {
   private fb = inject(FormBuilder);
   private modalService = inject(ModalService);
+  private livrosFiscaisService = inject(LivrosFiscaisService);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private notificationService = inject(NotificationService);
 
   tiposLivro = [
     { value: 1, label: 'Entrada' },
@@ -38,9 +48,10 @@ export class LivrosFiscais implements OnInit {
   startDate = '';
   endDate = '';
   endInput: HTMLInputElement | null = null;
+  selectedFiliais: string[] = [];
 
   form: FormGroup = this.fb.group({
-    tipoLivro: ['Entrada'],
+    tipoLivro: [],
     periodo: this.fb.group({
       start: [this.startDate],
       end: [this.endDate],
@@ -79,14 +90,54 @@ export class LivrosFiscais implements OnInit {
       .map((checked: boolean, i: number) => (checked ? this.tarefasDisponiveis[i].id : null))
       .filter((v: string | null) => v !== null);
 
+    if (selectedTarefas.length === 0) {
+      this.notificationService.alert('Atenção!', 'Selecione pelo menos uma tarefa para executar.');
+      return;
+    }
+
+    if (!this.form.value.periodo.start || !this.form.value.periodo.end) {
+      this.notificationService.alert('Atenção!', 'Selecione o período de execução.');
+      return;
+    }
+
+    if (this.selectedFiliais.length === 0) {
+      this.notificationService.alert('Atenção!', 'Selecione pelo menos uma filial para executar.');
+      return;
+    }
+
+    if (this.form.value.tipoLivro === null) {
+      this.notificationService.alert('Atenção!', 'Selecione o tipo de livro.');
+      return;
+    }
+
     const payload = {
-      tipoLivro: this.form.value.tipoLivro,
-      dataInicial: this.form.value.periodo.start,
-      dataFinal: this.form.value.periodo.end,
-      tarefas: selectedTarefas,
+      book_type: this.form.value.tipoLivro === 1 ? 'entrada' : 'saida',
+      start_date: this.form.value.periodo.start,
+      end_date: this.form.value.periodo.end,
+      filiais: this.selectedFiliais,
+      tasks: {
+        open_book: selectedTarefas.includes('abrir'),
+        update_book: selectedTarefas.includes('atualizar'),
+        close_book: selectedTarefas.includes('fechar'),
+        save_spreadsheet: selectedTarefas.includes('salvar_excel'),
+        save_pdf: selectedTarefas.includes('salvar_pdf'),
+      },
     };
 
-    console.log('Executando com os parâmetros:', payload);
+    try {
+      this.livrosFiscaisService.execute(payload).subscribe({
+        next: () => {
+          this.notificationService.success('Sucesso!', 'Livro gerado com sucesso.');
+        },
+        error: (error) => {
+          this.notificationService.error('Erro!', error.error.detail);
+          console.log(error);
+        },
+      });
+    } catch (error) {
+      this.notificationService.error('Erro!', 'Erro ao executar tarefas.');
+      console.log(error);
+    }
   }
 
   onStartInput(event: Event, end: HTMLInputElement): void {
@@ -129,7 +180,8 @@ export class LivrosFiscais implements OnInit {
         title: 'Seleção de filiais',
         subtitle: 'Selecione os grupos ou filiais individuais para execução',
         onConfirm: (branches: string[]) => {
-          console.log('Selected branches from modal:', branches);
+          this.selectedFiliais = [...branches];
+          this.cdr.detectChanges();
         },
       } as Partial<FiliaisModal>,
     });
