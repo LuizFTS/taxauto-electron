@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from modules.automation.application.dto.livros_fiscais_dto import (
@@ -13,7 +13,7 @@ router = APIRouter()
 
 class TaskRequest(BaseModel):
   open_book: bool
-  refresh_book: bool
+  update_book: bool
   close_book: bool
   save_spreadsheet: bool
   save_pdf: bool
@@ -36,6 +36,13 @@ def run_livros_fiscais(data: LivrosFiscaisRequest):
     tasks=LivrosFiscaisTasksDTO(**data.tasks.model_dump())
   )
 
-  usecase = RunLivrosFiscaisUseCase()
-
-  return usecase.execute(dto)
+  try:
+    usecase = RunLivrosFiscaisUseCase()
+    return usecase.execute(dto)
+  except ValueError as ve:
+    # Erros específicos de valor/negócio
+    raise HTTPException(status_code=400, detail=str(ve))
+  except Exception as ex:
+    # Erros inesperados (500)
+    raise HTTPException(status_code=500, detail=f"Erro interno: {str(ex)}")
+   
