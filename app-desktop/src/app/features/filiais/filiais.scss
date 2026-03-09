@@ -15,6 +15,10 @@
   padding: 32px;
   max-width: 1200px;
   margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 /* Surface Elevation */
@@ -26,6 +30,9 @@
     0 1px 2px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 /* Header & Tabs */
@@ -85,9 +92,12 @@
   display: flex;
   align-items: center;
 
-  icon {
+  mat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
-    left: 12px;
+    left: 10px;
     font-size: 20px;
     color: #94a3b8;
     pointer-events: none;
@@ -126,7 +136,8 @@
 
 /* Table Canvas */
 .table-container {
-  overflow-x: auto;
+  overflow: auto;
+  flex: 1;
 }
 
 table {
@@ -135,20 +146,38 @@ table {
   text-align: left;
 }
 
+th:nth-child(2),
+td:nth-child(2) {
+  width: 100%;
+  white-space: normal;
+}
+
+th:nth-child(4),
+td:nth-child(4) {
+  text-align: center;
+}
+th:nth-child(5),
+td:nth-child(5) {
+  text-align: center;
+}
+
 th {
   font-size: 13px;
   font-weight: 600;
   color: #475569;
-  padding: 16px 32px;
+  padding: 5px 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  text-align: left;
+  white-space: nowrap;
 }
 
 td {
   font-size: 14px;
   color: #0f172a;
-  padding: 16px 32px;
+  padding: 5px 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.04);
   vertical-align: middle;
+  white-space: nowrap;
 }
 
 tbody tr {
@@ -282,7 +311,7 @@ tr.editing-row {
     cursor: pointer;
     transition: all 0.2s ease;
 
-    icon {
+    mat-icon {
       font-size: 18px;
     }
 
