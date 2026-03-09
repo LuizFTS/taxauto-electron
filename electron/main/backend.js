@@ -28,11 +28,14 @@ function startBackend() {
     backendProcess = isDev
       ? spawn(backendPath, ['main.py'], {
         cwd: path.join(__dirname, '../../backend'),
-        stdio: 'pipe'
+        stdio: 'pipe',
+        detached: false
       })
       : spawn(backendPath, [], {
         stdio: 'pipe',
-        windowsHide: true
+        windowsHide: true,
+        detached: false
+
       });
 
     backendProcess.stdout.on('data', (data) => {
@@ -58,6 +61,10 @@ function startBackend() {
       backendProcess = null;
     });
 
+    backendProcess.on('close', () => {
+      backendProcess = null;
+    });
+
     backendProcess.on('error', reject);
 
   });
@@ -66,15 +73,21 @@ function startBackend() {
 function stopBackend() {
   if (!backendProcess) return;
 
-  if (process.platform === 'win32') {
+  try {
+    if (process.platform === 'win32') {
 
-    exec(`taskkill /pid ${backendProcess.pid} /T /F`);
+      exec(`taskkill /pid ${backendProcess.pid} /T /F`);
 
-  } else {
+    } else {
 
-    backendProcess.kill('SIGTERM');
+      backendProcess.kill('SIGTERM');
 
+    }
+  } catch (error) {
+    console.error('Erro ao parar backend:', error);
   }
+
+  backendProcess = null;
 }
 
 function killOldBackends() {

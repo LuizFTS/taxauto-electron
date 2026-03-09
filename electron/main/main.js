@@ -31,9 +31,9 @@ if (!gotLock) {
 
 app.whenReady().then(async () => {
 
+  createLoadingWindow();
   console.log("Starting TaxAuto backend...");
 
-  const loading = createLoadingWindow();
 
   try {
 
@@ -94,5 +94,6 @@ app.on('window-all-closed', () => {
 app.on('quit', () => {
 
   stopBackend();
+  process.exit(0);
 
 });
