@@ -2,14 +2,46 @@
   "name": "taxauto-electron",
   "version": "1.0.0",
   "description": "",
-  "main": "electron/main.js",
+  "main": "electron/main/main.js",
   "scripts": {
     "ng": "npm --prefix app-desktop run",
     "angular-start": "npm --prefix app-desktop start",
-    "angular-build": "npm --prefix app-desktop run build -- --base-href ./",
+    "angular-build": "npm --prefix app-desktop run build -- --base-href ./ --source-map=false",
+    "backend-build": "powershell -ExecutionPolicy Bypass -File backend/scripts/build-backend.ps1",
     "electron-start": "wait-on http://localhost:4200 && electron .",
     "dev": "concurrently \"npm run angular-start\" \"npm run electron-start\"",
-    "install-all": "npm install && npm install --prefix app-desktop"
+    "install-all": "npm install && npm install --prefix app-desktop",
+    "build": "npm run angular-build && npm run backend-build && electron-builder"
+  },
+  "build": {
+    "appId": "com.taxauto.app",
+    "productName": "TaxAuto",
+    "icon": "build/icon.ico",
+    "compression": "maximum",
+    "asar": true,
+    "directories": {
+      "buildResources": "assets"
+    },
+    "files": [
+      "electron/**/*",
+      "app-desktop/dist/app-desktop/browser/**/*",
+      "package.json",
+      "!**/*.map",
+      "!**/*.ts"
+    ],
+    "extraResources": [
+      {
+        "from": "backend/dist",
+        "to": "backend",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    }
   },
   "keywords": [],
   "author": "",
@@ -18,7 +50,10 @@
   "devDependencies": {
     "concurrently": "^9.2.1",
     "electron": "^40.6.1",
-    "electron-is-dev": "^3.0.1",
+    "electron-builder": "^26.8.1",
     "wait-on": "^9.0.4"
+  },
+  "dependencies": {
+    "axios": "^1.13.6"
   }
 }

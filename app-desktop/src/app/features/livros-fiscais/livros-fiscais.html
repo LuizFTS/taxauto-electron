@@ -16,10 +16,11 @@
         </div>
 
         <div class="field-group date-group">
-          <label class="field-label">Período</label>
+          <label class="field-label" for="startDate">Período</label>
           <div class="date-range-container" formGroupName="periodo">
             <input
               type="text"
+              id="startDate"
               maxlength="10"
               (input)="onDateInput($event)"
               (input)="onStartInput($event, endInput)"
@@ -62,13 +63,17 @@
 
       <div class="tasks-row" formArrayName="tarefas">
         @for (tarefa of tarefasDisponiveis; track $index) {
-          <div
+          <button
+            type="button"
             class="task-pill"
             [class.selected]="isTarefaSelected($index)"
             (click)="toggleTarefa($index)"
+            (keydown.enter)="toggleTarefa($index)"
+            (keydown.space)="toggleTarefa($index)"
+            [attr.aria-pressed]="isTarefaSelected($index)"
           >
             <span>{{ tarefa.nome }}</span>
-          </div>
+          </button>
         }
       </div>
     </div>

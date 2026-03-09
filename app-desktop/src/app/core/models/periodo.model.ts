@@ -1,4 +1,4 @@
-import type { StatusPeriodo } from '../types/status-periodo.type';
+import type { StatusPeriodo } from '../types/status-periodo';
 
 export interface Periodo {
   id: number | null;

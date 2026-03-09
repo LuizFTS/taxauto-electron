@@ -8,15 +8,25 @@
 
   <div class="periodo-selectors">
     <div class="field-group">
-      <label class="field-label">Mês</label>
-      <select class="field-select" [(ngModel)]="mesSelecionado" (ngModelChange)="onPeriodoChange()">
+      <label class="field-label" for="mes">Mês</label>
+      <select
+        id="mes"
+        class="field-select"
+        [(ngModel)]="mesSelecionado"
+        (ngModelChange)="onPeriodoChange()"
+      >
         <option *ngFor="let m of meses" [value]="m.valor">{{ m.label }}</option>
       </select>
     </div>
 
     <div class="field-group">
-      <label class="field-label">Ano</label>
-      <select class="field-select" [(ngModel)]="anoSelecionado" (ngModelChange)="onPeriodoChange()">
+      <label class="field-label" for="ano">Ano</label>
+      <select
+        id="ano"
+        class="field-select"
+        [(ngModel)]="anoSelecionado"
+        (ngModelChange)="onPeriodoChange()"
+      >
         <option *ngFor="let a of anos" [value]="a">{{ a }}</option>
       </select>
     </div>

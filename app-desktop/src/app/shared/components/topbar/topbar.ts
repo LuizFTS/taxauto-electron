@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class Topbar {
-  private electron = (window as any).electron;
+  private electron = window.electron;
 
   minimizeWindow() {
     this.electron?.send('window-minimize');

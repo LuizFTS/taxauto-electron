@@ -4,10 +4,10 @@ export { ElectronService } from './services/electron.service';
 export { ModalService } from './services/modal.service';
 
 // Types
-export type { ModalConfig } from './types/modal.types';
-export type { StatusArquivo } from './types/status-arquivo.type';
-export type { StatusPeriodo } from './types/status-periodo.type';
-export type { TipoArquivo } from './types/tipo-arquivo.type';
+export type { ModalConfig } from './types/modal';
+export type { StatusArquivo } from './types/status-arquivo';
+export type { StatusPeriodo } from './types/status-periodo';
+export type { TipoArquivo } from './types/tipo-arquivo';
 
 // Models
 export type { ApuracaoDetalhe } from './models/apuracao-detalhe.model';

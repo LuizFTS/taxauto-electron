@@ -66,8 +66,8 @@ export class Select<T = unknown> implements ControlValueAccessor, AfterViewInit 
      CVA CALLBACKS
   ============================ */
 
-  private onChange: (value: T | null) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange?: (value: T | null) => void;
+  private onTouched?: () => void;
 
   writeValue(value: T | null): void {
     this._value.set(value);
@@ -96,8 +96,8 @@ export class Select<T = unknown> implements ControlValueAccessor, AfterViewInit 
 
   select(option: SelectOption<T>) {
     this._value.set(option.value);
-    this.onChange(option.value);
-    this.onTouched();
+    this.onChange?.(option.value);
+    this.onTouched?.();
     this.isOpen.set(false);
   }
 

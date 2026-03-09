@@ -23,4 +23,9 @@ export class Modal {
       this.close();
     }
   }
+
+  get componentInputs(): Record<string, unknown> {
+    const data = this.modal()?.data;
+    return (data as Record<string, unknown>) ?? {};
+  }
 }

@@ -114,10 +114,10 @@ export class Filiais {
   }
 
   updateEditField(id: string, field: string, event: Event) {
-    const value = (event.target as HTMLInputElement | HTMLSelectElement).value;
-    if (this.editingRows[id]) {
-      (this.editingRows[id] as any)[field] = value;
-    }
+    const target = event.target as HTMLInputElement | HTMLSelectElement;
+
+    const row = this.editingRows[id] as Record<string, unknown>;
+    row[field] = target.value;
   }
 
   // --- Create ---
@@ -153,7 +153,9 @@ export class Filiais {
   }
 
   updateCreateField(field: string, event: Event) {
-    const value = (event.target as HTMLInputElement | HTMLSelectElement).value;
-    (this.newRowData as any)[field] = value;
+    const target = event.target as HTMLInputElement | HTMLSelectElement;
+
+    const row = this.newRowData as Record<string, unknown>;
+    row[field] = target.value;
   }
 }

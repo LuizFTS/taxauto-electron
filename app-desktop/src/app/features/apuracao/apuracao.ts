@@ -163,7 +163,12 @@ export class Apuracao implements OnInit, OnDestroy {
   }
 
   private gerarArquivosVazios(): ArquivoFiscal[] {
-    return (Object.entries(TIPOS_ARQUIVO_CONFIG) as [TipoArquivo, any][]).map(([tipo, config]) => ({
+    return (
+      Object.entries(TIPOS_ARQUIVO_CONFIG) as [
+        TipoArquivo,
+        { label: string; obrigatorio: boolean },
+      ][]
+    ).map(([tipo, config]) => ({
       tipo,
       label: config.label,
       nome_arquivo: null,

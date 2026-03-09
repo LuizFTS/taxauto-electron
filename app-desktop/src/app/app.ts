@@ -1,4 +1,4 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component, signal, OnInit, inject } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
 import { Modal } from './shared/components/modal/modal';
 
@@ -9,9 +9,8 @@ import { Modal } from './shared/components/modal/modal';
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
+  private readonly router = inject(Router);
   protected readonly title = signal('app-desktop');
-
-  constructor(private readonly router: Router) {}
 
   ngOnInit(): void {
     this.router.navigate(['livros-fiscais']);

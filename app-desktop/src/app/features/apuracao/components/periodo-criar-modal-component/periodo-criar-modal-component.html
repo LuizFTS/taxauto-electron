@@ -1,4 +1,11 @@
-<div class="modal-backdrop" (click)="fechar()"></div>
+<div
+  role="button"
+  tabindex="0"
+  class="modal-backdrop"
+  (click)="fechar()"
+  (keydown.enter)="fechar()"
+  (keydown.space)="fechar()"
+></div>
 
 <div class="modal">
   <div class="modal__header">

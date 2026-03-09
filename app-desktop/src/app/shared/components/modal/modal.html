@@ -1,11 +1,26 @@
 @if (modal(); as config) {
-  <div class="app-modal__backdrop" (click)="backdropClick(config.options?.closeOnBackdrop)">
-    <div class="app-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
-      <button class="app-modal__close" (click)="close()">
+  <div
+    class="app-modal__backdrop"
+    role="button"
+    tabindex="0"
+    aria-label="Fechar modal"
+    (click)="backdropClick(config.options?.closeOnBackdrop)"
+    (keydown.escape)="backdropClick(config.options?.closeOnBackdrop)"
+    (keydown.enter)="backdropClick(config.options?.closeOnBackdrop)"
+  >
+    <div
+      class="app-modal"
+      role="dialog"
+      aria-modal="true"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+    >
+      <button class="app-modal__close" (click)="close()" type="button" aria-label="Fechar">
         <mat-icon>close</mat-icon>
       </button>
+
       <div class="app-modal__content">
-        <ng-container *ngComponentOutlet="config.component; inputs: config.data"></ng-container>
+        <ng-container *ngComponentOutlet="config.component; inputs: componentInputs"></ng-container>
       </div>
     </div>
   </div>

@@ -127,7 +127,14 @@
 
 <!-- Modal de detalhe da filial -->
 <ng-container *ngIf="filialDetalhe">
-  <div class="modal-backdrop" (click)="fecharDetalhe()"></div>
+  <div
+    role="button"
+    tabindex="0"
+    class="modal-backdrop"
+    (click)="fecharDetalhe()"
+    (keydown.enter)="fecharDetalhe()"
+    (keydown.space)="fecharDetalhe()"
+  ></div>
   <div class="modal-detail">
     <div class="modal-detail__header">
       <div>

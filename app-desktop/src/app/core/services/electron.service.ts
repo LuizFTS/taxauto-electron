@@ -249,7 +249,12 @@ export class ElectronService {
     ]);
   }
 
-  executeLivrosFiscais(payload: any): Observable<any> {
-    return from((window as any).electron.invoke('execute-livros-fiscais', payload));
+  /**
+   *
+   * @param payload JSON das tasks para o backend
+   * @returns
+   */
+  executeLivrosFiscais(payload: unknown): Observable<unknown> {
+    return from(window.electron.invoke('execute-livros-fiscais', payload));
   }
 }

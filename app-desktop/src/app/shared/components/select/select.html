@@ -3,26 +3,39 @@
   [class.app-select--open]="isOpen()"
   [class.app-select--disabled]="disabled()"
 >
-  <button type="button" class="app-select__trigger" tabindex="0" #selectTrigger (click)="toggle()">
+  <button
+    type="button"
+    class="app-select__trigger"
+    #selectTrigger
+    aria-haspopup="listbox"
+    [attr.aria-expanded]="isOpen()"
+    aria-controls="select-listbox"
+    (click)="toggle()"
+    (keydown.arrowdown)="isOpen() ? null : toggle()"
+  >
     <span class="app-select__value">
       @if (selectedOption()) {
         {{ selectedOption()!.label }}
       } @else {
-        <span class="app-select__placeholder">
-          {{ placeholder }}
-        </span>
+        <span class="app-select__placeholder">{{ placeholder }}</span>
       }
     </span>
-
     <span class="app-select__arrow"></span>
   </button>
 
   @if (isOpen()) {
-    <div class="app-select__dropdown" role="listbox">
+    <div
+      id="select-listbox"
+      class="app-select__dropdown"
+      role="listbox"
+      [attr.aria-activedescendant]="focusedIndex() !== -1 ? 'option-' + focusedIndex() : null"
+    >
       @for (option of options; track option.value) {
         <div
+          [id]="'option-' + $index"
           class="app-select__option"
           role="option"
+          tabindex="-1"
           [attr.aria-selected]="option.value === _value()"
           [class.app-select__option--selected]="option.value === _value()"
           [class.app-select__option--focused]="focusedIndex() === $index"
@@ -30,6 +43,7 @@
           (keydown.enter)="select(option)"
           (keydown.arrowdown)="onArrowDown($event)"
           (keydown.arrowup)="onArrowUp($event)"
+          (keydown.esc)="onEsc($event)"
           (mouseenter)="focusedIndex.set($index)"
         >
           {{ option.label }}

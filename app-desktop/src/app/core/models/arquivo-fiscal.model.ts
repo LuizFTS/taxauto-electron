@@ -1,5 +1,5 @@
-import type { StatusArquivo } from '../types/status-arquivo.type';
-import type { TipoArquivo } from '../types/tipo-arquivo.type';
+import type { StatusArquivo } from '../types/status-arquivo';
+import type { TipoArquivo } from '../types/tipo-arquivo';
 
 export interface ArquivoFiscal {
   tipo: TipoArquivo;

@@ -1,4 +1,4 @@
-import type { TipoArquivo } from '../types/tipo-arquivo.type';
+import type { TipoArquivo } from '../types/tipo-arquivo';
 
 export const TIPOS_ARQUIVO_CONFIG: Record<TipoArquivo, { label: string; obrigatorio: boolean }> = {
   LIVRO_ENTRADA: { label: 'Livro de Entradas', obrigatorio: true },

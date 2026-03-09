@@ -79,9 +79,9 @@ async def health_check():
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    # comunica a porta para o Electron
+    print(f"PORT={settings.PORT}", flush=True)
+
     uvicorn.run(
-        "main:app",
-        host=settings.HOST,
-        port=settings.PORT,
-        reload=settings.DEBUG,
+        app, host=settings.HOST, port=settings.PORT, reload=settings.DEBUG, log_level="info"
     )
