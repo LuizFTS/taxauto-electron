@@ -6,7 +6,7 @@ from typing import List
 class LivrosFiscaisTasksDTO:
 
     open_book: bool
-    refresh_book: bool
+    update_book: bool
     close_book: bool
     save_spreadsheet: bool
     save_pdf: bool
