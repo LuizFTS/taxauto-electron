@@ -65,6 +65,7 @@ app.include_router(periodo_routes.router, prefix="/api/v1")
 app.include_router(livros_fiscais_routes.router, prefix="/api/v1")
 
 
+
 @app.get("/health", tags=["Sistema"])
 async def health_check():
     return {
