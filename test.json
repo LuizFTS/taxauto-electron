@@ -1,0 +1,16 @@
+{
+  "start_date": "01/03/2026",
+  "end_date": "08/03/2026",
+  "filiais": [
+    "2",
+    "9"
+  ],
+  "book_type": "entrada",
+  "tasks": {
+    "open_book": true,
+    "update_book": true,
+    "close_book": false,
+    "save_spreadsheet": false,
+    "save_pdf": false
+  }
+}
