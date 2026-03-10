@@ -1,4 +1,6 @@
 // Services
+export { BranchService } from './services/api/data/branch.service';
+export { CompanyService } from './services/api/data/company.service';
 export { ApuracaoApiService } from './services/api/apuração-api.service';
 export { ElectronService } from './services/electron.service';
 export { ModalService } from './services/modal.service';
