@@ -1,16 +1,44 @@
-/* Intent: Admin managing their business hierarchy (Empresas -> Filiais). Needs clarity, fast scanning, and obvious states.
-   Palette: Muted blue and crisp white for structure, soft green/gray for status.
-   Depth: Light shadows (layered approach) to pull the table up from the canvas background.
-   Surfaces: Page canvas is slightly off-white var(--mat-sys-surface), card is pure #ffffff.
-   Typography: Roboto blocky system font.
-   Spacing: Base 4px.
+/* Intent: Admin managing business hierarchy (Empresas → Filiais).
+   Tone: Refined & utilitarian — clean whitespace, crisp grid, obvious affordances.
+   Palette: Slate neutrals + a single blue accent (#4361ee). Status via semantic green/gray.
+   Spacing: 4px base grid. Rows breathe at 52px height.
 */
 
+// ─── Tokens ───────────────────────────────────────────────────────────────────
+$accent:       #4361ee;
+$accent-soft:  rgba(67, 97, 238, 0.08);
+$accent-ring:  rgba(67, 97, 238, 0.18);
+
+$text-primary: #0f172a;
+$text-muted:   #64748b;
+$text-hint:    #94a3b8;
+
+$border:       rgba(0, 0, 0, 0.07);
+$border-strong: rgba(0, 0, 0, 0.12);
+
+$surface:      #ffffff;
+$surface-alt:  #f8fafc;
+$surface-edit: #f0f4ff;
+
+$green-bg:     #dcfce7;
+$green-fg:     #15803d;
+$gray-bg:      #f1f5f9;
+$gray-fg:      #475569;
+$red-bg:       #fee2e2;
+$red-fg:       #ef4444;
+
+$radius-sm:    4px;
+$radius-md:    6px;
+$radius-lg:    8px;
+$radius-pill:  999px;
+
+// ─── Host ─────────────────────────────────────────────────────────────────────
 :host {
   display: block;
   height: 100%;
 }
 
+// ─── Page Layout ──────────────────────────────────────────────────────────────
 .page-container {
   padding: 32px;
   max-width: 1200px;
@@ -21,70 +49,87 @@
   box-sizing: border-box;
 }
 
-/* Surface Elevation */
+// ─── Card ─────────────────────────────────────────────────────────────────────
 .surface-card {
-  background-color: #ffffff;
-  border-radius: 8px;
+  background: $surface;
+  border-radius: $radius-lg;
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.05),
-    0 1px 2px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.04);
+    0 0 0 1px $border,
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 4px 16px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   flex: 1;
+  overflow: hidden;  // clips table scroll; tabs use z-index trick below
 }
 
-/* Header & Tabs */
+// ─── Card Header ──────────────────────────────────────────────────────────────
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 32px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 0 32px;
+  min-height: 64px;
+  border-bottom: 1px solid $border;
+  background: $surface;
+  // Needed so the tab active-underline (bottom: 0) sits on top of border-bottom
+  position: relative;
+  z-index: 1;
 }
 
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
 .tabs {
   display: flex;
-  gap: 24px;
+  align-items: stretch;
+  gap: 0;
+  height: 100%;
 }
 
 .tab-btn {
+  position: relative;
   background: none;
   border: none;
-  padding: 8px 4px;
+  padding: 0 20px;
+  height: 64px;
   font-size: 14px;
   font-weight: 500;
-  color: #64748b; /* Muted slate */
+  color: $text-muted;
   cursor: pointer;
-  position: relative;
-  transition: color 0.2s ease;
+  transition: color 0.15s ease;
+  white-space: nowrap;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 12px;
+    right: 12px;
+    height: 2px;
+    background: $accent;
+    border-radius: 2px 2px 0 0;
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+  }
 
   &:hover {
-    color: #0f172a; /* Darker on hover */
+    color: $text-primary;
   }
 
   &.active {
-    color: #4361ee; /* Primary accent */
-  }
+    color: $accent;
+    font-weight: 600;
 
-  &.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: #4361ee;
-    border-radius: 2px 2px 0 0;
+    &::after {
+      transform: scaleX(1);
+    }
   }
 }
 
-/* Actions */
+// ─── Header Actions ───────────────────────────────────────────────────────────
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .search-box {
@@ -93,33 +138,33 @@
   align-items: center;
 
   mat-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: absolute;
     left: 10px;
-    font-size: 20px;
-    color: #94a3b8;
+    font-size: 18px;
+    line-height: 1;
+    color: $text-hint;
     pointer-events: none;
   }
 
   input {
-    padding: 8px 12px 8px 40px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 6px;
-    font-size: 14px;
-    color: #0f172a;
-    width: 250px;
-    transition: all 0.2s;
+    height: 36px;
+    padding: 0 12px 0 36px;
+    border: 1px solid $border-strong;
+    border-radius: $radius-md;
+    font-size: 13.5px;
+    color: $text-primary;
+    background: $surface;
+    width: 240px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &::placeholder {
+      color: $text-hint;
+    }
 
     &:focus {
       outline: none;
-      border-color: #4361ee;
-      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
-    }
-
-    &::placeholder {
-      color: #94a3b8;
+      border-color: $accent;
+      box-shadow: 0 0 0 3px $accent-ring;
     }
   }
 }
@@ -127,202 +172,271 @@
 .btn-content {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 
-  icon {
+  mat-icon {
     font-size: 18px;
+    line-height: 1;
   }
 }
 
-/* Table Canvas */
+// ─── Table Container ──────────────────────────────────────────────────────────
 .table-container {
   overflow: auto;
   flex: 1;
 }
 
+// ─── Table ────────────────────────────────────────────────────────────────────
 table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
 }
 
-th:nth-child(2),
-td:nth-child(2) {
-  width: 100%;
-  white-space: normal;
-}
-
-th:nth-child(4),
-td:nth-child(4) {
-  text-align: center;
-}
-th:nth-child(5),
-td:nth-child(5) {
-  text-align: center;
+thead {
+  background: $surface-alt;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 th {
-  font-size: 13px;
-  font-weight: 600;
-  color: #475569;
-  padding: 5px 10px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  text-align: left;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $text-muted;
+  padding: 12px 20px;
+  border-bottom: 1px solid $border;
   white-space: nowrap;
 }
 
 td {
   font-size: 14px;
-  color: #0f172a;
-  padding: 5px 10px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  color: $text-primary;
+  padding: 14px 20px;
+  border-bottom: 1px solid $border;
   vertical-align: middle;
   white-space: nowrap;
 }
 
 tbody tr {
-  transition: background-color 0.15s ease;
+  transition: background-color 0.12s ease;
 
-  &:hover:not(.is-editing) {
-    background-color: #f8fafc;
+  &:last-child td {
+    border-bottom: none;
+  }
+
+  &:hover:not(.is-editing):not(.editing-row):not(.empty-row) {
+    background: $surface-alt;
   }
 }
 
 tr.is-editing,
 tr.editing-row {
-  background-color: #f0f4ff; /* soft highlight when editing/creating */
+  background: $surface-edit;
+
+  td {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
 }
 
-/* Columns */
-.actions-col {
-  width: 100px;
-  text-align: right;
-  padding-right: 32px;
+// ─── Column Widths ────────────────────────────────────────────────────────────
+.col-numero  { width: 140px; }
+.col-nome    { width: 100%; }   // greedy — takes remaining space
+.col-parent  { width: 200px; min-width: 140px; }
+.col-status  { width: 110px; text-align: center; }
+.col-actions { width: 96px;  text-align: right; padding-right: 24px; }
+
+// ─── Number Chip ──────────────────────────────────────────────────────────────
+.number-chip {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: $text-muted;
+  background: $gray-bg;
+  padding: 3px 8px;
+  border-radius: $radius-sm;
+  letter-spacing: 0.02em;
 }
 
 .text-muted {
-  color: #64748b;
+  color: $text-muted;
   font-size: 13px;
 }
 
-/* Status Badges */
+// ─── Status Badge ─────────────────────────────────────────────────────────────
 .status-badge {
   display: inline-flex;
+  align-items: center;
+  gap: 5px;
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: $radius-pill;
   font-size: 12px;
   font-weight: 500;
-  text-transform: capitalize;
+
+  // dot indicator
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
 
   &.ativo {
-    background-color: #dcfce7;
-    color: #166534;
+    background: $green-bg;
+    color: $green-fg;
+    &::before { background: $green-fg; }
   }
 
   &.inativo {
-    background-color: #f1f5f9;
-    color: #475569;
+    background: $gray-bg;
+    color: $gray-fg;
+    &::before { background: $gray-fg; }
   }
 }
 
-/* Action Buttons within table */
+// ─── Action Buttons ───────────────────────────────────────────────────────────
+.action-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2px;
+}
+
 .action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
-  padding: 8px;
-  color: #64748b;
-  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-sm;
+  color: $text-hint;
   cursor: pointer;
-  margin-left: 4px;
-  transition: all 0.2s;
+  transition: background 0.15s, color 0.15s;
 
-  icon {
+  mat-icon {
     font-size: 18px;
+    line-height: 1;
   }
 
   &:hover {
-    background-color: #e2e8f0;
-    color: #0f172a;
+    background: $gray-bg;
+    color: $text-primary;
   }
 
   &.delete:hover {
-    background-color: #fee2e2;
-    color: #ef4444;
+    background: $red-bg;
+    color: $red-fg;
   }
 
   &.save {
-    color: #16a34a;
-    &:hover {
-      background-color: #dcfce7;
-    }
+    color: $green-fg;
+    &:hover { background: $green-bg; }
   }
 
   &.cancel {
-    color: #ef4444;
-    &:hover {
-      background-color: #fee2e2;
-    }
+    color: $red-fg;
+    &:hover { background: $red-bg; }
   }
 }
 
-/* Inline Editing Controls */
+// ─── Inline Inputs ────────────────────────────────────────────────────────────
 .inline-input,
 .inline-select {
   width: 100%;
-  padding: 6px 10px;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  font-size: 14px;
-  background-color: #ffffff;
-  color: #0f172a;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid $border-strong;
+  border-radius: $radius-sm;
+  font-size: 13.5px;
+  background: $surface;
+  color: $text-primary;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
 
   &:focus {
     outline: none;
-    border-color: #4361ee;
-    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.1);
+    border-color: $accent;
+    box-shadow: 0 0 0 2px $accent-ring;
   }
 }
 
-/* Footer Summary */
+// ─── Empty State ──────────────────────────────────────────────────────────────
+.empty-row td {
+  border-bottom: none;
+  padding: 48px 20px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: $text-hint;
+
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    opacity: 0.4;
+  }
+
+  span {
+    font-size: 14px;
+  }
+}
+
+// ─── Footer ───────────────────────────────────────────────────────────────────
 .card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 32px;
-  background-color: #fafbfc;
-  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  padding: 14px 32px;
+  background: $surface-alt;
+  border-top: 1px solid $border;
+  min-height: 52px;
 }
 
 .summary-text {
-  font-size: 13px;
-  color: #64748b;
+  font-size: 12.5px;
+  color: $text-muted;
 }
 
 .pagination {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+}
 
-  .page-btn {
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
-    padding: 4px 8px;
-    color: #475569;
-    cursor: pointer;
-    transition: all 0.2s ease;
+.page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: $surface;
+  border: 1px solid $border-strong;
+  border-radius: $radius-sm;
+  color: $text-muted;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
 
-    mat-icon {
-      font-size: 18px;
-    }
+  mat-icon {
+    font-size: 18px;
+    line-height: 1;
+  }
 
-    &:hover:not([disabled]) {
-      background-color: #f1f5f9;
-      color: #0f172a;
-    }
+  &:hover:not([disabled]) {
+    background: $gray-bg;
+    color: $text-primary;
+  }
 
-    &[disabled] {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+  &[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 }
