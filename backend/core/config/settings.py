@@ -27,10 +27,10 @@ class Settings(BaseSettings):
 
     # Caminhos base derivados do sistema operacional do usuário
     USER_DOCUMENTS: Path = Path.home() / "Documents"
-    APP_DATA: Path = Path(os.getenv("APPDATA", Path.home() / ".local/share")) / "icms_apurador"
+    APP_DATA: Path = Path(os.getenv("APPDATA", Path.home() / ".local/share")) / "taxauto"
 
     # Workspace do usuário
-    WORKSPACE_ROOT: Path = USER_DOCUMENTS / "Apuracao_ICMS"
+    WORKSPACE_ROOT: Path = USER_DOCUMENTS / "TaxAuto"
 
     # Storage interno da aplicação
     DATABASE_PATH: Path = APP_DATA / "database.db"

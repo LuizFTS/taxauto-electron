@@ -10,6 +10,7 @@ from core.config.settings import settings
 from core.database.connection import run_migrations
 from modules.automation.presentation.routes import livros_fiscais_routes
 from modules.data_process.presentation.routes import periodo_routes
+from shared.presentation.routes import branch_group_routes, branch_routes, company_routes
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -64,6 +65,10 @@ app.add_middleware(
 app.include_router(periodo_routes.router, prefix="/api/v1")
 app.include_router(livros_fiscais_routes.router, prefix="/api/v1")
 
+# Shared Data tables
+app.include_router(branch_routes.router, prefix="/api/v1")
+app.include_router(company_routes.router, prefix="/api/v1")
+app.include_router(branch_group_routes.router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["Sistema"])
