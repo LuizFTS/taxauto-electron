@@ -16,7 +16,7 @@ class LivrosFiscaisOrchestrator:
     def __init__(self):
 
         self.session = ERPSession()
-    
+
         self.navigator = NavigateToLivrosFiscais()
 
         self.book_state = BookStateService()
@@ -27,17 +27,13 @@ class LivrosFiscaisOrchestrator:
 
     def execute(self, dto):
         print("[ORCHESTRATOR] Starting Livros Fiscais automation")
-        self.session.open()
+        # self.session.open()
 
-        self.navigator.execute()
+        # self.navigator.execute()
 
         for filial in dto.filiais:
             print(f"[ORCHESTRATOR] Processing filial {filial}")
-            is_open = self.book_state.is_open(
-                dto.book_type,
-                filial,
-                dto.start_date
-                )
+            is_open = self.book_state.is_open(dto.book_type, filial, dto.start_date)
 
             if is_open:
 

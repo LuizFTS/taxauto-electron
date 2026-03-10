@@ -1,5 +1,6 @@
 import nazm as a
 
+
 class NavigateToLivrosFiscais:
 
     def execute(self):
