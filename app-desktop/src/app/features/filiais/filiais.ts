@@ -1,78 +1,90 @@
-import { Component, ChangeDetectionStrategy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  CUSTOM_ELEMENTS_SCHEMA,
+  inject,
+  type OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Button } from '../../shared/components/button/button';
 import { MatIcon } from '@angular/material/icon';
 import type { Empresa, Filial } from '../../core';
+import { BranchService } from '../../core/services/api/data/branch.service';
+import { CompanyService } from '../../core/services/api/data/company.service';
+import { CompanyMapper } from '../../shared/mappers/company.mapper';
+import { BehaviorSubject, combineLatest, map, switchMap, type Observable } from 'rxjs';
 
 @Component({
   selector: 'app-filiais',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Button, MatIcon],
+  imports: [CommonModule, ReactiveFormsModule, Button, MatIcon, FormsModule],
   templateUrl: './filiais.html',
   styleUrl: './filiais.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class Filiais {
+export class Filiais implements OnInit {
+  private branchService = inject(BranchService);
+  private companyService = inject(CompanyService);
+
   activeTab: 'Empresas' | 'Filiais' = 'Empresas';
 
-  filiais: Filial[] = [
-    { id: '1', numero: '001', nome: 'FILIAL NORTE', uf: 'ES', empresaId: '1', status: 'Ativo' },
-    { id: '2', numero: '002', nome: 'FILIAL SUL', uf: 'MG', empresaId: '1', status: 'Ativo' },
-    {
-      id: '3',
-      numero: '001',
-      nome: 'UNIDADE CENTRAL',
-      uf: 'SP',
-      empresaId: '2',
-      status: 'Inativo',
-    },
-  ];
+  private empresasSubject = new BehaviorSubject<Empresa[]>([]);
+  private filiaisSubject = new BehaviorSubject<Filial[]>([]);
 
-  // Mock Data
-  empresas: Empresa[] = [
-    { id: '1', numero: '001', nome: 'CASA DO ADUBO', filiais: [], status: 'Ativo' },
-    { id: '2', numero: '002', nome: 'CASAL', filiais: [], status: 'Ativo' },
-    { id: '3', numero: '003', nome: 'NUTRIEN', filiais: [], status: 'Inativo' },
-  ];
+  empresasFiltered$!: Observable<Empresa[]>;
+  filiaisFiltered$!: Observable<Filial[]>;
 
   // Search
+  private searchSubject = new BehaviorSubject<string>('');
   searchQuery = '';
 
-  // Inline Editing State Map (maps row id to editable object clone)
+  // Inline Editing State Map
   editingRows: Record<string, Partial<Empresa | Filial>> = {};
 
   // Create Form State
   isCreating = false;
   newRowData: Partial<Empresa | Filial> = {};
 
+  ngOnInit() {
+    this.companyService
+      .getAll()
+      .pipe(
+        switchMap((companies) =>
+          this.branchService.getAll().pipe(map((branches) => ({ companies, branches }))),
+        ),
+      )
+      .subscribe(({ companies, branches }) => {
+        this.empresasSubject.next(CompanyMapper.toEmpresaList(companies, branches));
+        this.filiaisSubject.next(CompanyMapper.toFilialList(branches, companies));
+      });
+
+    this.empresasFiltered$ = combineLatest([this.empresasSubject, this.searchSubject]).pipe(
+      map(([list, q]) => list.filter((e) => e.nome.toLowerCase().includes(q.toLowerCase()))),
+    );
+
+    this.filiaisFiltered$ = combineLatest([this.filiaisSubject, this.searchSubject]).pipe(
+      map(([list, q]) => list.filter((f) => f.nome.toLowerCase().includes(q.toLowerCase()))),
+    );
+  }
+
   setActiveTab(tab: 'Empresas' | 'Filiais') {
     this.activeTab = tab;
-    // reset edits when switching tabs
     this.editingRows = {};
     this.isCreating = false;
     this.searchQuery = '';
+    this.searchSubject.next('');
   }
 
-  get filteredEmpresas(): Empresa[] {
-    return this.empresas.filter(
-      (e) =>
-        e.nome.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        e.numero.includes(this.searchQuery),
-    );
+  onSearchChange(valor: string) {
+    this.searchSubject.next(valor);
   }
 
-  get filteredFiliais(): Filial[] {
-    return this.filiais.filter(
-      (f) =>
-        f.nome.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        f.numero.includes(this.searchQuery),
-    );
-  }
-
-  updateSearch(event: Event) {
-    this.searchQuery = (event.target as HTMLInputElement).value;
+  /** Lookup a parent company name by its ID from the raw (unfiltered) subject */
+  getEmpresaNome(empresaId: string): string {
+    const empresa = this.empresasSubject.value.find((e) => e.id === empresaId);
+    return empresa?.nome ?? '—';
   }
 
   // ---- CRUD Operations ----
@@ -89,33 +101,37 @@ export class Filiais {
     const editData = this.editingRows[id];
 
     if (this.activeTab === 'Empresas') {
-      const idx = this.empresas.findIndex((e) => e.id === id);
+      const listaAtual = this.empresasSubject.value;
+      const idx = listaAtual.findIndex((e) => e.id === id);
       if (idx > -1) {
-        this.empresas[idx] = { ...this.empresas[idx], ...(editData as Empresa) };
+        listaAtual[idx] = { ...listaAtual[idx], ...(editData as Empresa) };
+        this.empresasSubject.next([...listaAtual]);
       }
     } else {
-      const idx = this.filiais.findIndex((f) => f.id === id);
+      const listaAtual = this.filiaisSubject.value;
+      const idx = listaAtual.findIndex((f) => f.id === id);
       if (idx > -1) {
-        this.filiais[idx] = { ...this.filiais[idx], ...(editData as Filial) };
+        listaAtual[idx] = { ...listaAtual[idx], ...(editData as Filial) };
+        this.filiaisSubject.next([...listaAtual]);
       }
     }
-
     delete this.editingRows[id];
   }
 
   deleteRow(id: string) {
     if (confirm('Tem certeza que deseja excluir?')) {
       if (this.activeTab === 'Empresas') {
-        this.empresas = this.empresas.filter((e) => e.id !== id);
+        const novaLista = this.empresasSubject.value.filter((e) => e.id !== id);
+        this.empresasSubject.next(novaLista);
       } else {
-        this.filiais = this.filiais.filter((f) => f.id !== id);
+        const novaLista = this.filiaisSubject.value.filter((f) => f.id !== id);
+        this.filiaisSubject.next(novaLista);
       }
     }
   }
 
   updateEditField(id: string, field: string, event: Event) {
     const target = event.target as HTMLInputElement | HTMLSelectElement;
-
     const row = this.editingRows[id] as Record<string, unknown>;
     row[field] = target.value;
   }
@@ -129,8 +145,10 @@ export class Filiais {
       nome: '',
       status: 'Ativo',
     };
+
     if (this.activeTab === 'Filiais') {
-      (this.newRowData as Filial).empresaId = this.empresas.length > 0 ? this.empresas[0].id : '';
+      const empresasAtuais = this.empresasSubject.value;
+      (this.newRowData as Filial).empresaId = empresasAtuais.length > 0 ? empresasAtuais[0].id : '';
     }
   }
 
@@ -143,9 +161,11 @@ export class Filiais {
     if (!this.newRowData.numero || !this.newRowData.nome) return;
 
     if (this.activeTab === 'Empresas') {
-      this.empresas = [...this.empresas, this.newRowData as Empresa];
+      const novaLista = [...this.empresasSubject.value, this.newRowData as Empresa];
+      this.empresasSubject.next(novaLista);
     } else {
-      this.filiais = [...this.filiais, this.newRowData as Filial];
+      const novaLista = [...this.filiaisSubject.value, this.newRowData as Filial];
+      this.filiaisSubject.next(novaLista);
     }
 
     this.isCreating = false;
@@ -154,7 +174,6 @@ export class Filiais {
 
   updateCreateField(field: string, event: Event) {
     const target = event.target as HTMLInputElement | HTMLSelectElement;
-
     const row = this.newRowData as Record<string, unknown>;
     row[field] = target.value;
   }
