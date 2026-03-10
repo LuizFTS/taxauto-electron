@@ -1,6 +1,7 @@
 import nazm as a
 import nazm.capture as c
 
+
 class OpenBookService:
 
     def execute(self):
