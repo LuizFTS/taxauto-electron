@@ -36,8 +36,8 @@
             <input
               type="text"
               placeholder="Buscar por número ou UF"
-              [(ngModel)]="searchText"
-              (input)="filterBranches()"
+              [(ngModel)]="searchQuery"
+              (ngModelChange)="onSearchChange($event)"
             />
           </div>
           <button class="btn-link" (click)="selectAll()">Selecionar todas</button>
@@ -49,16 +49,16 @@
         <div class="branches-grid">
           <label
             class="branch-item"
-            *ngFor="let branch of filteredBranches"
-            [class.selected]="selectedBranches.has(branch.id)"
+            *ngFor="let branch of branches$ | async"
+            [class.selected]="selectedBranches.has(branch.numero)"
           >
             <input
               type="checkbox"
-              [checked]="selectedBranches.has(branch.id)"
-              (change)="toggleBranch(branch.id)"
+              [checked]="selectedBranches.has(branch.numero)"
+              (change)="toggleBranch(branch.numero)"
             />
             <span class="custom-checkbox"></span>
-            <span>{{ branch.id }} - {{ branch.nome }}</span>
+            <span>{{ branch.numero }} - {{ branch.nome }}</span>
           </label>
         </div>
       </div>

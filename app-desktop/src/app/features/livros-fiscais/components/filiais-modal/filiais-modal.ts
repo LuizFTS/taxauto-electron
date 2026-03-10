@@ -1,7 +1,16 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ModalService, ElectronService, type GrupoEmpresas, type Filial } from '../../../../core';
+import {
+  ModalService,
+  ElectronService,
+  BranchService,
+  type GrupoEmpresas,
+  type Filial,
+  CompanyService,
+} from '../../../../core';
+import { BehaviorSubject, combineLatest, map, switchMap, type Observable } from 'rxjs';
+import { CompanyMapper } from '../../../../shared/mappers/company.mapper';
 
 @Component({
   standalone: true,
@@ -17,36 +26,52 @@ export class FiliaisModal implements OnInit {
 
   private modalService = inject(ModalService);
   private electronService = inject(ElectronService);
+  private branchService = inject(BranchService);
+  private companyService = inject(CompanyService);
 
-  branches: Filial[] = [];
-  filteredBranches: Filial[] = [];
+  private filiaisSubject = new BehaviorSubject<Filial[]>([]);
+
+  branches$!: Observable<Filial[]>;
   groups: GrupoEmpresas[] = [];
 
   selectedBranches: Set<string> = new Set<string>();
   selectedGroup: string | null = null;
 
-  searchText = '';
+  private searchSubject = new BehaviorSubject<string>('');
+  searchQuery = '';
+
+  onSearchChange(valor: string) {
+    this.searchSubject.next(valor);
+  }
 
   ngOnInit() {
-    this.electronService.getBranches().subscribe((data) => {
-      this.branches = data;
-      this.filteredBranches = [...this.branches];
-    });
+    this.companyService
+      .getAll()
+      .pipe(
+        switchMap((companies) =>
+          this.branchService.getAll().pipe(map((branches) => ({ companies, branches }))),
+        ),
+      )
+      .subscribe(({ companies, branches }) => {
+        // Alimentamos os Subjects com os dados iniciais do Mapper
+        this.filiaisSubject.next(CompanyMapper.toFilialList(branches, companies));
+      });
+    this.branches$ = combineLatest([this.filiaisSubject, this.searchSubject]).pipe(
+      map(([list, q]) =>
+        list.filter((f) => {
+          const branchNumber = parseInt(f.numero, 10);
+          const searchNumber = parseInt(q, 10);
+          const numberMatch = !isNaN(searchNumber) && branchNumber === searchNumber;
+          const ufMatch = f.uf.toLowerCase().includes(q.toLowerCase());
+
+          return numberMatch || ufMatch;
+        }),
+      ),
+    );
 
     this.electronService.getGroups().subscribe((data) => {
       this.groups = data;
     });
-  }
-
-  filterBranches() {
-    const text = this.searchText.toLowerCase().trim();
-    if (!text) {
-      this.filteredBranches = [...this.branches];
-      return;
-    }
-    this.filteredBranches = this.branches.filter(
-      (b) => b.id.includes(text) || b.uf.toLowerCase().includes(text),
-    );
   }
 
   toggleBranch(branchId: string) {
@@ -80,7 +105,10 @@ export class FiliaisModal implements OnInit {
 
   selectAll() {
     this.selectedGroup = null;
-    this.branches.forEach((b) => this.selectedBranches.add(b.id));
+
+    const currentBranches = this.filiaisSubject.value;
+
+    currentBranches.forEach((b) => this.selectedBranches.add(b.numero));
   }
 
   clearSelection() {
