@@ -8,24 +8,24 @@ import type { Empresa } from '../../../../core';
   templateUrl: './companies-table.html',
   styleUrl: './companies-table.scss',
 })
-export class CompanyTable {
+export class CompaniesTable {
   @Input() isCreating = false;
-  @Input() newRowData = {
+  @Input() newRowData: Partial<Empresa> = {
     numero: '',
     nome: '',
     status: 'Ativo',
   };
   @Input() editingRows: Record<string, Partial<Empresa>> = {};
-  @Input() empresas: Empresa[] = [];
+  @Input() empresas: Empresa[] | null = null;
 
   @Output() saveEdit = new EventEmitter<string>();
   @Output() startEdit = new EventEmitter<Empresa>();
   @Output() deleteRow = new EventEmitter<string>();
-  @Output() updateEditField = new EventEmitter<{ id: string; field: string; value: string }>();
+  @Output() updateEditField = new EventEmitter<{ id: string; field: string; event: Event }>();
   @Output() startCreate = new EventEmitter<void>();
   @Output() cancelCreate = new EventEmitter<void>();
   @Output() saveCreate = new EventEmitter<Empresa>();
-  @Output() updateCreateField = new EventEmitter<{ field: string; value: string }>();
+  @Output() updateCreateField = new EventEmitter<{ field: string; event: Event }>();
 
   @Output() cancelEdit = new EventEmitter<string>();
 
@@ -44,14 +44,11 @@ export class CompanyTable {
   }
 
   deleteRowHandle(id: string) {
-    if (confirm('Tem certeza que deseja excluir?')) {
-      this.deleteRow.emit(id);
-    }
+    this.deleteRow.emit(id);
   }
 
   updateEditFieldHandle(id: string, field: string, event: Event) {
-    const target = event.target as HTMLInputElement | HTMLSelectElement;
-    this.updateEditField.emit({ id, field, value: target.value });
+    this.updateEditField.emit({ id, field, event });
   }
 
   // --- Create ---
@@ -68,7 +65,6 @@ export class CompanyTable {
   }
 
   updateCreateFieldHandle(field: string, event: Event) {
-    const target = event.target as HTMLInputElement | HTMLSelectElement;
-    this.updateCreateField.emit({ field, value: target.value });
+    this.updateCreateField.emit({ field, event });
   }
 }
