@@ -22,11 +22,28 @@ export class BranchService {
     return this.http.get<BranchResponse>(`${API}/branches/${id}`);
   }
 
-  updateBranch(id: number, branch: BranchResponse): Observable<BranchResponse> {
-    return this.http.put<BranchResponse>(`${API}/branches/${id}`, branch);
+  updateBranch(
+    id: number,
+    {
+      name,
+      uf,
+      cnpj,
+      ie,
+      company_id,
+      status,
+    }: { name: string; uf: string; cnpj: string; ie: string; company_id: number; status: boolean },
+  ): Observable<void> {
+    return this.http.patch<void>(`${API}/branches/${id}`, {
+      name,
+      uf,
+      cnpj,
+      ie,
+      company_id,
+      ativa: status,
+    });
   }
 
-  deleteBranch(id: number): Observable<BranchResponse> {
-    return this.http.delete<BranchResponse>(`${API}/branches/${id}`);
+  deleteBranch(id: number): Observable<void> {
+    return this.http.delete<void>(`${API}/branches/${id}`);
   }
 }

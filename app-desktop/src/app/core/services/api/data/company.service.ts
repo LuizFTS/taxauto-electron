@@ -23,11 +23,14 @@ export class CompanyService {
     return this.http.get<CompanyResponse>(`${API}/companies/${id}`);
   }
 
-  updateCompany(id: number, company: CompanyResponse): Observable<CompanyResponse> {
-    return this.http.put<CompanyResponse>(`${API}/companies/${id}`, company);
+  updateCompany(id: number, name: string, status: boolean): Observable<void> {
+    return this.http.patch<void>(`${API}/companies/${id}`, {
+      name: name,
+      ativa: status,
+    });
   }
 
-  deleteCompany(id: number): Observable<CompanyResponse> {
-    return this.http.delete<CompanyResponse>(`${API}/companies/${id}`);
+  deleteCompany(id: number): Observable<void> {
+    return this.http.delete<void>(`${API}/companies/${id}`);
   }
 }
