@@ -14,6 +14,10 @@ export class BranchGroupService {
     return this.http.post<BranchGroupResponse>(`${API}/branch-group/`, branch);
   }
 
+  addBranchInGroup(group_id: number, branch_id: number): Observable<void> {
+    return this.http.post<void>(`${API}/branch-group/${group_id}/branches/${branch_id}`, {});
+  }
+
   getAll(): Observable<BranchGroupResponse[]> {
     return this.http.get<BranchGroupResponse[]>(`${API}/branch-group/`);
   }
