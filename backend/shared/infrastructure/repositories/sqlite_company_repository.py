@@ -32,7 +32,11 @@ class CompanyRepository(BaseRepository):
 
     async def listar(self) -> list[Company]:
         return await self.fetch_all(
-            "SELECT * FROM company ORDER BY nome",
+            """
+            SELECT * 
+            FROM company 
+            ORDER BY CAST(codigo AS INTEGER) ASC
+            """,
             (),
             Company,
         )
@@ -44,20 +48,20 @@ class CompanyRepository(BaseRepository):
             Company,
         )
 
-    async def update(self, code: str, name: str):
-        return await self.repo.execute(
+    async def update(self, id: int, name: str, ativa: bool):
+        ativa_int = 1 if ativa else 0
+        return await self.execute(
             """
             UPDATE company
-            SET nome = ?, uf = ?, cnpj = ?, ie = ?
-            WHERE codigo = ?
+            SET nome = ?, 
+                ativa = ?,
+                updated_at = DATETIME('now', 'localtime')
+            WHERE id = ?
             """,
-            (
-                name,
-                code,
-            ),
+            (name, ativa_int, id),
         )
 
-    async def deletar(self, company_id: int):
+    async def delete(self, company_id: int):
         await self.execute(
             "DELETE FROM company WHERE id = ?",
             (company_id,),
