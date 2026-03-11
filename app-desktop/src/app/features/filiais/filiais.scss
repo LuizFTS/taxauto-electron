@@ -5,32 +5,32 @@
 */
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
-$accent:       #4361ee;
-$accent-soft:  rgba(67, 97, 238, 0.08);
-$accent-ring:  rgba(67, 97, 238, 0.18);
+$accent: #4361ee;
+$accent-soft: rgba(67, 97, 238, 0.08);
+$accent-ring: rgba(67, 97, 238, 0.18);
 
 $text-primary: #0f172a;
-$text-muted:   #64748b;
-$text-hint:    #94a3b8;
+$text-muted: #64748b;
+$text-hint: #94a3b8;
 
-$border:       rgba(0, 0, 0, 0.07);
+$border: rgba(0, 0, 0, 0.07);
 $border-strong: rgba(0, 0, 0, 0.12);
 
-$surface:      #ffffff;
-$surface-alt:  #f8fafc;
+$surface: #ffffff;
+$surface-alt: #f8fafc;
 $surface-edit: #f0f4ff;
 
-$green-bg:     #dcfce7;
-$green-fg:     #15803d;
-$gray-bg:      #f1f5f9;
-$gray-fg:      #475569;
-$red-bg:       #fee2e2;
-$red-fg:       #ef4444;
+$green-bg: #dcfce7;
+$green-fg: #15803d;
+$gray-bg: #f1f5f9;
+$gray-fg: #475569;
+$red-bg: #fee2e2;
+$red-fg: #ef4444;
 
-$radius-sm:    4px;
-$radius-md:    6px;
-$radius-lg:    8px;
-$radius-pill:  999px;
+$radius-sm: 4px;
+$radius-md: 6px;
+$radius-lg: 8px;
+$radius-pill: 999px;
 
 // ─── Host ─────────────────────────────────────────────────────────────────────
 :host {
@@ -60,7 +60,7 @@ $radius-pill:  999px;
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow: hidden;  // clips table scroll; tabs use z-index trick below
+  overflow-x: auto; // clips table scroll; tabs use z-index trick below
 }
 
 // ─── Card Header ──────────────────────────────────────────────────────────────
@@ -141,6 +141,8 @@ $radius-pill:  999px;
     position: absolute;
     left: 10px;
     font-size: 18px;
+    height: 18px;
+    width: 18px;
     line-height: 1;
     color: $text-hint;
     pointer-events: none;
@@ -155,7 +157,9 @@ $radius-pill:  999px;
     color: $text-primary;
     background: $surface;
     width: 240px;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
 
     &::placeholder {
       color: $text-hint;
@@ -177,6 +181,8 @@ $radius-pill:  999px;
   mat-icon {
     font-size: 18px;
     line-height: 1;
+    height: 18px;
+    width: 18px;
   }
 }
 
@@ -184,211 +190,6 @@ $radius-pill:  999px;
 .table-container {
   overflow: auto;
   flex: 1;
-}
-
-// ─── Table ────────────────────────────────────────────────────────────────────
-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-thead {
-  background: $surface-alt;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-th {
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: $text-muted;
-  padding: 12px 20px;
-  border-bottom: 1px solid $border;
-  white-space: nowrap;
-}
-
-td {
-  font-size: 14px;
-  color: $text-primary;
-  padding: 14px 20px;
-  border-bottom: 1px solid $border;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-tbody tr {
-  transition: background-color 0.12s ease;
-
-  &:last-child td {
-    border-bottom: none;
-  }
-
-  &:hover:not(.is-editing):not(.editing-row):not(.empty-row) {
-    background: $surface-alt;
-  }
-}
-
-tr.is-editing,
-tr.editing-row {
-  background: $surface-edit;
-
-  td {
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-}
-
-// ─── Column Widths ────────────────────────────────────────────────────────────
-.col-numero  { width: 140px; }
-.col-nome    { width: 100%; }   // greedy — takes remaining space
-.col-parent  { width: 200px; min-width: 140px; }
-.col-status  { width: 110px; text-align: center; }
-.col-actions { width: 96px;  text-align: right; padding-right: 24px; }
-
-// ─── Number Chip ──────────────────────────────────────────────────────────────
-.number-chip {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  color: $text-muted;
-  background: $gray-bg;
-  padding: 3px 8px;
-  border-radius: $radius-sm;
-  letter-spacing: 0.02em;
-}
-
-.text-muted {
-  color: $text-muted;
-  font-size: 13px;
-}
-
-// ─── Status Badge ─────────────────────────────────────────────────────────────
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  border-radius: $radius-pill;
-  font-size: 12px;
-  font-weight: 500;
-
-  // dot indicator
-  &::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  &.ativo {
-    background: $green-bg;
-    color: $green-fg;
-    &::before { background: $green-fg; }
-  }
-
-  &.inativo {
-    background: $gray-bg;
-    color: $gray-fg;
-    &::before { background: $gray-fg; }
-  }
-}
-
-// ─── Action Buttons ───────────────────────────────────────────────────────────
-.action-group {
-  display: flex;
-  justify-content: flex-end;
-  gap: 2px;
-}
-
-.action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: $radius-sm;
-  color: $text-hint;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-
-  mat-icon {
-    font-size: 18px;
-    line-height: 1;
-  }
-
-  &:hover {
-    background: $gray-bg;
-    color: $text-primary;
-  }
-
-  &.delete:hover {
-    background: $red-bg;
-    color: $red-fg;
-  }
-
-  &.save {
-    color: $green-fg;
-    &:hover { background: $green-bg; }
-  }
-
-  &.cancel {
-    color: $red-fg;
-    &:hover { background: $red-bg; }
-  }
-}
-
-// ─── Inline Inputs ────────────────────────────────────────────────────────────
-.inline-input,
-.inline-select {
-  width: 100%;
-  height: 34px;
-  padding: 0 10px;
-  border: 1px solid $border-strong;
-  border-radius: $radius-sm;
-  font-size: 13.5px;
-  background: $surface;
-  color: $text-primary;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  box-sizing: border-box;
-
-  &:focus {
-    outline: none;
-    border-color: $accent;
-    box-shadow: 0 0 0 2px $accent-ring;
-  }
-}
-
-// ─── Empty State ──────────────────────────────────────────────────────────────
-.empty-row td {
-  border-bottom: none;
-  padding: 48px 20px;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  color: $text-hint;
-
-  mat-icon {
-    font-size: 36px;
-    width: 36px;
-    height: 36px;
-    opacity: 0.4;
-  }
-
-  span {
-    font-size: 14px;
-  }
 }
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
@@ -423,10 +224,14 @@ tr.editing-row {
   border-radius: $radius-sm;
   color: $text-muted;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 
   mat-icon {
     font-size: 18px;
+    height: 18px;
+    width: 18px;
     line-height: 1;
   }
 
