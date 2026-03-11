@@ -21,3 +21,12 @@ class BranchGroupRepository(BaseRepository):
             (branch_id,),
             BranchGroup,
         )
+
+    async def adicionar_filial(self, group_id: int, branch_id: int):
+        await self.execute(
+            """
+            INSERT INTO branch_group_item (group_id, branch_id)
+            VALUES (?, ?)
+            """,
+            (group_id, branch_id),
+        )

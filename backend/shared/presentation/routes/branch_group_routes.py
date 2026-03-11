@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
 from core.di.container import (
+    get_add_branch_in_group_usecase,
     get_create_branch_group_usecase,
     get_find_branch_group_usecase,
     get_list_groups_usecase,
@@ -19,22 +20,23 @@ router = APIRouter(prefix="/branch-group", tags=["Group of branches"])
 async def criar_grupo(body: CreateBranchGroupDTO):
 
     usecase = get_create_branch_group_usecase()
+    grupo = await usecase.execute(
+        codigo=body.codigo,
+        nome=body.nome,
+        analista=body.analista,
+    )
 
-    try:
-        grupo = await usecase.execute(
-            codigo=body.codigo,
-            nome=body.nome,
-            analista=body.analista,
-        )
+    return BranchGroupResponseDTO.from_entity(grupo)
 
-        return BranchGroupResponseDTO.from_entity(grupo)
 
-    except ValueError as e:
-        # Validation or business rule violation
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
-        )
+@router.post(
+    "/{group_id}/branches/{branch_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def add_branch_in_group(group_id: int, branch_id: int):
+
+    usecase = get_add_branch_in_group_usecase()
+    await usecase.execute(group_id, branch_id)
 
 
 @router.get(
@@ -44,7 +46,6 @@ async def criar_grupo(body: CreateBranchGroupDTO):
 async def listar_grupos():
 
     usecase = get_list_groups_usecase()
-
     grupos = await usecase.execute()
 
     return [BranchGroupResponseDTO.from_entity(g) for g in grupos]
@@ -57,20 +58,6 @@ async def listar_grupos():
 async def buscar_grupo(id: int):
 
     usecase = get_find_branch_group_usecase()
+    grupo = await usecase.execute(id)
 
-    try:
-        grupo = await usecase.execute(id)
-
-        return BranchGroupResponseDTO.from_entity(grupo)
-
-    except LookupError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e),
-        )
-
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
-        )
+    return BranchGroupResponseDTO.from_entity(grupo)

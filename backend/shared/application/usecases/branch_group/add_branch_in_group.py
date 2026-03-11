@@ -29,11 +29,7 @@ class AddBranchInGroupUseCase:
         self.group_repo = group_repo
         self.branch_repo = branch_repo
 
-    async def execute(
-        self,
-        group_id: int,
-        branch_id: int,
-    ) -> None:
+    async def execute(self, group_id: int, branch_id: int) -> None:
         """
         Adds a branch to a branch group.
 
