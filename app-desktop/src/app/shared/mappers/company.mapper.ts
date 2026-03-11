@@ -15,6 +15,8 @@ export class CompanyMapper {
       numero: branch.codigo.padStart(3, '0'),
       nome: branch.nome,
       uf: branch.uf,
+      cnpj: branch.cnpj,
+      ie: branch.ie ?? '-',
       empresaId: String(branch.company_id),
       status: empresaAtiva ? 'Ativo' : 'Inativo',
     };
