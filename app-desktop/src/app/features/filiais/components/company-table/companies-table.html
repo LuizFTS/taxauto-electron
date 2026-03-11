@@ -1,4 +1,10 @@
 <table>
+  <colgroup>
+    <col class="col-numero" />
+    <col class="col-nome" />
+    <col class="col-status" />
+    <col class="col-actions" />
+  </colgroup>
   <thead>
     <tr>
       <th class="col-numero">Nº Empresa</th>
@@ -12,7 +18,7 @@
     <!-- ── Create Row ── -->
     @if (isCreating) {
       <tr class="editing-row">
-        <td>
+        <td class="col-numero">
           <input
             type="text"
             class="inline-input"
@@ -21,7 +27,7 @@
             (input)="updateCreateFieldHandle('numero', $event)"
           />
         </td>
-        <td>
+        <td class="col-nome">
           <input
             type="text"
             class="inline-input"
@@ -30,14 +36,14 @@
             (input)="updateCreateFieldHandle('nome', $event)"
           />
         </td>
-        <td>
+        <td class="col-status">
           <select
             class="inline-select"
+            disabled
             [value]="newRowData.status"
             (change)="updateCreateFieldHandle('status', $event)"
           >
             <option value="Ativo">Ativo</option>
-            <option value="Inativo">Inativo</option>
           </select>
         </td>
         <td class="col-actions">
@@ -61,7 +67,7 @@
           <td class="col-numero">
             <span class="number-chip">{{ item.numero }}</span>
           </td>
-          <td class="col-nome">{{ item.nome }}</td>
+          <td class="col-nome" [title]="item.nome">{{ item.nome }}</td>
           <td class="col-status">
             <span
               class="status-badge"
@@ -84,7 +90,7 @@
         }
         <!-- Edit mode -->
         @if (editingRows[item.id]) {
-          <td>
+          <td class="col-numero">
             <input
               type="text"
               class="inline-input"
@@ -92,7 +98,7 @@
               (input)="updateEditFieldHandle(item.id, 'numero', $event)"
             />
           </td>
-          <td>
+          <td class="col-nome">
             <input
               type="text"
               class="inline-input"
@@ -100,7 +106,7 @@
               (input)="updateEditFieldHandle(item.id, 'nome', $event)"
             />
           </td>
-          <td>
+          <td class="col-status">
             <select
               class="inline-select"
               [value]="editingRows[item.id].status"
