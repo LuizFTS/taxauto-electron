@@ -19,7 +19,7 @@ def find_free_port(start=8000, end=8100):
 
 class Settings(BaseSettings):
 
-    APP_NAME: str = "ICMS Apurador"
+    APP_NAME: str = "TaxAuto"
     APP_VERSION: str = "0.1.0"
     HOST: str = "127.0.0.1"
     PORT: int = Field(default_factory=find_free_port)

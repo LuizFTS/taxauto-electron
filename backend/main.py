@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from core.config.settings import settings
 from core.database.connection import run_migrations
+from core.http.exception_handlers import register_exception_handlers
 from modules.automation.presentation.routes import livros_fiscais_routes
 from modules.data_process.presentation.routes import periodo_routes
 from shared.presentation.routes import branch_group_routes, branch_routes, company_routes
@@ -45,9 +46,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description="Backend local para apuração de ICMS.",
+    description="Backend TaxAuto.",
     lifespan=lifespan,
 )
+
+register_exception_handlers(app)
 
 # CORS — permite requisições do Electron (localhost)
 app.add_middleware(
