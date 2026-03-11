@@ -1,12 +1,15 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
 from core.di.container import (
     get_create_branch_usecase,
+    get_delete_branch_usecase,
     get_find_branch_usecase,
     get_list_all_branches_usecase,
+    get_update_branch_usecase,
 )
 from shared.application.dto.branch.branch_response_dto import BranchResponseDTO
 from shared.application.dto.branch.create_branch_dto import CreateBranchDTO
+from shared.application.dto.branch.update_branch_dto import UpdateBranchDTO
 
 router = APIRouter(prefix="/branches", tags=["Branches"])
 
@@ -19,30 +22,16 @@ router = APIRouter(prefix="/branches", tags=["Branches"])
 async def criar_filial(body: CreateBranchDTO):
 
     usecase = get_create_branch_usecase()
+    filial = await usecase.execute(
+        codigo=body.codigo,
+        nome=body.nome,
+        uf=body.uf,
+        cnpj=body.cnpj,
+        ie=body.ie,
+        company_id=body.company_id,
+    )
 
-    try:
-        filial = await usecase.execute(
-            codigo=body.codigo,
-            nome=body.nome,
-            uf=body.uf,
-            cnpj=body.cnpj,
-            ie=body.ie,
-            company_id=body.company_id,
-        )
-
-        return BranchResponseDTO.from_entity(filial)
-
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
-        )
-
-    except LookupError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e),
-        )
+    return BranchResponseDTO.from_entity(filial)
 
 
 @router.get(
@@ -52,7 +41,6 @@ async def criar_filial(body: CreateBranchDTO):
 async def listar_filiais():
 
     usecase = get_list_all_branches_usecase()
-
     filiais = await usecase.execute()
 
     return [BranchResponseDTO.from_entity(f) for f in filiais]
@@ -65,20 +53,30 @@ async def listar_filiais():
 async def buscar_filial(id: int):
 
     usecase = get_find_branch_usecase()
+    filial = await usecase.execute(id)
 
-    try:
-        filial = await usecase.execute(id)
+    return BranchResponseDTO.from_entity(filial)
 
-        return BranchResponseDTO.from_entity(filial)
 
-    except LookupError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e),
-        )
+# Delete by id
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_branch(id: int):
 
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
-        )
+    usecase = get_delete_branch_usecase()
+    await usecase.execute(id)
+
+
+# Update by id
+@router.patch("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def update_branch(id: int, body: UpdateBranchDTO):
+
+    usecase = get_update_branch_usecase()
+    await usecase.execute(
+        id=id,
+        name=body.name,
+        uf=body.uf,
+        cnpj=body.cnpj,
+        ie=body.ie,
+        company_id=body.company_id,
+        ativa=body.ativa,
+    )

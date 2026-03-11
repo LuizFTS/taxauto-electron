@@ -39,4 +39,36 @@ class BranchRepository(BaseRepository):
         )
 
     async def list_all(self):
-        return await self.fetch_all("SELECT * FROM branch", params=(), entity=Branch)
+        return await self.fetch_all(
+            """
+            SELECT * 
+            FROM branch
+            ORDER BY CAST(codigo AS INTEGER) ASC
+            """,
+            params=(),
+            entity=Branch,
+        )
+
+    async def delete(self, branch_id: int):
+        await self.execute(
+            "DELETE FROM branch WHERE id = ?",
+            (branch_id,),
+        )
+
+    async def update(
+        self, id: int, name: str, uf: str, cnpj: str, ie: str, company_id: int, ativa: bool
+    ):
+        return await self.execute(
+            """
+            UPDATE branch
+            SET nome = ?, 
+                uf = ?, 
+                cnpj = ?, 
+                ie = ?, 
+                company_id = ?, 
+                ativa = ?,
+                updated_at = DATETIME('now', 'localtime') 
+            WHERE id = ?
+            """,
+            (name, uf, cnpj, ie, company_id, ativa, id),
+        )
