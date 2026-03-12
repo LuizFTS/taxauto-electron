@@ -4,10 +4,13 @@ from core.database.mapper import row_to_entity, rows_to_entities
 
 class BaseRepository:
 
-    async def fetch_one(self, query: str, params: tuple, entity):
+    async def fetch_one(self, query: str, params: tuple, entity=None):
         async with session() as conn:
             cursor = await conn.execute(query, params)
             row = await cursor.fetchone()
+
+            if entity is None:
+                return row
 
             return row_to_entity(row, entity)
 
