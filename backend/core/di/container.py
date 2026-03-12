@@ -115,12 +115,9 @@ def get_update_branch_usecase():
 
 def get_add_branch_in_group_usecase():
     branch_repo = get_branch_repository()
-    company_repo = get_company_repository()
+    group_repo = get_branch_group_repository()
 
-    return AddBranchInGroupUseCase(
-        branch_repo=branch_repo,
-        company_repo=company_repo,
-    )
+    return AddBranchInGroupUseCase(branch_repo=branch_repo, group_repo=group_repo)
 
 
 def get_create_branch_group_usecase():

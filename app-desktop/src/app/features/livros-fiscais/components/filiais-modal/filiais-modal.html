@@ -10,21 +10,19 @@
     <div class="section-groups">
       <h3 class="section-title">Grupos Pré-Configurados</h3>
       <div class="groups-list">
-        <label
-          class="group-item"
-          *ngFor="let group of groups"
-          [class.selected]="selectedGroup === group.id"
-        >
-          <input
-            type="radio"
-            name="presetGroup"
-            [value]="group.id"
-            [checked]="selectedGroup === group.id"
-            (click)="toggleGroup(group.id)"
-          />
-          <span class="custom-radio"></span>
-          <span>{{ group.name }}</span>
-        </label>
+        @for (group of groups; track group.id) {
+          <label class="group-item" [class.selected]="selectedGroup === group.id">
+            <input
+              type="radio"
+              name="presetGroup"
+              [value]="group.id"
+              [checked]="selectedGroup === group.id"
+              (click)="toggleGroup(group.id)"
+            />
+            <span class="custom-radio"></span>
+            <span>{{ formatGroupName(group.name) }}</span>
+          </label>
+        }
       </div>
     </div>
 
@@ -47,19 +45,17 @@
 
       <div class="branches-list-container">
         <div class="branches-grid">
-          <label
-            class="branch-item"
-            *ngFor="let branch of branches$ | async"
-            [class.selected]="selectedBranches.has(branch.numero)"
-          >
-            <input
-              type="checkbox"
-              [checked]="selectedBranches.has(branch.numero)"
-              (change)="toggleBranch(branch.numero)"
-            />
-            <span class="custom-checkbox"></span>
-            <span>{{ branch.numero }} - {{ branch.nome }}</span>
-          </label>
+          @for (branch of branches$ | async; track branch.numero) {
+            <label class="branch-item" [class.selected]="selectedBranches.has(branch.numero)">
+              <input
+                type="checkbox"
+                [checked]="selectedBranches.has(branch.numero)"
+                (change)="toggleBranch(branch.numero)"
+              />
+              <span class="custom-checkbox"></span>
+              <span>{{ branch.numero }} - {{ branch.nome }}</span>
+            </label>
+          }
         </div>
       </div>
     </div>

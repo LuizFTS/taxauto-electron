@@ -1,9 +1,8 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, computed, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   ModalService,
-  ElectronService,
   BranchService,
   type GrupoEmpresas,
   type Filial,
@@ -11,6 +10,8 @@ import {
 } from '../../../../core';
 import { BehaviorSubject, combineLatest, map, switchMap, type Observable } from 'rxjs';
 import { CompanyMapper } from '../../../../shared/mappers/company.mapper';
+import { BranchGroupService } from '../../../../core/services/api/data/branch-group.service';
+import { GroupBranchMapper } from '../../../../shared/mappers/group-branch.mapper';
 
 @Component({
   standalone: true,
@@ -25,11 +26,22 @@ export class FiliaisModal implements OnInit {
   @Input() onConfirm?: (branches: string[]) => void;
 
   private modalService = inject(ModalService);
-  private electronService = inject(ElectronService);
   private branchService = inject(BranchService);
   private companyService = inject(CompanyService);
+  private groupService = inject(BranchGroupService);
 
   private filiaisSubject = new BehaviorSubject<Filial[]>([]);
+  private readonly filiaisFiltered = computed(() => {
+    const list = this.filiaisSubject.value;
+    const q = this.searchSubject.value;
+    return list.filter((f) => {
+      const branchNumber = parseInt(f.numero, 10);
+      const numberMatch = !isNaN(branchNumber) && branchNumber.toString().includes(q);
+      const ufMatch = f.uf.toLowerCase().includes(q.toLowerCase());
+
+      return numberMatch || ufMatch;
+    });
+  });
 
   branches$!: Observable<Filial[]>;
   groups: GrupoEmpresas[] = [];
@@ -60,8 +72,7 @@ export class FiliaisModal implements OnInit {
       map(([list, q]) =>
         list.filter((f) => {
           const branchNumber = parseInt(f.numero, 10);
-          const searchNumber = parseInt(q, 10);
-          const numberMatch = !isNaN(searchNumber) && branchNumber === searchNumber;
+          const numberMatch = !isNaN(branchNumber) && branchNumber.toString().includes(q);
           const ufMatch = f.uf.toLowerCase().includes(q.toLowerCase());
 
           return numberMatch || ufMatch;
@@ -69,8 +80,8 @@ export class FiliaisModal implements OnInit {
       ),
     );
 
-    this.electronService.getGroups().subscribe((data) => {
-      this.groups = data;
+    this.groupService.getAll().subscribe((data) => {
+      this.groups = GroupBranchMapper.toGroupBranchList(data);
     });
   }
 
@@ -80,11 +91,14 @@ export class FiliaisModal implements OnInit {
       // Unselect group if a branch is unselected
       if (this.selectedGroup) {
         const group = this.groups.find((g) => g.id === this.selectedGroup);
+
         if (group && group.branches.some((filial) => filial.id === branchId)) {
           this.selectedGroup = null;
         }
       }
     } else {
+      console.log(this.selectedBranches);
+
       this.selectedBranches.add(branchId);
     }
   }
@@ -98,7 +112,10 @@ export class FiliaisModal implements OnInit {
       const group = this.groups.find((g) => g.id === groupId);
       if (group) {
         this.selectedBranches.clear();
-        group.branches.forEach((bId) => this.selectedBranches.add(bId.id));
+
+        console.log(group.branches);
+        console.log(this.selectedBranches);
+        group.branches.forEach((bId) => this.selectedBranches.add(bId.codigo.padStart(3, '0')));
       }
     }
   }
@@ -106,9 +123,15 @@ export class FiliaisModal implements OnInit {
   selectAll() {
     this.selectedGroup = null;
 
-    const currentBranches = this.filiaisSubject.value;
+    const visibleBranches = this.filiaisFiltered();
 
-    currentBranches.forEach((b) => this.selectedBranches.add(b.numero));
+    if (visibleBranches) {
+      visibleBranches.forEach((b) => {
+        if (b.numero) {
+          this.selectedBranches.add(b.numero);
+        }
+      });
+    }
   }
 
   clearSelection() {
@@ -125,5 +148,17 @@ export class FiliaisModal implements OnInit {
 
   cancel() {
     this.modalService.close();
+  }
+
+  formatGroupName(value: string) {
+    const firstWord = value.split(' ')[0];
+    const remainingWords = value.split(' ').slice(1).join(' ');
+
+    return (
+      firstWord.charAt(0).toUpperCase() +
+      firstWord.slice(1).toLowerCase() +
+      ' ' +
+      remainingWords.toUpperCase()
+    );
   }
 }
