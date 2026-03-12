@@ -57,8 +57,9 @@ $radius-pill: 999px;
 // ─── Table ────────────────────────────────────────────────────────────────────
 table {
   width: 100%;
-  border-collapse: collapse;
+  min-width: 900px;
   text-align: left;
+  border-collapse: collapse;
   table-layout: fixed;
 }
 
@@ -340,5 +341,30 @@ tr.editing-row {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+  }
+}
+
+@media (max-width: 600px) {
+  th,
+  td {
+    padding: 8px 10px;
+  }
+
+  .col-numero {
+    width: 96px;
+    min-width: 80px;
+  }
+
+  .col-parent {
+    width: 160px;
+    min-width: 120px;
+  }
+
+  .col-status {
+    width: 96px;
+  }
+
+  .col-actions {
+    width: 88px;
   }
 }

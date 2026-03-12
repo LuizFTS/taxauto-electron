@@ -381,3 +381,40 @@ td.col-ie {
     -webkit-box-orient: vertical;
   }
 }
+
+@media (max-width: 720px) {
+  th,
+  td {
+    padding: 8px 10px;
+  }
+
+  .col-numero {
+    width: 72px;
+    min-width: 64px;
+  }
+
+  .col-uf {
+    width: 52px;
+  }
+
+  .col-cnpj {
+    width: 140px;
+  }
+
+  .col-ie {
+    width: 108px;
+  }
+
+  .col-parent {
+    width: 160px;
+    min-width: 140px;
+  }
+
+  .col-status {
+    width: 88px;
+  }
+
+  .col-actions {
+    width: 88px;
+  }
+}
