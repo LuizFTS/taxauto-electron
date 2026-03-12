@@ -1,20 +1,64 @@
+/* Intent: Admin managing business hierarchy (Empresas → Filiais).
+   Tone: Refined & utilitarian — clean whitespace, crisp grid, obvious affordances.
+   Palette: Slate neutrals + a single blue accent (#4361ee). Status via semantic green/gray.
+   Spacing: 4px base grid. Rows breathe at 52px height.
+*/
+
+// ─── Tokens ───────────────────────────────────────────────────────────────────
+$accent: #4361ee;
+$accent-soft: rgba(67, 97, 238, 0.08);
+$accent-ring: rgba(67, 97, 238, 0.18);
+
+$text-primary: #0f172a;
+$text-muted: #64748b;
+$text-hint: #94a3b8;
+
+$border: rgba(0, 0, 0, 0.07);
+$border-strong: rgba(0, 0, 0, 0.12);
+
+$surface: #ffffff;
+$surface-alt: #f8fafc;
+$surface-edit: #f0f4ff;
+
+$green-bg: #dcfce7;
+$green-fg: #15803d;
+$gray-bg: #f1f5f9;
+$gray-fg: #475569;
+$red-bg: #fee2e2;
+$red-fg: #ef4444;
+
+$radius-sm: 4px;
+$radius-md: 6px;
+$radius-lg: 8px;
+$radius-pill: 999px;
+
 .livros-fiscais-container {
   min-height: 100%;
 }
 
+// ─── Page Layout ─────────────────────────────────────────────────────────────
+
 .form-container {
-  display: flex;
-  flex-direction: column;
   gap: 20px;
   max-width: 900px;
   margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 .card-section {
-  background-color: oklch(96.7% 0.001 286.375);
-  border-radius: 12px;
+  background: $surface;
+  border-radius: $radius-lg;
   padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 0 0 1px $border,
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 4px 16px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .section-title {
