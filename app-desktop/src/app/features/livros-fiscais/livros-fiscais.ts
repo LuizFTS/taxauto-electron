@@ -4,6 +4,7 @@ import {
   ChangeDetectionStrategy,
   inject,
   OnInit,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -17,6 +18,7 @@ import { ModalService, NotificationService } from '../../core';
 import { FiliaisModal } from './components/filiais-modal/filiais-modal';
 import { Button, Select } from '../../shared';
 import { LivrosFiscaisService } from '../../core/services/api/automation/livros-fiscais.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-livros-fiscais',
@@ -32,6 +34,8 @@ export class LivrosFiscais implements OnInit {
   private livrosFiscaisService = inject(LivrosFiscaisService);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private notificationService = inject(NotificationService);
+
+  selectedPath = signal<string | null>(null);
 
   tiposLivro = [
     { value: 1, label: 'Entrada' },
@@ -81,8 +85,30 @@ export class LivrosFiscais implements OnInit {
   }
 
   toggleTarefa(index: number) {
-    const currentValue = this.tarefasFormArray.at(index).value;
-    this.tarefasFormArray.at(index).setValue(!currentValue);
+    const control = this.tarefasFormArray.at(index);
+    const newValue = !control.value;
+
+    control.setValue(newValue);
+
+    // REGRA: Se MARCAR 'Fechar' (2), marcar 'Atualizar' (0) e 'Abrir' (1)
+    if (index === 2 && newValue === true) {
+      this.tarefasFormArray.at(0).setValue(true);
+      this.tarefasFormArray.at(1).setValue(true);
+    }
+
+    // REGRA: Se MARCAR 'Atualizar' (0), marcar 'Abrir' (1)
+    if (index === 0 && newValue === true) {
+      this.tarefasFormArray.at(1).setValue(true);
+    }
+
+    // REGRA DE DESMARCAR: Se 'Atualizar' (0) ou 'Abrir' (1) ficarem falsos, 'Fechar' (2) deve desmarcar
+    if ((index === 0 || index === 1) && newValue === false) {
+      this.tarefasFormArray.at(2).setValue(false);
+    }
+
+    if (index === 1 && newValue === false) {
+      this.tarefasFormArray.at(0).setValue(false);
+    }
   }
 
   executar() {
@@ -110,11 +136,20 @@ export class LivrosFiscais implements OnInit {
       return;
     }
 
+    if (selectedTarefas.includes('salvar_excel') || selectedTarefas.includes('salvar_pdf')) {
+      this.pickFolder();
+      if (!this.selectedPath()) {
+        this.notificationService.alert('Atenção!', 'Selecione a pasta de destino.');
+        return;
+      }
+    }
+
     const payload = {
       book_type: this.form.value.tipoLivro === 1 ? 'entrada' : 'saida',
       start_date: this.form.value.periodo.start,
       end_date: this.form.value.periodo.end,
       filiais: this.selectedFiliais,
+      save_path: this.selectedPath() || null,
       tasks: {
         open_book: selectedTarefas.includes('abrir'),
         update_book: selectedTarefas.includes('atualizar'),
@@ -206,5 +241,22 @@ export class LivrosFiscais implements OnInit {
     }
 
     return date;
+  }
+
+  private pickFolder() {
+    window.electron
+      .invoke('select-directory', null)
+      .pipe(take(1))
+      .subscribe({
+        next: (path) => {
+          if (path) {
+            this.selectedPath.set(path as string);
+          }
+        },
+        error: (error) => {
+          this.notificationService.error('Erro!', 'Erro ao selecionar pasta');
+          console.log(error);
+        },
+      });
   }
 }

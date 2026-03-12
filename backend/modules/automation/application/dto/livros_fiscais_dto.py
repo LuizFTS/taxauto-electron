@@ -20,3 +20,4 @@ class LivrosFiscaisDTO:
     filiais: List[str]
     book_type: str
     tasks: LivrosFiscaisTasksDTO
+    save_path: str | None

@@ -10,15 +10,15 @@ class RunLivrosFiscaisUseCase:
 
     def execute(self, dto: LivrosFiscaisDTO):
 
-        if dto.book_type not in ['entrada', 'saida']:
+        if dto.book_type not in ["entrada", "saida"]:
             raise Exception(f'Livro "{dto.book_type}" informado é incompatível.')
-        
+
         if len(dto.filiais) == 0:
-            raise Exception('Selecione pelo menos uma filial para prosseguir.')
-        
+            raise Exception("Selecione pelo menos uma filial para prosseguir.")
+
         if not any(dto.tasks.__dict__.values()):
-            raise Exception('Selecione pelo menos uma tarefa para prosseguir.')
-        
+            raise Exception("Selecione pelo menos uma tarefa para prosseguir.")
+
         try:
             date_start = datetime.strptime(dto.start_date, "%d/%m/%Y")
             date_end = datetime.strptime(dto.end_date, "%d/%m/%Y")
@@ -30,7 +30,7 @@ class RunLivrosFiscaisUseCase:
 
         try:
             orchestrator = LivrosFiscaisOrchestrator()
-            return orchestrator.execute(dto)
+            orchestrator.execute(dto)
         except Exception as e:
             # Re-lança o erro para o Router capturar como 500
             raise Exception(f"Falha no processamento: {str(e)}")
