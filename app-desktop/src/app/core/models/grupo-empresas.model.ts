@@ -1,7 +1,9 @@
-import type { Filial } from './filial.model';
-
 export interface GrupoEmpresas {
   id: string;
   name: string;
-  branches: Filial[];
+  branches: {
+    id: string;
+    codigo: string;
+    name: string;
+  }[];
 }
