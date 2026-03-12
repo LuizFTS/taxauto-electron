@@ -1,11 +1,4 @@
-$body = @{
-    codigo = "1"
-    nome = "A"
-    analista = "A"
-} | ConvertTo-Json
-
 Invoke-RestMethod `
-    -Uri "http://127.0.0.1:8000/api/v1/branch-group" `
+    -Uri "http://127.0.0.1:8001/api/v1/branch-group/1/branches/82" `
     -Method Post `
-    -Body $body `
     -ContentType "application/json"
