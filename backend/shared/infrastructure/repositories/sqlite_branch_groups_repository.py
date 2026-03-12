@@ -30,3 +30,7 @@ class BranchGroupRepository(BaseRepository):
             """,
             (group_id, branch_id),
         )
+
+    async def exists(self, query: str, params: tuple) -> bool:
+        row = await self.fetch_one(query, params)
+        return row is not None
