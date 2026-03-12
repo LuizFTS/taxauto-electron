@@ -7,6 +7,9 @@ from core.di.container import (
     get_list_groups_usecase,
 )
 from shared.application.dto.branch_group.branch_group_response_dto import BranchGroupResponseDTO
+from shared.application.dto.branch_group.branch_group_with_branches_dto import (
+    BranchGroupWithBranchesDTO,
+)
 from shared.application.dto.branch_group.create_branch_group_dto import CreateBranchGroupDTO
 
 router = APIRouter(prefix="/branch-group", tags=["Group of branches"])
@@ -41,14 +44,14 @@ async def add_branch_in_group(group_id: int, branch_id: int):
 
 @router.get(
     "/",
-    response_model=list[BranchGroupResponseDTO],
+    response_model=list[BranchGroupWithBranchesDTO],
 )
 async def listar_grupos():
 
     usecase = get_list_groups_usecase()
     grupos = await usecase.execute()
 
-    return [BranchGroupResponseDTO.from_entity(g) for g in grupos]
+    return grupos
 
 
 @router.get(

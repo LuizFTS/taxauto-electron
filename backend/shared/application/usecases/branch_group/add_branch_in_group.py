@@ -81,13 +81,17 @@ class AddBranchInGroupUseCase:
         # ----------------------------
         # Avoid inserting the same branch into the same group multiple times.
 
-        existing_relation = await self.group_repo.fetch_one(
-            "SELECT 1 FROM branch_group_branch WHERE group_id = ? AND branch_id = ?",
+        exists = await self.group_repo.fetch_one(
+            """
+        SELECT 1
+        FROM branch_group_item
+        WHERE group_id = ? AND branch_id = ?
+        """,
             (group_id, branch_id),
-            dict,
+            None,
         )
 
-        if existing_relation is not None:
+        if exists:
             raise ValueError("Filial já está associada a este grupo")
 
         # ----------------------------

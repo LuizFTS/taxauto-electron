@@ -8,22 +8,19 @@ class GroupQueryService(BaseQueryService):
         rows = await self.fetch_all(
             """
             SELECT
-                g.id as grupo_id,
-                g.nome as grupo_nome,
-
-                f.id as filial_id,
-                f.codigo as filial_codigo,
-                f.nome as filial_nome,
-                f.uf as filial_uf
-
-            FROM grupo_filiais g
-            LEFT JOIN grupo_filial_item gfi
-                ON gfi.grupo_id = g.id
-
-            LEFT JOIN filial f
-                ON f.id = gfi.filial_id
-
-            ORDER BY g.nome, f.nome
+                bg.id as grupo_id,
+                bg.nome as grupo_nome,
+                bg.analista as analista_grupo,
+                b.id as branch_id,
+                b.codigo as branch_code,
+                b.nome as branch_name,
+                b.uf as branch_uf
+            FROM branch_group bg
+            LEFT JOIN branch_group_item bgi
+                ON bgi.group_id = bg.id
+            LEFT JOIN branch b
+                ON b.id = bgi.branch_id
+            ORDER BY bg.nome, b.nome
             """
         )
 
@@ -37,16 +34,17 @@ class GroupQueryService(BaseQueryService):
                 groups[gid] = {
                     "id": gid,
                     "name": row["grupo_nome"],
+                    "analyst": row["analista_grupo"],
                     "branches": [],
                 }
 
-            if row["filial_id"]:
+            if row["branch_id"]:
                 groups[gid]["branches"].append(
                     {
-                        "id": row["filial_id"],
-                        "numero": row["filial_codigo"],
-                        "nome": row["filial_nome"],
-                        "uf": row["filial_uf"],
+                        "id": row["branch_id"],
+                        "codigo": row["branch_code"],
+                        "name": row["branch_name"],
+                        "uf": row["branch_uf"],
                     }
                 )
 

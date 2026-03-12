@@ -88,8 +88,8 @@ class CreateBranchGroupUseCase:
         grupo = BranchGroup(
             id=None,
             codigo=codigo_normalizado,
-            nome=nome_normalizado,
-            analista=analista_normalizado,
+            name=nome_normalizado,
+            analyst=analista_normalizado,
         )
 
         created_group = await self.repo.criar(grupo)
@@ -102,7 +102,7 @@ class CreateBranchGroupUseCase:
             "Grupo criado id=%s codigo=%s analista=%s",
             created_group.id,
             created_group.codigo,
-            created_group.analista,
+            created_group.analyst,
         )
 
         return created_group
