@@ -1,6 +1,5 @@
-
 class SaveSpreadsheetService:
 
-    def execute(self, session, filial, book_type, start_date, end_date):
+    def execute(self, filial, book_type, start_date, end_date):
 
         pass
