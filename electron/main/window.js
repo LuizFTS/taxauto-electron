@@ -2,6 +2,7 @@ const { BrowserWindow, app } = require('electron');
 const path = require('path');
 
 let mainWindow;
+let loadingWindow;
 const isDev = !app.isPackaged;
 
 function createLoadingWindow() {
@@ -37,7 +38,7 @@ function createMainWindow() {
     width: 1100,
     height: 750,
     frame: false,
-    icon: path.join(__dirname, '../../build/icon.ico'),
+    icon: path.join(__dirname, '..', '..', 'icon', 'icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, '../preload/preload.js'),
       nodeIntegration: false,
@@ -72,8 +73,26 @@ function getWindow() {
   return mainWindow;
 }
 
+function getFocusedWindow() {
+  return BrowserWindow.getFocusedWindow();
+}
+
+function getAllWindows() {
+  return BrowserWindow.getAllWindows();
+}
+
+function closeLoading() {
+  if (loadingWindow) {
+    loadingWindow.close();
+    loadingWindow = null;
+  }
+}
+
 module.exports = {
   createMainWindow,
   createLoadingWindow,
+  closeLoading,
   getWindow,
+  getFocusedWindow,
+  getAllWindows
 };

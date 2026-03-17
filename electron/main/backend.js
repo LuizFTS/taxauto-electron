@@ -1,6 +1,7 @@
 const path = require('path');
+const fs = require('fs');
 const { spawn } = require('child_process');
-const { app } = require('electron')
+const { app } = require('electron');
 const { exec } = require('child_process');
 
 const isDev = !app.isPackaged;
@@ -11,111 +12,124 @@ function getBackendPath() {
   if (isDev) {
     return path.join(__dirname, '../../backend/.venv/Scripts/python.exe');
   }
-
   return path.join(process.resourcesPath, 'backend', 'backend.exe');
 }
 
 function startBackend() {
-
   return new Promise((resolve, reject) => {
-
     const backendPath = getBackendPath();
+    const cwd = isDev
+      ? path.join(__dirname, '../../backend')
+      : path.join(process.resourcesPath, 'backend');
 
-    if (backendProcess) {
-      return resolve(backendPort);
+    console.log(`[BACKEND] isDev: ${isDev}`);
+    console.log(`[BACKEND] backendPath: ${backendPath}`);
+    console.log(`[BACKEND] cwd: ${cwd}`);
+    console.log(`[BACKEND] exe exists: ${fs.existsSync(backendPath)}`);
+    console.log(`[BACKEND] cwd exists: ${fs.existsSync(cwd)}`);
+
+    // Lista arquivos na pasta do backend para confirmar o que foi empacotado
+    if (fs.existsSync(cwd)) {
+      console.log(`[BACKEND] files in cwd: ${fs.readdirSync(cwd).join(', ')}`);
+    }
+
+    if (!fs.existsSync(backendPath)) {
+      return reject(new Error(`backend.exe não encontrado: ${backendPath}`));
     }
 
     backendProcess = isDev
-      ? spawn(backendPath, ['main.py'], {
-        cwd: path.join(__dirname, '../../backend'),
-        stdio: 'pipe',
-        detached: false
-      })
-      : spawn(backendPath, [], {
-        stdio: 'pipe',
-        windowsHide: true,
-        detached: false
+      ? spawn(backendPath, ['main.py'], { cwd, stdio: 'pipe' })
+      : spawn(backendPath, [], { cwd, stdio: 'pipe', windowsHide: true });
 
-      });
+    console.log(`[BACKEND] PID: ${backendProcess.pid}`);
 
-    backendProcess.stdout.on('data', (data) => {
+    let resolved = false;
 
+    function handleOutput(source, data) {
       const text = data.toString();
-      process.stdout.write(`[BACKEND] ${text}`);
+      console.log(`[BACKEND ${source}]: ${text.trim()}`);
 
       const match = text.match(/PORT=(\d+)/);
-
-      if (match) {
+      if (match && !resolved) {
+        resolved = true;
         backendPort = parseInt(match[1], 10);
+        console.log(`[BACKEND] Porta capturada: ${backendPort}`);
         resolve(backendPort);
       }
+    }
 
+    backendProcess.stdout.on('data', (d) => handleOutput('STDOUT', d));
+    backendProcess.stderr.on('data', (d) => handleOutput('STDERR', d));
+
+    backendProcess.on('error', (err) => {
+      console.error(`[BACKEND] Spawn error: ${err.message}`);
+      reject(err);
     });
 
-    backendProcess.stderr.on('data', (data) => {
-      process.stderr.write(`[BACKEND] ${data}`);
-    });
-
-    backendProcess.on('exit', (code) => {
-      console.error(`Backend finalizado: ${code}`);
+    backendProcess.on('exit', (code, signal) => {
+      console.log(`[BACKEND] Exit — code: ${code}, signal: ${signal}`);
       backendProcess = null;
+      if (!resolved) {
+        reject(new Error(`Backend exited (code ${code}) before returning PORT`));
+      }
     });
 
-    backendProcess.on('close', () => {
-      backendProcess = null;
-    });
-
-    backendProcess.on('error', reject);
-
+    // Timeout de segurança — se em 20s não resolver, rejeita
+    setTimeout(() => {
+      if (!resolved) {
+        console.error(`[BACKEND] Timeout — PORT nunca recebido`);
+        reject(new Error('Backend startup timeout (20s)'));
+      }
+    }, 20000);
   });
 }
 
 function stopBackend() {
   if (!backendProcess) return;
-
+  console.log(`[BACKEND] Encerrando PID: ${backendProcess.pid}`);
   try {
     if (process.platform === 'win32') {
-
       exec(`taskkill /pid ${backendProcess.pid} /T /F`);
-
     } else {
-
       backendProcess.kill('SIGTERM');
-
     }
   } catch (error) {
-    console.error('Erro ao parar backend:', error);
+    console.error('[BACKEND] Erro ao encerrar:', error);
   }
-
   backendProcess = null;
 }
 
 function killOldBackends() {
-  if (process.platform === 'win32') {
-    exec('taskkill /IM backend.exe /F /T', () => { });
-  }
+  return new Promise((resolve) => {
+    if (process.platform !== 'win32') return resolve();
+
+    console.log('[BACKEND] Matando instâncias antigas de backend.exe...');
+    exec('taskkill /IM backend.exe /F /T', () => {
+      // aguarda o taskkill terminar antes de resolver
+      setTimeout(resolve, 300); // margem extra para o OS liberar
+    });
+  });
 }
 
 function killPort(port) {
-
   if (process.platform !== 'win32') return;
-
-  exec(`for /f "tokens=5" %a in ('netstat -ano ^| findstr :${port}') do taskkill /PID %a /F`, () => { });
-
+  console.log(`[BACKEND] Liberando porta ${port}...`);
+  exec(
+    `for /f "tokens=5" %a in ('netstat -ano ^| findstr :${port}') do taskkill /PID %a /F`,
+    (err, stdout) => {
+      if (stdout) console.log(`[BACKEND] killPort: ${stdout.trim()}`);
+    }
+  );
 }
 
-function closeLoading() {
-  if (loadingWindow) {
-    loadingWindow.close();
-    loadingWindow = null;
-  }
+function getPort() {
+  return backendPort;
 }
-
 
 module.exports = {
   startBackend,
   stopBackend,
-  closeLoading,
   killOldBackends,
-  killPort
+  killPort,
+  getPort,
 };

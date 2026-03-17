@@ -1,7 +1,7 @@
 const { app, dialog } = require('electron');
 
-const { createLoadingWindow, createMainWindow, getWindow } = require('./window');
-const { startBackend, stopBackend, killOldBackends, closeLoading } = require('./backend');
+const { createLoadingWindow, createMainWindow, getWindow, closeLoading } = require('./window');
+const { startBackend, stopBackend, killOldBackends, killPort } = require('./backend');
 const waitBackend = require('../utils/waitBackend');
 const registerWindowIPC = require('./ipc/window.ipc');
 
@@ -36,11 +36,12 @@ app.whenReady().then(async () => {
 
 
   try {
+    await killOldBackends();
+    killPort(8000);
 
-    killOldBackends();
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     backendPort = await startBackend();
-
     if (!backendPort) {
       throw new Error("Backend did not return port");
     }
@@ -58,7 +59,6 @@ app.whenReady().then(async () => {
     registerWindowIPC();
 
   } catch (error) {
-
     console.error(error);
 
     dialog.showErrorBox(
