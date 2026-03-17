@@ -20,7 +20,6 @@ export class ModalService {
   }
 
   open<T extends object>(config: ModalConfig<T>) {
-    console.log(config);
     this._modal.set(config);
   }
 
