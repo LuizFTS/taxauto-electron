@@ -1,12 +1,11 @@
 :host {
   width: 100%;
-  height: 100%;
 }
 
 .modal-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: calc(90vh - 48px);
   width: 100%;
   font-family: inherit;
   color: #1e293b;
@@ -81,7 +80,7 @@
   font-size: 14px;
   color: #334155;
   background-color: #ffffff;
-  min-width: 180px;
+  min-width: 206.6875px;
 
   &:hover {
     border-color: #cbd5e1;
@@ -130,6 +129,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
     margin-bottom: 16px;
 
     .section-title {
