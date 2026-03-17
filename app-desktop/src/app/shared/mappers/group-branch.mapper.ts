@@ -9,6 +9,7 @@ export class GroupBranchMapper {
     return {
       id: String(branch.id),
       name: branch.name,
+      analyst: branch.analyst,
       branches: branch.branches.map((branch) => ({
         id: String(branch.id),
         codigo: branch.codigo,
