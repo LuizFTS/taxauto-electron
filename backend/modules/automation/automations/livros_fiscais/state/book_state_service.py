@@ -5,6 +5,8 @@ import nazm.capture as c
 
 
 class BookStateService:
+    def __init__(self):
+        self.t = c.load_templates()
 
     def is_open(self, book_type, filial, start_date):
 
@@ -12,9 +14,8 @@ class BookStateService:
         start_date = start_date.replace("/", "")
 
         print(f"[STATE] Checking if book is open | filial={filial}")
-        t = c.load_templates()
 
-        a.click(t.binoculos)
+        a.press("f7")
 
         # Navigate to and fill company field
         a.press("tab")
@@ -44,31 +45,28 @@ class BookStateService:
 
         # Execute search
         a.press("f8")
+        time.sleep(1)
 
         # Check if closed book icon is visible (wait up to 2 seconds)
-        timeout = 5.0
+        timeout = 3.0
         start_time = time.time()
-
-        # Definimos as escalas como apenas a original para ganhar velocidade total
-        # Se o ícone não muda de tamanho na tela, 1.0 é tudo que você precisa.
-        fast_params = {
-            "timeout": 0.02,  # Faz o nazm checar apenas uma vez por chamada
-            "poll_interval": 0,  # Remove qualquer espera interna da lib
-        }
 
         state = True  # Valor default caso nada seja encontrado
         while time.time() - start_time < timeout:
+            # 2. CAPTURA ÚNICA (O segredo da velocidade)
+            # Use o método de captura mais rápido que você tiver
 
-            # 2. Verifica Closed com parâmetros ultra-rápidos
-            if a.exists(t.closedbook, **fast_params):
-                print("[STATUS] Livro fechado encontrado.")
-                state = False
-                break
+            # 3. Compara os dois na mesma imagem de memória
 
-            # 1. Verifica Pending com parâmetros ultra-rápidos
-            if a.exists(t.pendingbook, **fast_params):
-                print("[STATUS] Livro pendente encontrado.")
-                state = True
-                break
+            if a.element_exists(self.t.closedbook):
+                print("Fechado!")
+                return False
 
+            if a.element_exists(self.t.pendingbook):
+                print("Pendente!")
+                return True
+
+            time.sleep(0.01)
+
+        print("[TIMEOUT] Nenhum estado identificado.")
         return state
