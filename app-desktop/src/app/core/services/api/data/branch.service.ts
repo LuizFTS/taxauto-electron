@@ -3,23 +3,23 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import type { CreateBranchRequest } from '../../../models/api/request/create-branch.model';
 import type { BranchResponse } from '../../../models/api/response/branch-response.model';
-
-const API = 'http://127.0.0.1:8000/api/v1';
+import { BackendService } from '../backend.service';
 
 @Injectable({ providedIn: 'root' })
 export class BranchService {
   private http = inject(HttpClient);
+  private backend = inject(BackendService);
 
   createBranch(branch: CreateBranchRequest): Observable<BranchResponse> {
-    return this.http.post<BranchResponse>(`${API}/branches/`, branch);
+    return this.http.post<BranchResponse>(`${this.backend.api}/branches/`, branch);
   }
 
   getAll(): Observable<BranchResponse[]> {
-    return this.http.get<BranchResponse[]>(`${API}/branches/`);
+    return this.http.get<BranchResponse[]>(`${this.backend.api}/branches/`);
   }
 
   getById(id: number): Observable<BranchResponse> {
-    return this.http.get<BranchResponse>(`${API}/branches/${id}`);
+    return this.http.get<BranchResponse>(`${this.backend.api}/branches/${id}`);
   }
 
   updateBranch(
@@ -33,7 +33,7 @@ export class BranchService {
       status,
     }: { name: string; uf: string; cnpj: string; ie: string; company_id: number; status: boolean },
   ): Observable<void> {
-    return this.http.patch<void>(`${API}/branches/${id}`, {
+    return this.http.patch<void>(`${this.backend.api}/branches/${id}`, {
       name,
       uf,
       cnpj,
@@ -44,6 +44,6 @@ export class BranchService {
   }
 
   deleteBranch(id: number): Observable<void> {
-    return this.http.delete<void>(`${API}/branches/${id}`);
+    return this.http.delete<void>(`${this.backend.api}/branches/${id}`);
   }
 }
