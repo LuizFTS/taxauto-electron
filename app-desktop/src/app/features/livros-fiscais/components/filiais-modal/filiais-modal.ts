@@ -7,30 +7,36 @@ import {
   type GrupoEmpresas,
   type Filial,
   CompanyService,
+  type Empresa,
 } from '../../../../core';
-import { BehaviorSubject, combineLatest, map, switchMap, type Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs';
 import { CompanyMapper } from '../../../../shared/mappers/company.mapper';
 import { BranchGroupService } from '../../../../core/services/api/data/branch-group.service';
 import { GroupBranchMapper } from '../../../../shared/mappers/group-branch.mapper';
+import { Select } from '../../../../shared';
 
 @Component({
   standalone: true,
   selector: 'app-filiais-modal',
   templateUrl: './filiais-modal.html',
   styleUrl: './filiais-modal.scss',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, Select],
 })
 export class FiliaisModal implements OnInit {
   @Input() title = 'Seleção de filiais';
   @Input() subtitle = 'Selecione os grupos ou filiais individuais para execução';
   @Input() onConfirm?: (branches: string[]) => void;
 
+  tiposLivro$!: Observable<{ value: number | null; label: string }[]>;
+
   private modalService = inject(ModalService);
   private branchService = inject(BranchService);
   private companyService = inject(CompanyService);
   private groupService = inject(BranchGroupService);
 
+  private companyFilterSubject = new BehaviorSubject<number | null>(null);
   private filiaisSubject = new BehaviorSubject<Filial[]>([]);
+  private empresasSubject = new BehaviorSubject<Empresa[]>([]);
   private readonly filiaisFiltered = computed(() => {
     const list = this.filiaisSubject.value;
     const q = this.searchSubject.value;
@@ -44,9 +50,11 @@ export class FiliaisModal implements OnInit {
   });
 
   branches$!: Observable<Filial[]>;
+  empresas$!: Observable<Empresa[]>;
   groups: GrupoEmpresas[] = [];
 
   selectedBranches: Set<string> = new Set<string>();
+  selectedCompany = '';
   selectedGroup: string | null = null;
 
   private searchSubject = new BehaviorSubject<string>('');
@@ -67,17 +75,41 @@ export class FiliaisModal implements OnInit {
       .subscribe(({ companies, branches }) => {
         // Alimentamos os Subjects com os dados iniciais do Mapper
         this.filiaisSubject.next(CompanyMapper.toFilialList(branches, companies));
+        this.empresasSubject.next(CompanyMapper.toEmpresaList(companies, branches));
       });
-    this.branches$ = combineLatest([this.filiaisSubject, this.searchSubject]).pipe(
-      map(([list, q]) =>
-        list.filter((f) => {
-          const branchNumber = parseInt(f.numero, 10);
-          const numberMatch = !isNaN(branchNumber) && branchNumber.toString().includes(q);
-          const ufMatch = f.uf.toLowerCase().includes(q.toLowerCase());
+    this.branches$ = combineLatest([
+      this.filiaisSubject,
+      this.searchSubject,
+      this.companyFilterSubject,
+    ]).pipe(
+      map(([list, q, selectedId]) => {
+        return list
+          .filter((f) => {
+            const branchNumber = parseInt(f.numero, 10);
+            const numberMatch = !isNaN(branchNumber) && branchNumber.toString().includes(q);
+            const ufMatch = f.uf.toLowerCase().includes(q.toLowerCase());
+            return numberMatch || ufMatch;
+          })
+          .filter((f) => {
+            if (selectedId === null || selectedId === undefined) {
+              return true;
+            }
+            return parseInt(f.empresaId) === selectedId;
+          });
+      }),
+    );
 
-          return numberMatch || ufMatch;
-        }),
-      ),
+    this.empresas$ = this.empresasSubject.asObservable();
+
+    this.tiposLivro$ = this.empresas$.pipe(
+      map((empresas) => {
+        const listaMapeada = empresas.map((empresas) => ({
+          value: parseInt(empresas.id),
+          label: empresas.nome,
+        }));
+
+        return [{ value: null, label: 'Todas as empresas' }, ...listaMapeada];
+      }),
     );
 
     this.groupService.getAll().subscribe((data) => {
@@ -97,8 +129,6 @@ export class FiliaisModal implements OnInit {
         }
       }
     } else {
-      console.log(this.selectedBranches);
-
       this.selectedBranches.add(branchId);
     }
   }
@@ -112,9 +142,6 @@ export class FiliaisModal implements OnInit {
       const group = this.groups.find((g) => g.id === groupId);
       if (group) {
         this.selectedBranches.clear();
-
-        console.log(group.branches);
-        console.log(this.selectedBranches);
         group.branches.forEach((bId) => this.selectedBranches.add(bId.codigo.padStart(3, '0')));
       }
     }
@@ -148,6 +175,13 @@ export class FiliaisModal implements OnInit {
 
   cancel() {
     this.modalService.close();
+  }
+
+  onCompanySelect(event: { value: number | null; label: string }) {
+    this.selectedCompany = event.value?.toString() || '';
+    this.selectedBranches.clear();
+    this.selectedGroup = null;
+    this.companyFilterSubject.next(event.value);
   }
 
   formatGroupName(value: string) {

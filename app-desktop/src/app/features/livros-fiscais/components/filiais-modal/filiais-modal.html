@@ -20,7 +20,7 @@
               (click)="toggleGroup(group.id)"
             />
             <span class="custom-radio"></span>
-            <span>{{ formatGroupName(group.name) }}</span>
+            <span>{{ formatGroupName(group.analyst) }}</span>
           </label>
         }
       </div>
@@ -30,6 +30,12 @@
       <div class="branches-header">
         <h3 class="section-title">Filiais Individuais</h3>
         <div class="branches-actions">
+          <app-select
+            [options]="(tiposLivro$ | async) ?? []"
+            [(ngModel)]="selectedCompany"
+            (selectAction)="onCompanySelect($event)"
+            placeholder="Empresa"
+          ></app-select>
           <div class="search-box">
             <input
               type="text"
