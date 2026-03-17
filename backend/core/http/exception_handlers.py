@@ -2,6 +2,8 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from starlette import status
 
+from modules.automation.automations.state.automation_state import AutomationStoppedException
+
 
 def register_exception_handlers(app: FastAPI) -> None:
     """
@@ -26,6 +28,13 @@ def register_exception_handlers(app: FastAPI) -> None:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={"detail": str(exc)},
+        )
+
+    @app.exception_handler(AutomationStoppedException)
+    async def automation_interrupt_handler(request: Request, exc: AutomationStoppedException):
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={"detail": "Automacao interrompida pelo usuário", "code": "AUTOMATION_STOPPED"},
         )
 
     @app.exception_handler(Exception)

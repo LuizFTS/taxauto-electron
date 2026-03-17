@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from core.di.container import automation_state
+from modules.automation.application.automation_runner import AutomationRunner
 from modules.automation.application.dto.livros_fiscais_dto import LivrosFiscaisDTO
 from modules.automation.automations.livros_fiscais.orchestrator.livros_fiscais_orchestrator import (
     LivrosFiscaisOrchestrator,
@@ -28,9 +30,7 @@ class RunLivrosFiscaisUseCase:
         if date_end < date_start:
             raise ValueError("A data final não pode ser menor que a data inicial.")
 
-        try:
-            orchestrator = LivrosFiscaisOrchestrator()
-            orchestrator.execute(dto)
-        except Exception as e:
-            # Re-lança o erro para o Router capturar como 500
-            raise Exception(f"Falha no processamento: {str(e)}")
+        orchestrator = LivrosFiscaisOrchestrator(automation_state)
+
+        runner = AutomationRunner(automation_state)
+        runner.run(orchestrator.execute, dto)

@@ -1,3 +1,5 @@
+import nazm as a
+
 from modules.automation.automations.livros_fiscais.navigation.erp_session import ERPSession
 from modules.automation.automations.livros_fiscais.navigation.navigate_to_livros_fiscais import (
     NavigateToLivrosFiscais,
@@ -13,10 +15,12 @@ from modules.automation.automations.livros_fiscais.services.update_book_service 
     UpdateBookService,
 )
 from modules.automation.automations.livros_fiscais.state.book_state_service import BookStateService
+from modules.automation.automations.state.automation_state import AutomationState
 
 
 class LivrosFiscaisOrchestrator:
-    def __init__(self):
+    def __init__(self, state: AutomationState):
+        self.state = state
 
         self.session = ERPSession()
 
@@ -24,45 +28,51 @@ class LivrosFiscaisOrchestrator:
 
         self.book_state = BookStateService()
 
-        self.open_book = OpenBookService()
-        self.update_book = UpdateBookService()
-        self.close_book = CloseBookService()
-
-        self.save_book = SaveBooksOrchestrator()
+        self.open_book = OpenBookService(self.state)
+        self.update_book = UpdateBookService(self.state)
+        self.close_book = CloseBookService(self.state)
 
     def execute(self, dto):
         print("[ORCHESTRATOR] Starting Livros Fiscais automation")
-        # self.session.open()
+        self.state.check()
 
-        # self.navigator.execute()
+        self.session.open()
+        self.state.check()
 
-        for filial in dto.filiais:
-            print(f"[ORCHESTRATOR] Processing filial {filial}")
-            is_open = self.book_state.is_open(dto.book_type, filial, dto.start_date)
-            print("teste 2")
+        self.navigator.execute()
+        self.state.check()
 
-            if is_open:
+        if dto.tasks.open_book or dto.tasks.update_book or dto.tasks.close_book:
+            for filial in dto.filiais:
 
-                if dto.tasks.update_book:
-                    self.update_book.execute()
+                self.state.check()
 
-                if dto.tasks.close_book:
-                    self.close_book.execute()
+                print(f"[ORCHESTRATOR] Processing filial {filial}")
+                is_open = self.book_state.is_open(dto.book_type, filial, dto.start_date)
 
-            else:
-                print("teste")
+                necessita_abrir = not is_open and (
+                    dto.tasks.open_book or dto.tasks.update_book or dto.tasks.close_book
+                )
+                self.state.check()
 
-                if dto.tasks.open_book:
+                if necessita_abrir:
+                    self.state.check()
                     self.open_book.execute()
 
                 if dto.tasks.update_book:
+                    self.state.check()
                     self.update_book.execute()
 
                 if dto.tasks.close_book:
+                    self.state.check()
                     self.close_book.execute()
 
+        self.state.check()
+
         if dto.tasks.save_spreadsheet or dto.tasks.save_pdf:
-            orchestrator = SaveBooksOrchestrator()
+            orchestrator = SaveBooksOrchestrator(self.session, self.state)
             orchestrator.execute(dto)
 
+        self.state.check()
+        a.double_press("ctrl", "q")
         return {"status": "finished"}

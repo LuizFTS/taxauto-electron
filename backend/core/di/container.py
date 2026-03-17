@@ -1,3 +1,4 @@
+from modules.automation.automations.state.automation_state import AutomationState
 from shared.application.usecases.branch.create_branch import (
     CreateBranchUseCase,
 )
@@ -51,6 +52,8 @@ from shared.infrastructure.repositories.sqlite_branch_repository import (
 from shared.infrastructure.repositories.sqlite_company_repository import (
     CompanyRepository,
 )
+
+automation_state = AutomationState()
 
 
 # Repositories

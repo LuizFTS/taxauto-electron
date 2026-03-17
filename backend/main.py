@@ -8,7 +8,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from core.config.settings import settings
 from core.database.connection import run_migrations
+from core.di.container import automation_state
 from core.http.exception_handlers import register_exception_handlers
+from modules.automation.automations.state.emergency_stop import setup_emergency_stop
 from modules.automation.presentation.routes import livros_fiscais_routes
 from modules.data_process.presentation.routes import periodo_routes
 from shared.presentation.routes import branch_group_routes, branch_routes, company_routes
@@ -38,6 +40,8 @@ async def lifespan(app: FastAPI):
 
     logger.info("Encerrando aplicação.")
 
+
+setup_emergency_stop(automation_state)
 
 # ---------------------------------------------------------------------------
 # App
