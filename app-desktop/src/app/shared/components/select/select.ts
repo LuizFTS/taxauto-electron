@@ -11,6 +11,8 @@ import {
   ViewChild,
   input,
   AfterViewInit,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -38,6 +40,8 @@ export class Select<T = unknown> implements ControlValueAccessor, AfterViewInit 
 
   @Input() options: SelectOption<T>[] = [];
   @Input() placeholder = 'Select';
+
+  @Output() selectAction = new EventEmitter<SelectOption<T>>();
 
   private host = inject(ElementRef<HTMLElement>);
 
@@ -95,10 +99,13 @@ export class Select<T = unknown> implements ControlValueAccessor, AfterViewInit 
   }
 
   select(option: SelectOption<T>) {
+    if (this.disabled()) return;
+
     this._value.set(option.value);
     this.onChange?.(option.value);
     this.onTouched?.();
     this.isOpen.set(false);
+    this.selectAction.emit(option);
   }
 
   @HostListener('document:click', ['$event'])
