@@ -13,10 +13,11 @@ if (Test-Path dist) { Remove-Item dist -Recurse -Force }
 if (Test-Path build) { Remove-Item build -Recurse -Force }
 
 # build com pyinstaller
-pyinstaller main.py `
-  --name backend `
+pyinstaller `
   --onefile `
-  --clean `
-  --noconfirm
+  --name backend `
+  --distpath dist `
+  --noconfirm `
+  main.py
 
 Write-Host "Backend build concluído"
