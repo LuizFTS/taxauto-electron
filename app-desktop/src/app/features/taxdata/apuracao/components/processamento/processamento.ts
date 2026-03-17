@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { ApuracaoApiService, ProcessamentoStatus } from '../../../../core';
+import { ApuracaoApiService, ProcessamentoStatus } from '../../../../../core';
 
 const ETAPAS_LABEL: Record<string, string> = {
   NORMALIZACAO: 'Normalizando dados',

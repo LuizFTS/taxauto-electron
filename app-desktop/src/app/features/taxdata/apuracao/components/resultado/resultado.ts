@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApuracaoApiService, ApuracaoFilial } from '../../../../core';
+import { ApuracaoApiService, ApuracaoFilial } from '../../../../../core';
 
 @Component({
   selector: 'app-resultado',

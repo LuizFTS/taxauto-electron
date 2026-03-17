@@ -14,10 +14,10 @@ import {
   FormArray,
   FormControl,
 } from '@angular/forms';
-import { ModalService, NotificationService } from '../../core';
+import { ModalService, NotificationService } from '../../../core';
 import { FiliaisModal } from './components/filiais-modal/filiais-modal';
-import { Button, Select } from '../../shared';
-import { LivrosFiscaisService } from '../../core/services/api/automation/livros-fiscais.service';
+import { Button, Select } from '../../../shared';
+import { LivrosFiscaisService } from '../../../core/services/api/automation/livros-fiscais.service';
 
 @Component({
   selector: 'app-livros-fiscais',

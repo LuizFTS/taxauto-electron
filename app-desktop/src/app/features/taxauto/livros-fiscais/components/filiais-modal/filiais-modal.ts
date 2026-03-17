@@ -8,12 +8,12 @@ import {
   type Filial,
   CompanyService,
   type Empresa,
-} from '../../../../core';
+} from '../../../../../core';
 import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs';
-import { CompanyMapper } from '../../../../shared/mappers/company.mapper';
-import { BranchGroupService } from '../../../../core/services/api/data/branch-group.service';
-import { GroupBranchMapper } from '../../../../shared/mappers/group-branch.mapper';
-import { Select } from '../../../../shared';
+import { CompanyMapper } from '../../../../../shared/mappers/company.mapper';
+import { BranchGroupService } from '../../../../../core/services/api/data/branch-group.service';
+import { GroupBranchMapper } from '../../../../../shared/mappers/group-branch.mapper';
+import { Select } from '../../../../../shared';
 
 @Component({
   standalone: true,

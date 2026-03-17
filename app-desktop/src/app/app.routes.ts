@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
 import { WindowLayout } from './shared';
-import { LivrosFiscais } from './features/livros-fiscais/livros-fiscais';
+import { LivrosFiscais } from './features/taxauto/livros-fiscais/livros-fiscais';
 import { Filiais } from './features/filiais/filiais';
-import { Apuracao } from './features/apuracao/apuracao';
-import { Processamento } from './features/apuracao/components/processamento/processamento';
-import { Resultado } from './features/apuracao/components/resultado/resultado';
-import { Difal } from './features/difal/difal';
+import { Apuracao } from './features/taxdata/apuracao/apuracao';
+import { Processamento } from './features/taxdata/apuracao/components/processamento/processamento';
+import { Resultado } from './features/taxdata/apuracao/components/resultado/resultado';
+import { Difal } from './features/taxdata/difal/difal';
 
 export const routes: Routes = [
   {

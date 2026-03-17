@@ -9,7 +9,7 @@ import {
   ArquivoFiscal,
   TipoArquivo,
   TIPOS_ARQUIVO_CONFIG,
-} from '../../core';
+} from '../../../core';
 import { PeriodoCriarModalComponent } from './components/periodo-criar-modal-component/periodo-criar-modal-component';
 
 @Component({

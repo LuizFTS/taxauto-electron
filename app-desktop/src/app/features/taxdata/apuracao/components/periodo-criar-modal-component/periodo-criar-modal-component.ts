@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ApuracaoApiService, Periodo } from '../../../../core';
+import { ApuracaoApiService, Periodo } from '../../../../../core';
 
 const MESES = [
   'Janeiro',
