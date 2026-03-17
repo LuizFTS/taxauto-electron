@@ -11,12 +11,13 @@
     "electron-start": "wait-on http://localhost:4200 && electron .",
     "dev": "concurrently \"npm run angular-start\" \"npm run electron-start\"",
     "install-all": "npm install && npm install --prefix app-desktop",
+    "build-front": "npm run angular-build && electron-builder",
     "build": "npm run angular-build && npm run backend-build && electron-builder"
   },
   "build": {
     "appId": "com.taxauto.app",
     "productName": "TaxAuto",
-    "icon": "build/icon.ico",
+    "icon": "icon/icon.ico",
     "compression": "maximum",
     "asar": true,
     "directories": {
@@ -27,7 +28,8 @@
       "app-desktop/dist/app-desktop/browser/**/*",
       "package.json",
       "!**/*.map",
-      "!**/*.ts"
+      "!**/*.ts",
+      "!icon/*"
     ],
     "extraResources": [
       {
@@ -40,7 +42,7 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "build/icon.ico"
+      "icon": "icon/icon.ico"
     }
   },
   "keywords": [],
