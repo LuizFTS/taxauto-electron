@@ -44,12 +44,15 @@
 
     <!-- Seção 2: Entidades e Abrangência -->
     <div class="card-section">
-      <h3 class="section-title">Entidades e Abrangência</h3>
+      <h3 class="section-title">Filiais e Grupos</h3>
 
       <div class="entities-box">
         <div class="entities-info">
           <h4>Selecionar Filiais e Grupos</h4>
-          <span class="selected-count">{{ selectedFiliais.length }} filiais selecionadas</span>
+          <span class="selected-count"
+            >{{ selectedFiliais.length }} {{ selectedFiliais.length === 1 ? 'filial' : 'filiais' }}
+            {{ selectedFiliais.length === 1 ? 'selecionada' : 'selecionadas' }}</span
+          >
         </div>
         <app-button variant="outline" size="md" (click)="openFiliaisModal()">
           CONFIGURAR
@@ -63,17 +66,25 @@
 
       <div class="tasks-row" formArrayName="tarefas">
         @for (tarefa of tarefasDisponiveis; track $index) {
-          <button
-            type="button"
-            class="task-pill"
-            [class.selected]="isTarefaSelected($index)"
-            (click)="toggleTarefa($index)"
-            (keydown.enter)="toggleTarefa($index)"
-            (keydown.space)="toggleTarefa($index)"
-            [attr.aria-pressed]="isTarefaSelected($index)"
-          >
-            <span>{{ tarefa.nome }}</span>
-          </button>
+          <div class="tasks-row__button__container">
+            <button
+              type="button"
+              class="task-pill"
+              [class.selected]="isTarefaSelected($index)"
+              (click)="toggleTarefa($index)"
+              (keydown.enter)="toggleTarefa($index)"
+              (keydown.space)="toggleTarefa($index)"
+              [attr.aria-pressed]="isTarefaSelected($index)"
+            >
+              <span>{{ tarefa.nome }}</span>
+            </button>
+            @if (tarefa.id === 'salvar_excel' && isTarefaSelected($index)) {
+              <div class="tasks-row__button__container__checkbox">
+                <input type="checkbox" id="consolidado" [formControl]="getConsolidadoControl()" />
+                <label for="consolidado">Consolidado</label>
+              </div>
+            }
+          </div>
         }
       </div>
     </div>

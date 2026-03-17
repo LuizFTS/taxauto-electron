@@ -18,7 +18,6 @@ import { ModalService, NotificationService } from '../../core';
 import { FiliaisModal } from './components/filiais-modal/filiais-modal';
 import { Button, Select } from '../../shared';
 import { LivrosFiscaisService } from '../../core/services/api/automation/livros-fiscais.service';
-import { take } from 'rxjs';
 
 @Component({
   selector: 'app-livros-fiscais',
@@ -45,7 +44,7 @@ export class LivrosFiscais implements OnInit {
     { id: 'atualizar', nome: 'Atualizar livro' },
     { id: 'abrir', nome: 'Abrir livro' },
     { id: 'fechar', nome: 'Fechar livro' },
-    { id: 'salvar_excel', nome: 'Salvar planilha' },
+    { id: 'salvar_excel', nome: 'Salvar Excel' },
     { id: 'salvar_pdf', nome: 'Salvar PDF' },
   ];
 
@@ -60,8 +59,13 @@ export class LivrosFiscais implements OnInit {
       start: [this.startDate],
       end: [this.endDate],
     }),
+    consolidado: [false],
     tarefas: this.fb.array(this.tarefasDisponiveis.map(() => new FormControl(false))),
   });
+
+  getConsolidadoControl(): FormControl {
+    return this.form.get('consolidado') as FormControl;
+  }
 
   ngOnInit(): void {
     const today = new Date();
@@ -87,31 +91,15 @@ export class LivrosFiscais implements OnInit {
   toggleTarefa(index: number) {
     const control = this.tarefasFormArray.at(index);
     const newValue = !control.value;
-
     control.setValue(newValue);
 
-    // REGRA: Se MARCAR 'Fechar' (2), marcar 'Atualizar' (0) e 'Abrir' (1)
-    if (index === 2 && newValue === true) {
-      this.tarefasFormArray.at(0).setValue(true);
-      this.tarefasFormArray.at(1).setValue(true);
-    }
-
-    // REGRA: Se MARCAR 'Atualizar' (0), marcar 'Abrir' (1)
-    if (index === 0 && newValue === true) {
-      this.tarefasFormArray.at(1).setValue(true);
-    }
-
-    // REGRA DE DESMARCAR: Se 'Atualizar' (0) ou 'Abrir' (1) ficarem falsos, 'Fechar' (2) deve desmarcar
-    if ((index === 0 || index === 1) && newValue === false) {
-      this.tarefasFormArray.at(2).setValue(false);
-    }
-
-    if (index === 1 && newValue === false) {
-      this.tarefasFormArray.at(0).setValue(false);
+    if (index === 3 && newValue === false) {
+      this.form.get('consolidado')?.setValue(false);
     }
   }
 
-  executar() {
+  async executar() {
+    console.log(this.form.value);
     const selectedTarefas = this.form.value.tarefas
       .map((checked: boolean, i: number) => (checked ? this.tarefasDisponiveis[i].id : null))
       .filter((v: string | null) => v !== null);
@@ -137,8 +125,8 @@ export class LivrosFiscais implements OnInit {
     }
 
     if (selectedTarefas.includes('salvar_excel') || selectedTarefas.includes('salvar_pdf')) {
-      this.pickFolder();
-      if (!this.selectedPath()) {
+      const path = await this.pickFolder();
+      if (!path) {
         this.notificationService.alert('Atenção!', 'Selecione a pasta de destino.');
         return;
       }
@@ -149,6 +137,7 @@ export class LivrosFiscais implements OnInit {
       start_date: this.form.value.periodo.start,
       end_date: this.form.value.periodo.end,
       filiais: this.selectedFiliais,
+      consolidado: this.form.value.consolidado,
       save_path: this.selectedPath() || null,
       tasks: {
         open_book: selectedTarefas.includes('abrir'),
@@ -162,11 +151,17 @@ export class LivrosFiscais implements OnInit {
     try {
       this.livrosFiscaisService.execute(payload).subscribe({
         next: () => {
-          this.notificationService.success('Sucesso!', 'Livro gerado com sucesso.');
+          this.notificationService.success('Sucesso!', 'Processo concluído!');
+          window.electron.focusWindow();
         },
         error: (error) => {
+          if (error.error.code === 'AUTOMATION_STOPPED') {
+            this.notificationService.alert('Atenção!', 'Processo interrompido.');
+            window.electron.focusWindow();
+            return;
+          }
           this.notificationService.error('Erro!', error.error.detail);
-          console.log(error);
+          window.electron.focusWindow();
         },
       });
     } catch (error) {
@@ -208,7 +203,6 @@ export class LivrosFiscais implements OnInit {
   }
 
   openFiliaisModal() {
-    console.log('openFiliaisModal');
     this.modalService.open({
       component: FiliaisModal,
       data: {
@@ -243,20 +237,19 @@ export class LivrosFiscais implements OnInit {
     return date;
   }
 
-  private pickFolder() {
-    window.electron
-      .invoke('select-directory', null)
-      .pipe(take(1))
-      .subscribe({
-        next: (path) => {
-          if (path) {
-            this.selectedPath.set(path as string);
-          }
-        },
-        error: (error) => {
-          this.notificationService.error('Erro!', 'Erro ao selecionar pasta');
-          console.log(error);
-        },
-      });
+  private async pickFolder(): Promise<string | null> {
+    try {
+      const path = await window.electron.invoke('select-directory', null);
+
+      if (path) {
+        this.selectedPath.set(path);
+        return path;
+      }
+      return null;
+    } catch (error) {
+      this.notificationService.error('Erro!', 'Erro ao selecionar pasta');
+      console.error(error);
+      return null;
+    }
   }
 }

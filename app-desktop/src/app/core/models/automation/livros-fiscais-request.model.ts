@@ -5,6 +5,7 @@ export interface LivrosFiscaisRequest {
   end_date: string;
   filiais: string[];
   book_type: string;
+  consolidado: boolean;
   tasks: TaskRequest;
   save_path?: string | null;
 }
