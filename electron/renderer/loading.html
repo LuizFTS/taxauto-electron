@@ -36,16 +36,13 @@
         -webkit-font-smoothing: antialiased;
       }
 
-      /* ── layout ─────────────────────────── */
       .shell {
         width: 100%;
         height: 100%;
-        padding: 30px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 0;
         position: relative;
       }
 
@@ -62,7 +59,7 @@
         opacity: 0.5;
       }
 
-      /* ── logo block ──────────────────────── */
+      /* ── logo ───────────────────────────── */
       .logo-wrap {
         display: flex;
         flex-direction: column;
@@ -84,7 +81,6 @@
         overflow: hidden;
       }
 
-      /* shine sweep */
       .logo-icon::after {
         content: "";
         position: absolute;
@@ -113,22 +109,55 @@
         font-size: 26px;
         font-weight: 600;
         letter-spacing: -0.5px;
-        color: var(--text);
       }
 
       .logo-name span {
         color: var(--accent);
       }
 
-      /* ── status area ─────────────────────── */
+      /* ── infinite spinner bar ───────────── */
       .status-wrap {
         margin-top: 36px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 14px;
+        gap: 12px;
         animation: fadeUp 0.6s cubic-bezier(0.22, 0.9, 0.36, 1) 0.15s both;
         width: 220px;
+      }
+
+      .bar-track {
+        width: 100%;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 99px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* infinite shimmer — two passes for smooth loop */
+      .bar-track::before,
+      .bar-track::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -60%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent),
+          #5b9aff,
+          transparent
+        );
+        border-radius: 99px;
+        box-shadow: 0 0 10px rgba(45, 107, 228, 0.8);
+        animation: slide 1.6s ease-in-out infinite;
+      }
+
+      .bar-track::after {
+        animation-delay: 0.8s;
       }
 
       .status-text {
@@ -136,40 +165,13 @@
         font-family: "DM Mono", monospace;
         color: var(--muted);
         letter-spacing: 0.04em;
-        height: 16px;
-        transition: opacity 0.3s;
-      }
-
-      /* progress bar */
-      .bar-track {
-        width: 100%;
-        height: 3px;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 99px;
-        overflow: hidden;
-      }
-
-      .bar-fill {
-        height: 100%;
-        width: 0%;
-        background: linear-gradient(
-          90deg,
-          var(--accent2),
-          var(--accent),
-          #5b9aff
-        );
-        border-radius: 99px;
-        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 0 8px rgba(45, 107, 228, 0.7);
       }
 
       /* dots */
       .dots {
         display: flex;
         gap: 5px;
-        margin-top: 2px;
       }
-
       .dot {
         width: 4px;
         height: 4px;
@@ -191,7 +193,7 @@
         bottom: 16px;
         font-size: 10px;
         font-family: "DM Mono", monospace;
-        color: rgba(138, 154, 184, 0.4);
+        color: rgba(138, 154, 184, 0.35);
         letter-spacing: 0.08em;
       }
 
@@ -204,6 +206,15 @@
         to {
           opacity: 1;
           transform: translateY(0);
+        }
+      }
+
+      @keyframes slide {
+        0% {
+          left: -60%;
+        }
+        100% {
+          left: 110%;
         }
       }
 
@@ -230,11 +241,10 @@
         }
       }
 
-      /* fade-out on done */
+      /* fade-out quando o backend estiver pronto */
       body.done {
         animation: fadeOut 0.5s ease forwards;
       }
-
       @keyframes fadeOut {
         to {
           opacity: 0;
@@ -246,7 +256,6 @@
     <div class="shell">
       <div class="logo-wrap">
         <div class="logo-icon">
-          <!-- simple "T" document icon -->
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h8v1.5H8V13zm0 3h6v1.5H8V16zm0-6h3v1.5H8V10z"
@@ -257,10 +266,8 @@
       </div>
 
       <div class="status-wrap">
-        <div class="bar-track">
-          <div class="bar-fill" id="bar"></div>
-        </div>
-        <div class="status-text" id="msg">Iniciando serviços...</div>
+        <div class="bar-track"></div>
+        <div class="status-text">Iniciando...</div>
         <div class="dots">
           <div class="dot"></div>
           <div class="dot"></div>
@@ -272,40 +279,23 @@
     </div>
 
     <script>
-      const bar = document.getElementById("bar");
-      const msg = document.getElementById("msg");
-
-      const steps = [
-        { pct: 20, label: "Carregando módulos..." },
-        { pct: 45, label: "Conectando ao banco de dados..." },
-        { pct: 68, label: "Inicializando serviços fiscais..." },
-        { pct: 88, label: "Verificando configurações..." },
-        { pct: 100, label: "Pronto!" },
-      ];
-
-      let i = 0;
-      function next() {
-        if (i >= steps.length) return;
-        const s = steps[i++];
-        bar.style.width = s.pct + "%";
-        msg.textContent = s.label;
-        if (i < steps.length) {
-          setTimeout(next, 600 + Math.random() * 400);
-        } else {
-          // backend ready → notify Electron (or just fade out after delay)
-          setTimeout(() => {
-            document.body.classList.add("done");
-            setTimeout(() => {
-              // If running inside Electron, send IPC signal:
-              // window.electronAPI?.backendReady();
-              // For standalone demo, just reload:
-              // location.reload();
-            }, 500);
-          }, 700);
-        }
+      // Chame esta função assim que o backend estiver pronto:
+      function backendReady() {
+        document.body.classList.add("done");
+        setTimeout(() => {
+          // window.electronAPI?.backendReady();
+        }, 500);
       }
 
-      setTimeout(next, 400);
+      // Exemplo: poll até o backend responder OK
+      // async function pollBackend() {
+      //   try {
+      //     const r = await fetch('http://localhost:3000/health');
+      //     if (r.ok) return backendReady();
+      //   } catch (_) {}
+      //   setTimeout(pollBackend, 800);
+      // }
+      // pollBackend();
     </script>
   </body>
 </html>
