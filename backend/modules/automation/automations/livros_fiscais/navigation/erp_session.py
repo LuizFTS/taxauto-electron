@@ -1,44 +1,73 @@
-import pygetwindow as gw
-import win32con
-import win32gui
+import subprocess
+import time
 
 
 class ERPSession:
+    def __init__(self, titulo="Portal Casa do Adubo"):
+        self.titulo = titulo
+        self.hwnd = None
 
-    def _focar_e_maximizar(self, titulo_janela):
-        # 1. Busca todas as janelas que contenham o título
-        janelas = gw.getWindowsWithTitle(titulo_janela)
+    def _execute_ps(self, script: str):
+        """Helper para executar PowerShell e capturar saída."""
+        return subprocess.run(
+            ["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True
+        )
 
-        if not janelas:
-            print(f"Nenhuma janela com o título '{titulo_janela}' encontrada.")
-            return
+    def get_window(self, timeout=10):
+        """Busca o HWND com lógica de retry (importante para Apps Java)."""
+        start_time = time.time()
+        ps_script = f"""
+        $win = Get-Process | Where-Object {{ $_.MainWindowTitle -like "*{self.titulo}*" }} | Select-Object -First 1
+        if ($win) {{ $win.MainWindowHandle }}
+        """
 
-        print(f"Encontradas {len(janelas)} janelas. Focando na primeira...")
-
-        # 2. Seleciona a primeira (ou você pode iterar se quiser uma específica)
-        janela = janelas[0]
-        hwnd = janela._hWnd  # Pega o Handle da janela para usar com win32gui
-
-        try:
-            # 3. Forçar a restauração caso esteja minimizada
-            if win32gui.IsIconic(hwnd):
-                win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
-
-            # 4. Trazer para o topo (Hack para ignorar restrição do Windows)
-            win32gui.SetVariantPart(hwnd)  # Remove o "ghosting"
-            win32gui.ShowWindow(hwnd, win32con.SW_SHOW)
-            win32gui.SetForegroundWindow(hwnd)
-
-            # 5. Maximizar na tela principal
-            win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
-
-            print(f"Janela '{janela.title}' movida para tela principal e focada.")
-
-        except Exception as e:
-            print(f"Erro ao tentar focar janela: {e}")
+        while (time.time() - start_time) < timeout:
+            result = self._execute_ps(ps_script)
+            handle = result.stdout.strip()
+            if handle and handle != "0":
+                return handle
+            time.sleep(1)
+        return None
 
     def open(self):
-        self._focar_e_maximizar("Portal Casa do Adubo")
+        """Inicializa a sessão encontrando a janela."""
+        print(f"[ERP] Localizando janela: {self.titulo}...")
+        self.hwnd = self.get_window()
+        if self.hwnd:
+            self.focus()
+            return True
+        print("[ERP] Erro: Janela não encontrada.")
+        return False
+
+    def focus(self):
+        """Foca na janela usando o HWND salvo."""
+        if not self.hwnd:
+            # Tenta re-capturar se o hwnd sumiu
+            if not self.open():
+                return
+
+        ps_script = f"""
+        $code = @'
+            [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+            [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+            [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hAfter, int x, int y, int cx, int cy, uint f);
+'@
+        if (-not ([Ref].Assembly.GetType("Win32.Win32Utils"))) {{
+            Add-Type -MemberDefinition $code -Name "Win32Utils" -Namespace "Win32"
+        }}
+        
+        $h = [IntPtr]{self.hwnd}
+        [Win32.Win32Utils]::ShowWindow($h, 9)
+        [Win32.Win32Utils]::SetWindowPos($h, [IntPtr]::Zero, 0, 0, 0, 0, 0x0041)
+        [Win32.Win32Utils]::ShowWindow($h, 3)
+        [Win32.Win32Utils]::SetForegroundWindow($h)
+        """
+        self._execute_ps(ps_script)
 
     def close(self):
-        pass
+        """Opcional: Fecha o processo do ERP se necessário."""
+        if self.hwnd:
+            self._execute_ps(
+                f"Stop-Process -Id (Get-Process | Where-Object {{ $_.MainWindowHandle -eq {self.hwnd} }}).Id -Force"
+            )
+            self.hwnd = None
