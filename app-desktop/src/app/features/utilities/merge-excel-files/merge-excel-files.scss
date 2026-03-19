@@ -1,0 +1,27 @@
+.actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 1rem;
+  overflow: hidden;
+
+  app-card {
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 auto;
+    min-height: 0;
+
+    ::ng-deep .card {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+  }
+}

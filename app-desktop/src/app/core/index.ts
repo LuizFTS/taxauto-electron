@@ -4,6 +4,7 @@ export { CompanyService } from './services/api/data/company.service';
 export { ApuracaoApiService } from './services/api/apuração-api.service';
 export { ModalService } from './services/modal.service';
 export { NotificationService } from './services/notification.service';
+export { MergeExcelFilesService } from './services/api/utilities/merge-excel-files.service';
 
 // Types
 export type { ModalConfig } from './types/modal';

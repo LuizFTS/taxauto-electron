@@ -1,0 +1,11 @@
+<div class="main">
+  <app-card>
+    <h3 class="section-title">Consolidar Excel</h3>
+    <app-drag-and-drop-area (filesChanged)="onFilesChanged($event)" />
+  </app-card>
+  <div class="actions-row">
+    <app-button [loading]="isLoading" variant="solid" size="md" (click)="executar()"
+      >Executar</app-button
+    >
+  </div>
+</div>
