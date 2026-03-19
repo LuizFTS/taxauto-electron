@@ -21,6 +21,6 @@ export class App implements OnInit {
       document.body.setAttribute('data-theme', 'light');
     }
 
-    this.router.navigate(['livros-fiscais']);
+    this.router.navigate(['taxauto/livros-fiscais']);
   }
 }

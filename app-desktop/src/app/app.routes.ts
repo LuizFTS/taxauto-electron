@@ -6,6 +6,7 @@ import { Apuracao } from './features/taxdata/apuracao/apuracao';
 import { Processamento } from './features/taxdata/apuracao/components/processamento/processamento';
 import { Resultado } from './features/taxdata/apuracao/components/resultado/resultado';
 import { Difal } from './features/taxdata/difal/difal';
+import { MergeExcelFiles } from './features/utilities/merge-excel-files/merge-excel-files';
 
 export const routes: Routes = [
   {
@@ -13,28 +14,47 @@ export const routes: Routes = [
     component: WindowLayout,
     children: [
       {
-        path: 'livros-fiscais',
-        component: LivrosFiscais,
-      },
-      {
-        path: 'filiais',
-        component: Filiais,
-      },
-      {
-        path: 'difal',
-        component: Difal,
-      },
-      {
-        path: 'apuracao',
-        component: Apuracao,
+        path: 'taxauto',
         children: [
           {
-            path: 'processamento/:id',
-            component: Processamento,
+            path: 'livros-fiscais',
+            component: LivrosFiscais,
+          },
+        ],
+      },
+      {
+        path: 'taxdata',
+        children: [
+          {
+            path: 'difal',
+            component: Difal,
           },
           {
-            path: 'resultado/:id',
-            component: Resultado,
+            path: 'apuracao',
+            component: Apuracao,
+            children: [
+              {
+                path: 'processamento/:id',
+                component: Processamento,
+              },
+              {
+                path: 'resultado/:id',
+                component: Resultado,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: 'utilitarios',
+        children: [
+          {
+            path: 'merge-excel-files',
+            component: MergeExcelFiles,
+          },
+          {
+            path: 'branch-manager',
+            component: Filiais,
           },
         ],
       },

@@ -18,7 +18,7 @@ export class Sidemenu {
         {
           title: 'Livros fiscais',
           icon: 'book',
-          route: '/livros-fiscais',
+          route: '/taxauto/livros-fiscais',
         },
         /* {
           title: 'Notas canceladas',
@@ -32,16 +32,21 @@ export class Sidemenu {
         }, */
       ],
     },
-    /* {
+    {
       title: 'Utilitários',
       items: [
         {
           title: 'Consolidar Excel',
           icon: 'handyman',
-          route: '/consolidar-excel',
+          route: '/utilitarios/merge-excel-files',
+        },
+        {
+          title: 'Gerenciar filiais',
+          icon: 'domain',
+          route: '/utilitarios/branch-manager',
         },
       ],
-    }, */
+    },
   ];
 
   toggleMenu(): void {
