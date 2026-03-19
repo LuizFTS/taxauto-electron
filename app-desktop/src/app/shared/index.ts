@@ -1,4 +1,6 @@
 export { Button } from './components/button/button';
+export { Card } from './components/card/card';
+export { DragAndDropArea } from './components/drag-and-drop-area/drag-and-drop-area';
 export { Modal } from './components/modal/modal';
 export { NotificationModalComponent } from './components/notification-modal/notification-modal';
 export { Select } from './components/select/select';
