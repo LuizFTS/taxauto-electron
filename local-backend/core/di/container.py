@@ -1,3 +1,9 @@
+from modules.automation.application.usecases.merge_excel_files_usecase import (
+    MergeExcelFilesUseCase,
+)
+from modules.automation.automations.merge_excel_files.services.merge_excel_files_service import (
+    MergeExcelFilesService,
+)
 from modules.automation.automations.state.automation_state import AutomationState
 from shared.application.usecases.branch.create_branch import (
     CreateBranchUseCase,
@@ -54,6 +60,14 @@ from shared.infrastructure.repositories.sqlite_company_repository import (
 )
 
 automation_state = AutomationState()
+
+
+def get_merge_excel_files_service():
+    return MergeExcelFilesService()
+
+
+def get_merge_excel_files_usecase():
+    return MergeExcelFilesUseCase(get_merge_excel_files_service())
 
 
 # Repositories
