@@ -35,8 +35,10 @@ function createLoadingWindow() {
 
 function createMainWindow() {
   mainWindow = new BrowserWindow({
-    width: 1100,
-    height: 750,
+    height: 700,
+    width: 1000,
+    minHeight: 700,
+    minWidth: 1000,
     frame: false,
     icon: path.join(__dirname, '..', '..', 'icon', 'icon.ico'),
     webPreferences: {

@@ -28,13 +28,13 @@
 
     <div class="section-branches">
       <div class="branches-header">
-        <h3 class="section-title">Filiais Individuais</h3>
+        <h3 class="section-title">Filiais</h3>
         <div class="branches-actions">
           <app-select
             [options]="(tiposLivro$ | async) ?? []"
             [(ngModel)]="selectedCompany"
             (selectAction)="onCompanySelect($event)"
-            placeholder="Empresa"
+            [placeholder]="(getNomeEmpresaSelecionada() | async) ?? ''"
           ></app-select>
           <div class="search-box">
             <input

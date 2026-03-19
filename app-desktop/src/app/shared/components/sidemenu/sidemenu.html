@@ -1,30 +1,83 @@
-<div class="sidemenu">
-  <div class="sidemenu__title">
-    <h1>TaxAuto</h1>
+<div class="sidemenu" [class.sidemenu--collapsed]="!isOpen">
+  <div class="sidemenu__header">
+    <button
+      class="sidemenu__toggle"
+      type="button"
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="isOpen"
+      aria-label="Toggle menu"
+    >
+      <span class="sidemenu__toggle-bar"></span>
+      <span class="sidemenu__toggle-bar"></span>
+      <span class="sidemenu__toggle-bar"></span>
+    </button>
+    <h1 class="sidemenu__title-text">TaxAuto</h1>
   </div>
 
   <div class="sidemenu__content">
     <nav class="sidemenu__nav">
-      <ul>
-        <li routerLink="/livros-fiscais" routerLinkActive="active" class="sidemenu__nav-item">
-          <a>
-            <mat-icon>book</mat-icon>
-            <span>Livros fiscais</span>
-          </a>
-        </li>
-        <!-- <li routerLink="/apuracao" routerLinkActive="active" class="sidemenu__nav-item">
-          <a>Apuração</a>
-        </li> -->
-        <!-- <li routerLink="/difal" routerLinkActive="active" class="sidemenu__nav-item">
-          <a>DIFAL</a>
-        </li> -->
-        <li routerLink="/filiais" routerLinkActive="active" class="sidemenu__nav-item">
-          <a>
-            <mat-icon>business</mat-icon>
-            <span>Filiais</span>
-          </a>
-        </li>
-      </ul>
+      @for (section of menuItems; track section.title) {
+        <div class="sidemenu__section">
+          <p class="sidemenu__section-title">{{ section.title }}</p>
+          <ul>
+            @for (item of section.items; track item.title) {
+              <li
+                routerLink="{{ item.route }}"
+                routerLinkActive="active"
+                class="sidemenu__nav-item"
+              >
+                <a>
+                  <mat-icon>{{ item.icon }}</mat-icon>
+                  <span class="sidemenu__label">{{ item.title }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+
+        @if (section !== menuItems[menuItems.length - 1]) {
+          <div class="sidemenu__divider"></div>
+        }
+      }
+
+      <!--
+
+      <div class="sidemenu__section">
+        <p class="sidemenu__section-title">Auditoria</p>
+        <ul>
+          <li routerLink="/difal" routerLinkActive="active" class="sidemenu__nav-item">
+            <a>
+              <mat-icon>fact_check</mat-icon>
+              <span class="sidemenu__label">DIFAL</span>
+            </a>
+          </li>
+          <li routerLink="/apuracao" routerLinkActive="active" class="sidemenu__nav-item">
+            <a>
+              <mat-icon>analytics</mat-icon>
+              <span class="sidemenu__label">Apuração</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidemenu__divider"></div>
+
+      <div class="sidemenu__section">
+        <p class="sidemenu__section-title">Controle</p>
+        <ul></ul>
+      </div>
+      -->
     </nav>
+  </div>
+
+  <div class="sidemenu__footer">
+    <!-- <button class="sidemenu__footer-item" type="button">
+      <mat-icon>settings</mat-icon>
+      <span class="sidemenu__label">Configurações</span>
+    </button>
+    <button class="sidemenu__footer-item sidemenu__footer-item--primary" type="button">
+      <mat-icon>login</mat-icon>
+      <span class="sidemenu__label">Entrar</span>
+    </button> -->
   </div>
 </div>

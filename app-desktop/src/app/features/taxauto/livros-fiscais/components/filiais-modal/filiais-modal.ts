@@ -9,7 +9,7 @@ import {
   CompanyService,
   type Empresa,
 } from '../../../../../core';
-import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { CompanyMapper } from '../../../../../shared/mappers/company.mapper';
 import { BranchGroupService } from '../../../../../core/services/api/data/branch-group.service';
 import { GroupBranchMapper } from '../../../../../shared/mappers/group-branch.mapper';
@@ -40,13 +40,21 @@ export class FiliaisModal implements OnInit {
   private readonly filiaisFiltered = computed(() => {
     const list = this.filiaisSubject.value;
     const q = this.searchSubject.value;
-    return list.filter((f) => {
-      const branchNumber = parseInt(f.numero, 10);
-      const numberMatch = !isNaN(branchNumber) && branchNumber.toString().includes(q);
-      const ufMatch = f.uf.toLowerCase().includes(q.toLowerCase());
+    const selectedId = this.companyFilterSubject.value;
+    return list
+      .filter((f) => {
+        const branchNumber = parseInt(f.numero, 10);
+        const numberMatch = !isNaN(branchNumber) && branchNumber.toString().includes(q);
+        const ufMatch = f.uf.toLowerCase().includes(q.toLowerCase());
 
-      return numberMatch || ufMatch;
-    });
+        return numberMatch || ufMatch;
+      })
+      .filter((f) => {
+        if (selectedId === null || selectedId === undefined) {
+          return true;
+        }
+        return parseInt(f.empresaId) === selectedId;
+      });
   });
 
   branches$!: Observable<Filial[]>;
@@ -182,6 +190,18 @@ export class FiliaisModal implements OnInit {
     this.selectedBranches.clear();
     this.selectedGroup = null;
     this.companyFilterSubject.next(event.value);
+  }
+
+  getNomeEmpresaSelecionada(): Observable<string> {
+    if (this.selectedCompany === '') {
+      return of('Todas as empresas');
+    }
+    return this.empresasSubject.asObservable().pipe(
+      map((empresas) => {
+        const empresa = empresas.find((e) => e.id === this.selectedCompany);
+        return empresa ? empresa.nome : '';
+      }),
+    );
   }
 
   formatGroupName(value: string) {

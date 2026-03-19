@@ -42,9 +42,7 @@ class SaveSpreadsheetService:
             a.press("tab", 4)
             self.state.check()
             a.press("up")
-            a.press("tab")
-            a.press("up")
-            a.press("tab", 7)
+            a.press("tab", 8)
             self.state.check()
             a.press("up")
             a.press("tab", 3)
@@ -69,6 +67,7 @@ class SaveSpreadsheetService:
         a.press("tab", 2)
         a.press("space")
         self.state.check()
+        sleep(1)
 
         # Fill save path in save dialog
         a.wait_for(self.t.dialog_ok)

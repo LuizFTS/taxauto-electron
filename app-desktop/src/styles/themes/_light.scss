@@ -1,0 +1,29 @@
+@use '../variables' as *;
+
+body[data-theme='light'] {
+  --bg-color: oklch(90.67% 0.0001 271.152);
+  --border-color: oklch(87.1% 0.006 286.286);
+  --icon-hover: oklch(87.1% 0.006 286.286);
+  --icon-selected: oklch(92% 0.004 286.32);
+  --text-color: oklch(29.873% 0.00719 285.895);
+  --button-bg: oklch(68.5% 0.169 237.323);
+  --button-bg-hover: oklch(50% 0.134 242.749);
+  --button-text: oklch(96.7% 0.001 286.375);
+
+  --card-bg: oklch(96.7% 0.001 286.375);
+
+  --primary-color: oklch(27.9% 0.041 260.031);
+  --primary-hover-color: oklch(34.214% 0.05537 257.953);
+
+  --logo-bg-color: oklch(44.2% 0.017 285.786);
+  --logo-text-color: oklch(92% 0.004 286.32);
+
+  --red-color: oklch(50.5% 0.213 27.518);
+  --dark-red-color: oklch(39.6% 0.141 25.723);
+
+  --green-color: oklch(62.7% 0.194 149.214);
+  --dark-green-color: oklch(39.3% 0.095 152.535);
+
+  --orange-color: oklch(70.5% 0.213 47.604);
+  --dark-orange-color: oklch(47% 0.157 37.304);
+}

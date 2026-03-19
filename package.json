@@ -1,13 +1,13 @@
 {
   "name": "taxauto-electron",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "electron/main/main.js",
   "scripts": {
     "ng": "npm --prefix app-desktop run",
     "angular-start": "npm --prefix app-desktop start",
     "angular-build": "npm --prefix app-desktop run build -- --base-href ./ --source-map=false",
-    "backend-build": "powershell -ExecutionPolicy Bypass -File backend/scripts/build-backend.ps1",
+    "backend-build": "powershell -ExecutionPolicy Bypass -File local-backend/scripts/build-backend.ps1",
     "electron-start": "wait-on http://localhost:4200 && electron .",
     "dev": "concurrently \"npm run angular-start\" \"npm run electron-start\"",
     "install-all": "npm install && npm install --prefix app-desktop",
@@ -33,7 +33,7 @@
     ],
     "extraResources": [
       {
-        "from": "backend/dist",
+        "from": "local-backend/dist",
         "to": "backend",
         "filter": [
           "**/*"

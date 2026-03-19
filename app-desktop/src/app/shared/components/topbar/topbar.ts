@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewEncapsulation } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './topbar.html',
   styleUrl: './topbar.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  encapsulation: ViewEncapsulation.None,
 })
 export class Topbar {
   private electron = window.electron;

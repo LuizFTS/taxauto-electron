@@ -1,0 +1,47 @@
+// Mixin para centralizar conteúdo flex
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin icon-size($size) {
+  height: $size;
+  width: $size;
+  font-size: $size;
+  line-height: 1;
+
+  @include flex-center;
+}
+
+// Mixin para botões de janela (Electron)
+@mixin window-button-base($height, $width) {
+  height: $height;
+  width: $width;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-app-region: no-drag; // Garante que o botão seja clicável
+  @include flex-center;
+}
+
+@mixin flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@mixin transition-standard($props...) {
+  transition: map-loop($props, 0.2s ease); // Simplificado para o exemplo
+}
+
+// Facilitador para o estado de colapso
+@mixin hide-collapsed {
+  opacity: 0;
+  transform: translateX(-8px);
+  pointer-events: none;
+  width: 0;
+  overflow: hidden;
+  display: none;
+}

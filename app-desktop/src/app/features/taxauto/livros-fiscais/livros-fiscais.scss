@@ -49,7 +49,7 @@ $radius-pill: 999px;
 }
 
 .card-section {
-  background: $surface;
+  background: var(--card-bg);
   border-radius: $radius-lg;
   padding: 24px;
   box-shadow:
@@ -64,7 +64,7 @@ $radius-pill: 999px;
 .section-title {
   font-size: 16px;
   font-weight: 700;
-  color: oklch(35% 0.04 260); /* Dark slate blue based on mockup title color */
+  color: var(--text-color); /* Dark slate blue based on mockup title color */
   margin-top: 0;
   margin-bottom: 20px;
 }
@@ -85,7 +85,7 @@ $radius-pill: 999px;
 .field-label {
   font-size: 14px;
   font-weight: 500;
-  color: oklch(60% 0.01 260); /* Gray label color */
+  color: var(--text-color); /* Gray label color */
 }
 
 /* Custom Form Inputs */
@@ -96,7 +96,7 @@ $radius-pill: 999px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   font-size: 14px;
-  color: oklch(35% 0.04 260);
+  color: var(--text-color);
   background-color: #ffffff;
   outline: none;
   transition:
@@ -121,7 +121,7 @@ $radius-pill: 999px;
 }
 
 .date-separator {
-  color: oklch(60% 0.01 260);
+  color: var(--text-color);
   font-size: 14px;
   font-weight: 500;
 }

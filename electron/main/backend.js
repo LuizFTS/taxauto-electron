@@ -10,7 +10,7 @@ let backendPort = null;
 
 function getBackendPath() {
   if (isDev) {
-    return path.join(__dirname, '../../backend/.venv/Scripts/python.exe');
+    return path.join(__dirname, '../../local-backend/.venv/Scripts/python.exe');
   }
   return path.join(process.resourcesPath, 'backend', 'backend.exe');
 }
@@ -19,7 +19,7 @@ function startBackend() {
   return new Promise((resolve, reject) => {
     const backendPath = getBackendPath();
     const cwd = isDev
-      ? path.join(__dirname, '../../backend')
+      ? path.join(__dirname, '../../local-backend')
       : path.join(process.resourcesPath, 'backend');
 
     console.log(`[BACKEND] isDev: ${isDev}`);
@@ -80,7 +80,7 @@ function startBackend() {
         console.error(`[BACKEND] Timeout — PORT nunca recebido`);
         reject(new Error('Backend startup timeout (20s)'));
       }
-    }, 20000);
+    }, 60000);
   });
 }
 
