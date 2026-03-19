@@ -16,13 +16,13 @@ import {
 } from '@angular/forms';
 import { ModalService, NotificationService } from '../../../core';
 import { FiliaisModal } from './components/filiais-modal/filiais-modal';
-import { Button, Select } from '../../../shared';
+import { Button, Select, Card } from '../../../shared';
 import { LivrosFiscaisService } from '../../../core/services/api/automation/livros-fiscais.service';
 
 @Component({
   selector: 'app-livros-fiscais',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Button, Select],
+  imports: [CommonModule, ReactiveFormsModule, Button, Select, Card],
   templateUrl: './livros-fiscais.html',
   styleUrl: './livros-fiscais.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -242,8 +242,8 @@ export class LivrosFiscais implements OnInit {
       const path = await window.electron.invoke('select-directory', null);
 
       if (path) {
-        this.selectedPath.set(path);
-        return path;
+        this.selectedPath.set(path[0]);
+        return path[0];
       }
       return null;
     } catch (error) {

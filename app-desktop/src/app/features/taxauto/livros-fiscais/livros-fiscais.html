@@ -1,7 +1,7 @@
 <div class="livros-fiscais-container">
   <form [formGroup]="form" class="form-container">
     <!-- Seção 1: Parâmetros -->
-    <div class="card-section">
+    <app-card>
       <h3 class="section-title">Parâmetros</h3>
 
       <div class="parameters-row">
@@ -40,10 +40,10 @@
           </div>
         </div>
       </div>
-    </div>
+    </app-card>
 
     <!-- Seção 2: Entidades e Abrangência -->
-    <div class="card-section">
+    <app-card>
       <h3 class="section-title">Filiais e Grupos</h3>
 
       <div class="entities-box">
@@ -58,10 +58,10 @@
           CONFIGURAR
         </app-button>
       </div>
-    </div>
+    </app-card>
 
     <!-- Seção 3: Seleção de Tarefas -->
-    <div class="card-section">
+    <app-card>
       <h3 class="section-title">Seleção de Tarefas</h3>
 
       <div class="tasks-row" formArrayName="tarefas">
@@ -87,7 +87,7 @@
           </div>
         }
       </div>
-    </div>
+    </app-card>
     <!-- Ações -->
     <div class="actions-row">
       <app-button variant="solid" size="md" (click)="executar()">Executar</app-button>
