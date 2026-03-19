@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
   send: (channel, data) => ipcRenderer.send(channel, data),
@@ -10,5 +10,9 @@ contextBridge.exposeInMainWorld('electron', {
 
   focusWindow: () => {
     ipcRenderer.send('window-focus');
+  },
+
+  getFilePath: (file) => {
+    return webUtils.getPathForFile(file);
   }
 });

@@ -60,6 +60,21 @@ function registerWindowIPC() {
     return result.canceled ? null : result.filePaths[0]
   })
 
+  ipcMain.handle('select-files', async () => {
+    const focusedWindow = getFocusedWindow();
+
+    const result = await dialog.showOpenDialog(focusedWindow, {
+      title: 'Selecione os arquivos',
+      buttonLabel: 'Selecionar arquivos',
+      properties: ['openFile', 'multiSelections', 'showHiddenFiles'],
+      filters: [
+        { name: 'Arquivos de Referência', extensions: ['xlsx', 'csv'] }
+      ]
+    });
+
+    return result.canceled ? null : result.filePaths
+  })
+
   ipcMain.handle('get-backend-port', async () => {
     return getPort();
   });
