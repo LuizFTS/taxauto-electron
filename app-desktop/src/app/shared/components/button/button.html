@@ -5,8 +5,14 @@
   [class.app-btn--sm]="size === 'sm'"
   [class.app-btn--md]="size === 'md'"
   [class.app-btn--lg]="size === 'lg'"
-  [disabled]="disabled"
   [attr.type]="type"
+  [disabled]="disabled || loading"
 >
-  <ng-content></ng-content>
+  @if (loading) {
+    <span class="spinner"></span>
+  }
+
+  @if (!loading) {
+    <ng-content></ng-content>
+  }
 </button>
