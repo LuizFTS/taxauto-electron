@@ -88,6 +88,6 @@ class SaveSpreadsheetService:
         a.press("tab", 2)
         self.state.check()
 
-        change_spreadsheet_filename(save_path, f"{str(filial).zfill(2)}_{book_type.upper()}.csv")
+        change_spreadsheet_filename(save_path, filial, book_type)
 
         self.state.check()
