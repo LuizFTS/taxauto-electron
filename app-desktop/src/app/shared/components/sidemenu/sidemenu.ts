@@ -20,7 +20,7 @@ export class Sidemenu {
           icon: 'book',
           route: '/taxauto/livros-fiscais',
         },
-        /* {
+        {
           title: 'Notas canceladas',
           icon: 'cancel',
           route: '/notas-canceladas',
@@ -29,7 +29,7 @@ export class Sidemenu {
           title: 'Congelar periodos',
           icon: 'lock',
           route: '/congelar-periodos',
-        }, */
+        },
       ],
     },
     {
