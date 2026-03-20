@@ -59,13 +59,8 @@ export class LivrosFiscais implements OnInit {
       start: [this.startDate],
       end: [this.endDate],
     }),
-    consolidado: [false],
     tarefas: this.fb.array(this.tarefasDisponiveis.map(() => new FormControl(false))),
   });
-
-  getConsolidadoControl(): FormControl {
-    return this.form.get('consolidado') as FormControl;
-  }
 
   ngOnInit(): void {
     const today = new Date();
@@ -92,10 +87,6 @@ export class LivrosFiscais implements OnInit {
     const control = this.tarefasFormArray.at(index);
     const newValue = !control.value;
     control.setValue(newValue);
-
-    if (index === 3 && newValue === false) {
-      this.form.get('consolidado')?.setValue(false);
-    }
   }
 
   async executar() {

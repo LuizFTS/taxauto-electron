@@ -78,12 +78,6 @@
             >
               <span>{{ tarefa.nome }}</span>
             </button>
-            @if (tarefa.id === 'salvar_excel' && isTarefaSelected($index)) {
-              <div class="tasks-row__button__container__checkbox">
-                <input type="checkbox" id="consolidado" [formControl]="getConsolidadoControl()" />
-                <label for="consolidado">Consolidado</label>
-              </div>
-            }
           </div>
         }
       </div>
