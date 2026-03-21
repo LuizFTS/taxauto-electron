@@ -1,0 +1,84 @@
+:host {
+  display: block;
+  flex: 1 1 0; /* Grow exactly to cover full width equally */
+  min-width: 200px;
+}
+
+.kpi-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-radius: 12px;
+  height: 100%;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__value {
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 20px;
+      font-weight: 600;
+    }
+  }
+
+  /* Variations */
+  &--danger {
+    background-color: #ffe4e6;
+    color: #e11d48;
+
+    .kpi-card__icon i {
+      color: #e11d48;
+    }
+  }
+
+  &--warning {
+    background-color: #fef3c7;
+    color: #b45309;
+
+    .kpi-card__icon i {
+      color: #b45309;
+    }
+  }
+
+  &--info {
+    background-color: #e0e7ff;
+    color: #3f60f2;
+
+    .kpi-card__icon i {
+      color: #3f60f2;
+    }
+  }
+
+  &--success {
+    background-color: #ecfdf5;
+    color: #059669;
+
+    .kpi-card__icon i {
+      color: #059669;
+    }
+  }
+}
