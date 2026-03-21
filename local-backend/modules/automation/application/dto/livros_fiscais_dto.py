@@ -19,7 +19,6 @@ class LivrosFiscaisDTO:
     end_date: str
     filiais: List[str]
     book_type: str
-    consolidado: bool
     tasks: LivrosFiscaisTasksDTO
     save_path: str | None
 

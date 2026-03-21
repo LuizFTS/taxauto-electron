@@ -3,7 +3,7 @@ from datetime import datetime
 from core.di.container import automation_state
 from modules.automation.application.automation_runner import AutomationRunner
 from modules.automation.application.dto.livros_fiscais_dto import LivrosFiscaisDTO
-from modules.automation.automations.livros_fiscais.orchestrator.livros_fiscais_orchestrator import (
+from modules.automation.automations.tax_reports.orchestrator.livros_fiscais_orchestrator import (
     LivrosFiscaisOrchestrator,
 )
 
