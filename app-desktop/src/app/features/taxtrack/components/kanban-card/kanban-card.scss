@@ -1,0 +1,166 @@
+:host {
+  display: block;
+}
+
+$border-radius: 8px;
+$padding: 16px;
+
+/* Status Colors */
+$color-pendente-bg: #f8fafc;
+$color-pendente-border: #e2e8f0;
+$color-pendente-text: #64748b;
+
+$color-emandamento-border: #3b82f6; /* Blue border */
+$color-emandamento-text: #64748b;
+$color-emandamento-icon: #3b82f6;
+$color-emandamento-badge-bg: #eff6ff;
+$color-emandamento-badge-text: #3b82f6;
+
+$color-entregue-border: #22c55e;
+$color-entregue-text: #22c55e;
+$color-entregue-badge-bg: #f0fdf4;
+
+$color-atrasado-border: #ef4444;
+$color-atrasado-text: #ef4444;
+$color-atrasado-badge-bg: #fef2f2;
+
+.kanban-card {
+  background-color: #ffffff;
+  border-radius: $border-radius;
+  padding: $padding;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid transparent;
+  transition: box-shadow 0.2s, transform 0.2s;
+  
+  &:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+  }
+
+  /* Status Borders */
+  &.status-pendente {
+    border-color: $color-pendente-border;
+  }
+  &.status-em_andamento {
+    border: 2px solid $color-emandamento-border;
+    padding: calc(#{$padding} - 1px); /* Adjust padding for thicker border */
+  }
+  &.status-entregue {
+    border-color: #e2e8f0; /* Faint green or faint gray */
+    border-top: 2px solid $color-entregue-border;
+    padding-top: calc(#{$padding} - 1px);
+  }
+  &.status-atrasado {
+    border-color: #e2e8f0;
+    border-left: 3px solid $color-atrasado-border;
+    padding-left: calc(#{$padding} - 2px);
+  }
+
+  .kanban-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .kanban-card-category {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &.category-pendente {
+        background-color: #f1f5f9;
+        color: #475569;
+      }
+      &.category-em_andamento {
+        background-color: $color-emandamento-badge-bg;
+        color: $color-emandamento-badge-text;
+      }
+      &.category-entregue {
+        background-color: $color-entregue-badge-bg;
+        color: $color-entregue-text;
+      }
+      &.category-atrasado {
+        background-color: $color-atrasado-badge-bg;
+        color: $color-atrasado-text;
+      }
+    }
+
+    .status-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      i {
+        font-size: 16px;
+      }
+
+      &.icon-entregue { color: $color-entregue-border; }
+      &.icon-atrasado { color: $color-atrasado-border; }
+    }
+  }
+
+  .kanban-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .kanban-card-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0f172a;
+      line-height: 1.4;
+    }
+
+    .kanban-card-location {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #94a3b8;
+      font-size: 12px;
+
+      i {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .kanban-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+
+    .kanban-card-status-text {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+
+      i {
+        font-size: 14px;
+      }
+
+      &.text-pendente { color: $color-pendente-text; }
+      &.text-em_andamento { color: $color-emandamento-text; }
+      &.text-entregue { color: $color-entregue-text; }
+      &.text-atrasado { color: $color-atrasado-text; }
+    }
+
+    .kanban-card-assignee {
+      img {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+        background-color: #e2e8f0;
+      }
+    }
+  }
+}

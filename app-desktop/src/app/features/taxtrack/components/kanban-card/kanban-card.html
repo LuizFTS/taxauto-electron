@@ -1,0 +1,50 @@
+<div class="kanban-card" [ngClass]="['status-' + item.status]">
+  <div class="kanban-card-header">
+    <span class="kanban-card-category" [ngClass]="['category-' + item.status]">{{
+      item.category
+    }}</span>
+    @switch (item.status) {
+      @case ('entregue') {
+        <span class="status-icon icon-entregue">
+          <i class="material-symbols-outlined">check_circle</i>
+        </span>
+      }
+      @case ('atrasado') {
+        <span class="status-icon icon-atrasado">
+          <i class="material-symbols-outlined">warning</i>
+        </span>
+      }
+    }
+  </div>
+
+  <div class="kanban-card-body">
+    <h4 class="kanban-card-title">{{ item.title }}</h4>
+    <div class="kanban-card-location">
+      <i class="material-symbols-outlined">location_on</i>
+      <span>{{ item.location }}</span>
+    </div>
+  </div>
+
+  <div class="kanban-card-footer">
+    <div class="kanban-card-status-text" [ngClass]="['text-' + item.status]">
+      @switch (item.status) {
+        @case ('pendente') {
+          <i class="material-symbols-outlined">calendar_today</i>
+        }
+        @case ('em_andamento') {
+          <i class="material-symbols-outlined">sync</i>
+        }
+        @case ('entregue') {
+          <i class="material-symbols-outlined">check_circle</i>
+        }
+        @case ('atrasado') {
+          <i class="material-symbols-outlined">event_busy</i>
+        }
+      }
+      <span>{{ item.statusText }}</span>
+    </div>
+    <div class="kanban-card-assignee">
+      <mat-icon>person</mat-icon>
+    </div>
+  </div>
+</div>
