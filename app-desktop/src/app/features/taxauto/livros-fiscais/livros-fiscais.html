@@ -6,11 +6,11 @@
 
       <div class="parameters-row">
         <div class="field-group">
-          <label class="field-label" for="tipoLivroSelect">Tipo de Livro</label>
+          <label class="field-label" for="tipoLivroSelect">Tipo de Relatório</label>
           <app-select
             formControlName="tipoLivro"
-            [options]="tiposLivro"
-            [placeholder]="'Selecione o tipo de livro'"
+            [options]="tiposRelatorio"
+            [placeholder]="'Selecione o tipo de relatório'"
             [autofocus]="true"
           ></app-select>
         </div>
@@ -60,31 +60,75 @@
       </div>
     </app-card>
 
-    <!-- Seção 3: Seleção de Tarefas -->
-    <app-card>
-      <h3 class="section-title">Seleção de Tarefas</h3>
+    <!-- Seção 3: Seleção de Tarefas ou Credenciais -->
+    @if (form.get('tipoLivro')?.value === 1 || form.get('tipoLivro')?.value === 2) {
+      <app-card>
+        <h3 class="section-title">Seleção de Tarefas</h3>
 
-      <div class="tasks-row" formArrayName="tarefas">
-        @for (tarefa of tarefasDisponiveis; track $index) {
-          <div class="tasks-row__button__container">
-            <button
-              type="button"
-              class="task-pill"
-              [class.selected]="isTarefaSelected($index)"
-              (click)="toggleTarefa($index)"
-              (keydown.enter)="toggleTarefa($index)"
-              (keydown.space)="toggleTarefa($index)"
-              [attr.aria-pressed]="isTarefaSelected($index)"
-            >
-              <span>{{ tarefa.nome }}</span>
-            </button>
+        <div class="tasks-row" formArrayName="tarefas">
+          @for (tarefa of tarefasDisponiveis; track $index) {
+            <div class="tasks-row__button__container">
+              <button
+                type="button"
+                class="task-pill"
+                [class.selected]="isTarefaSelected($index)"
+                (click)="toggleTarefa($index)"
+                (keydown.enter)="toggleTarefa($index)"
+                (keydown.space)="toggleTarefa($index)"
+                [attr.aria-pressed]="isTarefaSelected($index)"
+              >
+                <span>{{ tarefa.nome }}</span>
+              </button>
+            </div>
+          }
+        </div>
+      </app-card>
+    } @else if (form.get('tipoLivro')?.value === 3) {
+      <app-card>
+        <h3 class="section-title">Credenciais de Acesso (PortalGED)</h3>
+
+        <div class="parameters-row">
+          <div class="field-group">
+            <label class="field-label" for="loginPortalGed">Usuário</label>
+            <input
+              type="text"
+              id="loginPortalGed"
+              formControlName="login"
+              class="custom-input"
+              placeholder="Digite o usuário de acesso"
+              autocomplete="username"
+              aria-required="true"
+            />
           </div>
-        }
-      </div>
-    </app-card>
+
+          <div class="field-group">
+            <label class="field-label" for="senhaPortalGed">Senha</label>
+            <input
+              type="password"
+              id="senhaPortalGed"
+              formControlName="senha"
+              class="custom-input"
+              placeholder="Digite a senha de acesso"
+              autocomplete="current-password"
+              aria-required="true"
+            />
+          </div>
+        </div>
+
+        <div class="remember-row">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="lembrarSenha" />
+            <span class="custom-checkbox"></span>
+            <span>Lembrar minhas credenciais</span>
+          </label>
+        </div>
+      </app-card>
+    }
     <!-- Ações -->
     <div class="actions-row">
-      <app-button variant="solid" size="md" (click)="executar()">Executar</app-button>
+      <app-button [loading]="isLoading" variant="solid" size="md" (click)="executar()"
+        >Executar</app-button
+      >
     </div>
   </form>
 </div>
