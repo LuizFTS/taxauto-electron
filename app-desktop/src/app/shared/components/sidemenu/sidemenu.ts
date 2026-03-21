@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
@@ -9,7 +9,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './sidemenu.scss',
 })
 export class Sidemenu {
-  isOpen = false;
+  @Input() isOpen = false;
+  @Output() toggleSideMenu = new EventEmitter<void>();
 
   menuItems = [
     {
@@ -33,6 +34,16 @@ export class Sidemenu {
       ],
     },
     {
+      title: 'TaxTrack',
+      items: [
+        {
+          title: 'Dashboard',
+          icon: 'dashboard',
+          route: '/taxtrack/dashboard',
+        },
+      ],
+    },
+    {
       title: 'Utilitários',
       items: [
         {
@@ -50,6 +61,6 @@ export class Sidemenu {
   ];
 
   toggleMenu(): void {
-    this.isOpen = !this.isOpen;
+    this.toggleSideMenu.emit();
   }
 }

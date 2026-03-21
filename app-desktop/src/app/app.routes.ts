@@ -8,6 +8,7 @@ import { Resultado } from './features/taxdata/apuracao/components/resultado/resu
 import { Difal } from './features/taxdata/difal/difal';
 import { MergeExcelFiles } from './features/utilities/merge-excel-files/merge-excel-files';
 import { CancelledInvoices } from './features/taxauto/cancelled-invoices/cancelled-invoices';
+import { Dashboard } from './features/taxtrack/dashboard/dashboard';
 
 export const routes: Routes = [
   {
@@ -47,6 +48,15 @@ export const routes: Routes = [
                 component: Resultado,
               },
             ],
+          },
+        ],
+      },
+      {
+        path: 'taxtrack',
+        children: [
+          {
+            path: 'dashboard',
+            component: Dashboard,
           },
         ],
       },
