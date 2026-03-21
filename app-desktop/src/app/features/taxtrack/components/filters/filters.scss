@@ -1,0 +1,92 @@
+:host {
+  display: block;
+}
+
+.filters-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0 24px 0;
+  width: 100%;
+}
+
+.filters-left {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  position: relative;
+
+  .filter-label {
+    position: absolute;
+    top: -8px;
+    left: 12px;
+    background-color: var(
+      --card-bg
+    ); /* Match the exact select input background to prevent overlap divergence */
+    padding: 0 4px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #94a3b8;
+    z-index: 2; /* Sobrepor a borda do app-select */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &--calendar {
+    width: 160px; /* Um pouco menor para calendário */
+
+    .calendar-icon-overlay {
+      position: absolute;
+      right: 2px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 36px;
+      width: 36px;
+      background-color: #ffffff; /* Fundo opaco para sobrepor a seta chevron nativa */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 2;
+      border-radius: 0 4px 4px 0;
+
+      i {
+        color: #94a3b8;
+        font-size: 18px;
+      }
+    }
+  }
+
+  app-select {
+    display: block;
+    width: 100%;
+  }
+}
+
+.filters-right {
+  .clear-filters-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 8px 12px;
+
+    &:hover {
+      color: #0f172a;
+    }
+
+    i {
+      font-size: 20px;
+    }
+  }
+}

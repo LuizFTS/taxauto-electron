@@ -1,0 +1,67 @@
+<app-card>
+  <form [formGroup]="form" class="filters-container">
+    <div class="filters-left">
+      <!-- Empresa -->
+      <div class="filter-group">
+        <label class="filter-label" for="filter-empresa">EMPRESA</label>
+        <app-select
+          id="filter-empresa"
+          formControlName="empresa"
+          [options]="empresasOptions"
+          [placeholder]="'Todas as Empresas'"
+        ></app-select>
+      </div>
+
+      <!-- Filial -->
+      <div class="filter-group">
+        <label class="filter-label" for="filter-filial">FILIAL</label>
+        <app-select
+          id="filter-filial"
+          formControlName="filial"
+          [options]="filiaisOptions"
+          [placeholder]="'Todas as Filiais'"
+        ></app-select>
+      </div>
+
+      <!-- Responsável -->
+      <div class="filter-group">
+        <label class="filter-label" for="filter-responsavel">RESPONSÁVEL</label>
+        <app-select
+          id="filter-responsavel"
+          formControlName="responsavel"
+          [options]="responsaveisOptions"
+          [placeholder]="'Todos'"
+        ></app-select>
+      </div>
+
+      <!-- Tipo -->
+      <div class="filter-group">
+        <label class="filter-label" for="filter-tipo">TIPO</label>
+        <app-select
+          id="filter-tipo"
+          formControlName="tipo"
+          [options]="tiposOptions"
+          [placeholder]="'Todos os Tributos'"
+        ></app-select>
+      </div>
+
+      <!-- Mês/Ano -->
+      <div class="filter-group filter-group--calendar">
+        <label class="filter-label" for="filter-mes-ano">MÊS/ANO</label>
+        <app-select
+          id="filter-mes-ano"
+          formControlName="mesAno"
+          [options]="mesAnoOptions"
+          [placeholder]="'Out/2023'"
+        ></app-select>
+      </div>
+    </div>
+
+    <div class="filters-right">
+      <button type="button" class="clear-filters-btn" (click)="form.reset()">
+        <i class="material-symbols-outlined">filter_list_off</i>
+        <span>Limpar Filtros</span>
+      </button>
+    </div>
+  </form>
+</app-card>
