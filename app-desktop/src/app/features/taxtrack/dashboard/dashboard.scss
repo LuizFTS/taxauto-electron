@@ -1,0 +1,32 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+  padding: 24px;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.dashboard-kpis-area {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 24px;
+}
+
+.dashboard-board-area {
+  flex: 1;
+  min-height: 0; /* Important for scrollable flex children */
+}

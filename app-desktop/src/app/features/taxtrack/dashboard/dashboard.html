@@ -1,0 +1,13 @@
+<div class="dashboard-container">
+  <div class="dashboard-kpis-area">
+    @for (kpi of mockKpiCards; track kpi.title) {
+      <app-kpi-card [data]="kpi"></app-kpi-card>
+    }
+  </div>
+
+  <app-filters [form]="filtersForm"></app-filters>
+
+  <div class="dashboard-board-area">
+    <app-kanban [items]="mockKanbanItems"></app-kanban>
+  </div>
+</div>
