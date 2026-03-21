@@ -45,7 +45,13 @@ export class DragAndDropArea {
       const droppedFiles = Array.from(event.dataTransfer.files);
 
       const validFiles = droppedFiles
-        .filter((f) => f.name.endsWith('.csv') || f.name.endsWith('.xlsx'))
+        .filter(
+          (f) =>
+            f.name.endsWith('.csv') ||
+            f.name.endsWith('.xlsx') ||
+            f.name.endsWith('.xlsm') ||
+            f.name.endsWith('.xls'),
+        )
         .map((f) => window.electron.getFilePath(f));
 
       if (validFiles.length > 0) {
