@@ -1,10 +1,26 @@
+from modules.automation.application.usecases.cancelled_invoices_usecase import (
+    CancelledInvoicesUseCase,
+)
 from modules.automation.application.usecases.merge_excel_files_usecase import (
     MergeExcelFilesUseCase,
+)
+from modules.automation.automations.cancelled_tax_invoices.navigation.browser_session import (
+    BrowserSession,
+)
+from modules.automation.automations.cancelled_tax_invoices.navigation.navigate_to_report import (
+    NavigateToReport,
+)
+from modules.automation.automations.cancelled_tax_invoices.orchestrator.get_cancelled_report_orchestrator import (
+    GetCancelledReportOrchestrator,
+)
+from modules.automation.automations.cancelled_tax_invoices.services.download_report_service import (
+    DownloadReportService,
 )
 from modules.automation.automations.merge_excel_files.services.merge_excel_files_service import (
     MergeExcelFilesService,
 )
 from modules.automation.automations.state.automation_state import AutomationState
+from modules.automation.utils.selenium_driver import SeleniumDriver
 from shared.application.usecases.branch.create_branch import (
     CreateBranchUseCase,
 )
@@ -62,12 +78,38 @@ from shared.infrastructure.repositories.sqlite_company_repository import (
 automation_state = AutomationState()
 
 
+def get_browser_session(driver: SeleniumDriver):
+    return BrowserSession(driver)
+
+
+def get_navigate_to_report(driver: SeleniumDriver):
+    return NavigateToReport(driver)
+
+
+def get_download_report(driver: SeleniumDriver):
+    return DownloadReportService(driver)
+
+
+def get_get_cancelled_report_orchestrator(driver: SeleniumDriver):
+    return GetCancelledReportOrchestrator(
+        get_browser_session(driver),
+        get_navigate_to_report(driver),
+        get_download_report(driver),
+    )
+
+
 def get_merge_excel_files_service():
     return MergeExcelFilesService()
 
 
 def get_merge_excel_files_usecase():
     return MergeExcelFilesUseCase(get_merge_excel_files_service())
+
+
+def get_cancelled_invoices_usecase(driver: SeleniumDriver):
+    return CancelledInvoicesUseCase(
+        get_get_cancelled_report_orchestrator(driver),
+    )
 
 
 # Repositories
