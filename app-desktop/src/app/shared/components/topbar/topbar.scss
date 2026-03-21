@@ -4,7 +4,8 @@
   display: flex;
   justify-content: flex-end;
   height: 28px;
-  background-color: var(--card-bg); // Utilizando sua variável de card/bg
+  width: 100%;
+  background-color: oklch(27.9% 0.041 260.031);
 
   // Região de arraste para janelas Electron/Desktop
   &__drag-region {
@@ -22,11 +23,11 @@
       @include window-button-base(28px, 60px);
 
       // Cores baseadas no seu tema light
-      color: var(--text-color);
+      color: #fff;
 
       &:hover {
-        background-color: var(--icon-hover);
-        color: var(--text-color);
+        background-color: oklch(47.216% 0.08482 261.346 / 0.5);
+        color: #cecece;
       }
 
       // Estilização do ícone interna ao botão

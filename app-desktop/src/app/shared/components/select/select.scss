@@ -19,7 +19,7 @@ $brand: oklch(37.2% 0.044 257.287);
   border-radius: 8px;
   border: 1px solid #ddd;
 
-  background: white;
+  background: var(--card-bg);
   cursor: pointer;
 
   transition:
@@ -80,12 +80,12 @@ $brand: oklch(37.2% 0.044 257.287);
   display: block;
 
   &--focused {
-    background: color-mix(in oklch, $brand 8%, transparent);
+    background: color-mix(in oklch, $brand 6%, transparent);
     border-color: color-mix(in oklab, $brand 30%, transparent);
   }
 
   &:hover {
-    background: color-mix(in oklch, $brand 8%, transparent);
+    background: color-mix(in oklch, $brand 6%, transparent);
     border-color: color-mix(in oklab, $brand 30%, transparent);
   }
 
@@ -101,7 +101,7 @@ $brand: oklch(37.2% 0.044 257.287);
 }
 
 .app-select__option--selected {
-  background: color-mix(in oklch, $brand 20%, transparent);
+  background: color-mix(in oklch, $brand 15%, transparent);
   font-weight: 500;
 }
 
