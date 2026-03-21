@@ -38,7 +38,7 @@ class MergeExcelFilesService:
             try:
                 if extension == ".csv":
                     df = self._load_csv(path)
-                elif extension in (".xlsx", ".xls"):
+                elif extension in (".xlsx", ".xls", ".xlsm"):
                     df = self._load_excel(path)
                 else:
                     raise ValueError(f"Unsupported file type: {extension}")
@@ -75,20 +75,54 @@ class MergeExcelFilesService:
             df.columns = df.iloc[0]
             df = df[1:].reset_index(drop=True)
 
+        df["nome_arquivo"] = path.name
         return df
 
     def _load_excel(self, path: Path) -> pd.DataFrame:
         """
         Robust Excel loader with reliable header detection.
         """
+        # 1. Carregamos uma prévia do Excel (sem cabeçalho) para análise
+        # Lemos apenas as primeiras linhas definidas no seu preview
+        preview_df = pd.read_excel(path, header=None, nrows=self.DEFAULT_PREVIEW_ROWS)
 
-        def reader(**kwargs):
-            return pd.read_excel(path, header=None, **kwargs)
+        # 2. Convertemos as linhas do DataFrame em strings separadas por ";"
+        # para reutilizar seu detector que espera esse formato.
+        lines = []
+        for _, row in preview_df.iterrows():
+            # Converte cada célula para string, remove espaços e junta com ";"
+            line_str = ";".join([str(val).strip() if pd.notna(val) else "" for val in row])
+            lines.append(line_str)
 
-        preview = reader(nrows=self.DEFAULT_PREVIEW_ROWS)
-        header_idx = self._detect_header_from_preview(preview)
+        # 3. Agora o seu detector vai funcionar porque as 'lines' são strings formatadas
+        header_idx = self._detect_header_from_lines(lines)
 
-        return reader(skiprows=header_idx)
+        # 4. Lê o arquivo completo pulando as linhas até o cabeçalho detectado
+        df = pd.read_excel(path, skiprows=header_idx)
+
+        # 1. Remove linhas onde a primeira coluna é vazia
+        coluna_chave = df.columns[0]
+        df = df.dropna(subset=[coluna_chave])
+
+        # 2. Converte o número do documento para inteiro (para tirar o .0 do 44340.0)
+        # Só fazemos isso se a coluna for numérica
+        try:
+            df[coluna_chave] = df[coluna_chave].astype(float).astype(int)
+        except Exception:
+            pass  # Caso haja algum texto perdido, ele mantém como está
+
+        # 3. Reset do index para a contagem ficar limpa (0, 1, 2, 3...)
+        df = df.reset_index(drop=True)
+
+        # 5. Sua lógica de limpeza para colunas "Unnamed"
+        if any("Unnamed" in str(col) for col in df.columns):
+            # Garante que não estamos pegando uma linha vazia como header
+            df.columns = df.iloc[0]
+            df = df[1:].reset_index(drop=True)
+
+        df["nome_arquivo"] = path.name
+
+        return df
 
     def _detect_header_from_lines(self, lines: List[str]) -> int:
         """
