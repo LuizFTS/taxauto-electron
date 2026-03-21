@@ -7,6 +7,7 @@ import { Processamento } from './features/taxdata/apuracao/components/processame
 import { Resultado } from './features/taxdata/apuracao/components/resultado/resultado';
 import { Difal } from './features/taxdata/difal/difal';
 import { MergeExcelFiles } from './features/utilities/merge-excel-files/merge-excel-files';
+import { CancelledInvoices } from './features/taxauto/cancelled-invoices/cancelled-invoices';
 
 export const routes: Routes = [
   {
@@ -19,6 +20,10 @@ export const routes: Routes = [
           {
             path: 'livros-fiscais',
             component: LivrosFiscais,
+          },
+          {
+            path: 'cancelled-invoices',
+            component: CancelledInvoices,
           },
         ],
       },

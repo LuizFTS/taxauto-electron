@@ -1,1 +1,92 @@
-<p>cancelled-invoices works!</p>
+<div class="livros-fiscais-container">
+  <form [formGroup]="form" class="form-container">
+    <!-- Seção 1: Parâmetros -->
+    <app-card>
+      <h3 class="section-title">Parâmetros</h3>
+
+      <div class="parameters-row">
+        <div class="field-group">
+          <label class="field-label" for="tipoLivroSelect">Tipo de Livro</label>
+          <app-select
+            formControlName="tipoLivro"
+            [options]="tiposLivro"
+            [placeholder]="'Selecione o tipo de livro'"
+            [autofocus]="true"
+          ></app-select>
+        </div>
+
+        <div class="field-group date-group">
+          <label class="field-label" for="startDate">Período</label>
+          <div class="date-range-container" formGroupName="periodo">
+            <input
+              type="text"
+              id="startDate"
+              maxlength="10"
+              (input)="onDateInput($event)"
+              (input)="onStartInput($event, endInput)"
+              formControlName="start"
+              class="custom-input date-input"
+              #startInput
+            />
+            <span class="date-separator">até</span>
+            <input
+              type="text"
+              maxlength="10"
+              (input)="onDateInput($event)"
+              formControlName="end"
+              class="custom-input date-input"
+              #endInput
+            />
+          </div>
+        </div>
+      </div>
+    </app-card>
+
+    <!-- Seção 2: Entidades e Abrangência -->
+    <app-card>
+      <h3 class="section-title">Filiais e Grupos</h3>
+
+      <div class="entities-box">
+        <div class="entities-info">
+          <h4>Selecionar Filiais e Grupos</h4>
+          <span class="selected-count"
+            >{{ selectedFiliais.length }} {{ selectedFiliais.length === 1 ? 'filial' : 'filiais' }}
+            {{ selectedFiliais.length === 1 ? 'selecionada' : 'selecionadas' }}</span
+          >
+        </div>
+        <app-button variant="outline" size="md" (click)="openFiliaisModal()">
+          CONFIGURAR
+        </app-button>
+      </div>
+    </app-card>
+
+    <!-- Seção 3: Seleção de Tarefas -->
+    <app-card>
+      <h3 class="section-title">Seleção de Tarefas</h3>
+
+      <div class="tasks-row" formArrayName="tarefas">
+        @for (tarefa of tarefasDisponiveis; track $index) {
+          <div class="tasks-row__button__container">
+            <button
+              type="button"
+              class="task-pill"
+              [class.selected]="isTarefaSelected($index)"
+              (click)="toggleTarefa($index)"
+              (keydown.enter)="toggleTarefa($index)"
+              (keydown.space)="toggleTarefa($index)"
+              [attr.aria-pressed]="isTarefaSelected($index)"
+            >
+              <span>{{ tarefa.nome }}</span>
+            </button>
+          </div>
+        }
+      </div>
+    </app-card>
+    <!-- Ações -->
+    <div class="actions-row">
+      <app-button [loading]="isLoading" variant="solid" size="md" (click)="executar()"
+        >Executar</app-button
+      >
+    </div>
+  </form>
+</div>
