@@ -3,21 +3,28 @@ import {
   Component,
   ChangeDetectionStrategy,
   inject,
-  OnInit,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  FormArray,
-  FormControl,
-} from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormArray, FormGroup } from '@angular/forms';
+
 import { ModalService, NotificationService } from '../../../core';
-import { FiliaisModal } from './components/filiais-modal/filiais-modal';
+import { SelectBranchesModal } from '../../../shared/components/select-branches-modal/select-branches-modal';
 import { Button, Select, Card } from '../../../shared';
-import { LivrosFiscaisService } from '../../../core/services/api/automation/livros-fiscais.service';
+import { TaxReportsService } from '../../../core/services/api/automation/tax-reports.service';
+
+import {
+  TIPOS_RELATORIO,
+  TAREFAS_DISPONIVEIS,
+  TAREFAS_COM_DESTINO,
+} from './livros-fiscais.constants';
+import {
+  LivroFiscalPayload,
+  TarefaId,
+  type CancelledInvoicesPayload,
+} from './livros-fiscais.types';
+import { buildLivrosFiscaisForm, getSelectedTarefas } from './livros-fiscais.form';
+import { applyDateMask, formatDate, lastDayOfMonth, parseDate } from './livros-fiscais.utils';
 
 @Component({
   selector: 'app-livros-fiscais',
@@ -27,55 +34,23 @@ import { LivrosFiscaisService } from '../../../core/services/api/automation/livr
   styleUrl: './livros-fiscais.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LivrosFiscais implements OnInit {
+export class LivrosFiscais {
   private fb = inject(FormBuilder);
   private modalService = inject(ModalService);
-  private livrosFiscaisService = inject(LivrosFiscaisService);
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private taxReportsService = inject(TaxReportsService);
+  private cdr = inject(ChangeDetectorRef);
   private notificationService = inject(NotificationService);
 
+  readonly tiposRelatorio = TIPOS_RELATORIO;
+  readonly tarefasDisponiveis = TAREFAS_DISPONIVEIS;
+
   selectedPath = signal<string | null>(null);
-
-  tiposLivro = [
-    { value: 1, label: 'Entrada' },
-    { value: 2, label: 'Saída' },
-  ];
-  tarefasDisponiveis = [
-    { id: 'atualizar', nome: 'Atualizar livro' },
-    { id: 'abrir', nome: 'Abrir livro' },
-    { id: 'fechar', nome: 'Fechar livro' },
-    { id: 'salvar_excel', nome: 'Salvar Excel' },
-    { id: 'salvar_pdf', nome: 'Salvar PDF' },
-  ];
-
-  startDate = '';
-  endDate = '';
-  endInput: HTMLInputElement | null = null;
   selectedFiliais: string[] = [];
+  isLoading = false;
 
-  form: FormGroup = this.fb.group({
-    tipoLivro: [],
-    periodo: this.fb.group({
-      start: [this.startDate],
-      end: [this.endDate],
-    }),
-    tarefas: this.fb.array(this.tarefasDisponiveis.map(() => new FormControl(false))),
-  });
+  form: FormGroup = buildLivrosFiscaisForm(this.fb);
 
-  ngOnInit(): void {
-    const today = new Date();
-
-    // Today
-    this.endDate = this.formatDate(today);
-    this.form.get('periodo.end')?.setValue(this.endDate);
-
-    // First day of the month
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    this.startDate = this.formatDate(firstDay);
-    this.form.get('periodo.start')?.setValue(this.startDate);
-  }
-
-  get tarefasFormArray() {
+  get tarefasFormArray(): FormArray {
     return this.form.controls['tarefas'] as FormArray;
   }
 
@@ -83,53 +58,116 @@ export class LivrosFiscais implements OnInit {
     return this.tarefasFormArray.at(index).value;
   }
 
-  toggleTarefa(index: number) {
+  toggleTarefa(index: number): void {
     const control = this.tarefasFormArray.at(index);
-    const newValue = !control.value;
-    control.setValue(newValue);
+    control.setValue(!control.value);
   }
 
-  async executar() {
-    console.log(this.form.value);
-    const selectedTarefas = this.form.value.tarefas
-      .map((checked: boolean, i: number) => (checked ? this.tarefasDisponiveis[i].id : null))
-      .filter((v: string | null) => v !== null);
+  onDateInput(event: Event): void {
+    applyDateMask(event.target as HTMLInputElement);
+  }
 
-    if (selectedTarefas.length === 0) {
-      this.notificationService.alert('Atenção!', 'Selecione pelo menos uma tarefa para executar.');
-      return;
-    }
+  onStartInput(event: Event, endInput: HTMLInputElement): void {
+    const value = (event.target as HTMLInputElement).value;
+    if (value.length !== 10) return;
 
-    if (!this.form.value.periodo.start || !this.form.value.periodo.end) {
-      this.notificationService.alert('Atenção!', 'Selecione o período de execução.');
-      return;
-    }
+    const parsed = parseDate(value);
+    if (!parsed) return;
 
-    if (this.selectedFiliais.length === 0) {
-      this.notificationService.alert('Atenção!', 'Selecione pelo menos uma filial para executar.');
-      return;
-    }
+    this.form.get('periodo.end')?.setValue(formatDate(lastDayOfMonth(parsed)));
+    endInput.focus();
+    setTimeout(() => endInput.select(), 0);
+  }
 
-    if (this.form.value.tipoLivro === null) {
-      this.notificationService.alert('Atenção!', 'Selecione o tipo de livro.');
-      return;
-    }
+  openFiliaisModal(): void {
+    this.modalService.open({
+      component: SelectBranchesModal,
+      data: {
+        title: 'Seleção de filiais',
+        subtitle: 'Selecione os grupos ou filiais individuais para execução',
+        filiais: this.selectedFiliais,
+        onConfirm: (branches: string[]) => {
+          this.selectedFiliais = [...branches];
+          this.cdr.detectChanges();
+        },
+      } as Partial<SelectBranchesModal>,
+    });
+  }
 
-    if (selectedTarefas.includes('salvar_excel') || selectedTarefas.includes('salvar_pdf')) {
+  async executar(): Promise<void> {
+    if (!this.validarFormulario()) return;
+
+    this.isLoading = true;
+
+    const selectedTarefas = getSelectedTarefas(this.form) as TarefaId[];
+    const precisaDestino =
+      selectedTarefas.some((t) => TAREFAS_COM_DESTINO.has(t)) || this.form.value.tipoLivro === 3;
+
+    if (precisaDestino) {
       const path = await this.pickFolder();
       if (!path) {
-        this.notificationService.alert('Atenção!', 'Selecione a pasta de destino.');
+        this.finalizarComAlerta('Selecione a pasta de destino.');
         return;
       }
     }
 
-    const payload = {
-      book_type: this.form.value.tipoLivro === 1 ? 'entrada' : 'saida',
-      start_date: this.form.value.periodo.start,
-      end_date: this.form.value.periodo.end,
+    if (this.form.value.tipoLivro === 3) {
+      if (this.form.value.lembrarSenha) {
+        localStorage.setItem('portalged_login', this.form.value.login);
+        localStorage.setItem('portalged_senha', this.form.value.senha);
+        localStorage.setItem('portalged_lembrar', 'true');
+      } else {
+        localStorage.removeItem('portalged_login');
+        localStorage.removeItem('portalged_senha');
+        localStorage.removeItem('portalged_lembrar');
+      }
+
+      this.taxReportsService
+        .generateCancelledInvoicesReport(this.buildPayloadCancelledInvoices())
+        .subscribe({
+          next: () => this.onSuccess(),
+          error: (err) => this.onError(err),
+        });
+      return;
+    }
+
+    this.taxReportsService.execute(this.buildPayload(selectedTarefas)).subscribe({
+      next: () => this.onSuccess(),
+      error: (err) => this.onError(err),
+    });
+  }
+
+  // ─── privados ────────────────────────────────────────────────────────────────
+
+  private validarFormulario(): boolean {
+    const selectedTarefas = getSelectedTarefas(this.form);
+    const { start, end } = this.form.value.periodo;
+
+    if (this.form.value.tipoLivro === 3) {
+      if (!this.form.value.login || !this.form.value.senha) {
+        return this.alerta('Informe o usuário e a senha para acessar o PortalGED.');
+      }
+    }
+
+    if (selectedTarefas.length === 0 && this.form.value.tipoLivro !== 3)
+      return this.alerta('Selecione pelo menos uma tarefa para executar.');
+    if (!start || !end) return this.alerta('Selecione o período de execução.');
+    if (this.selectedFiliais.length === 0)
+      return this.alerta('Selecione pelo menos uma filial para executar.');
+    if (this.form.value.tipoLivro === null) return this.alerta('Selecione o tipo de livro.');
+
+    return true;
+  }
+
+  private buildPayload(selectedTarefas: TarefaId[]): LivroFiscalPayload {
+    const { tipoLivro, periodo } = this.form.value;
+
+    return {
+      book_type: tipoLivro === 1 ? 'entrada' : 'saida',
+      start_date: periodo.start,
+      end_date: periodo.end,
       filiais: this.selectedFiliais,
-      consolidado: this.form.value.consolidado,
-      save_path: this.selectedPath() || null,
+      save_path: this.selectedPath() ?? null,
       tasks: {
         open_book: selectedTarefas.includes('abrir'),
         update_book: selectedTarefas.includes('atualizar'),
@@ -138,108 +176,64 @@ export class LivrosFiscais implements OnInit {
         save_pdf: selectedTarefas.includes('salvar_pdf'),
       },
     };
-
-    try {
-      this.livrosFiscaisService.execute(payload).subscribe({
-        next: () => {
-          this.notificationService.success('Sucesso!', 'Processo concluído!');
-          window.electron.focusWindow();
-        },
-        error: (error) => {
-          if (error.error.code === 'AUTOMATION_STOPPED') {
-            this.notificationService.alert('Atenção!', 'Processo interrompido.');
-            window.electron.focusWindow();
-            return;
-          }
-          this.notificationService.error('Erro!', error.error.detail);
-          window.electron.focusWindow();
-        },
-      });
-    } catch (error) {
-      this.notificationService.error('Erro!', 'Erro ao executar tarefas.');
-      console.log(error);
-    }
   }
 
-  onStartInput(event: Event, end: HTMLInputElement): void {
-    const value = (event.target as HTMLInputElement).value;
+  private buildPayloadCancelledInvoices(): CancelledInvoicesPayload {
+    const { periodo, login, senha } = this.form.value;
 
-    if (value.length !== 10) return;
-
-    const parsed = this.parseDate(value);
-    if (!parsed) return;
-
-    const lastDay = new Date(parsed.getFullYear(), parsed.getMonth() + 1, 0);
-    const formattedLastDay = this.formatDate(lastDay);
-    this.form.get('periodo.end')?.setValue(formattedLastDay);
-
-    end.focus();
-    setTimeout(() => end.select(), 0);
+    return {
+      start_date: periodo.start,
+      end_date: periodo.end,
+      filiais: this.selectedFiliais,
+      save_path: this.selectedPath()!,
+      login: login,
+      password: senha,
+    };
   }
 
-  onDateInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-
-    let value = input.value.replace(/\D/g, '');
-
-    value = value.substring(0, 8);
-
-    if (value.length > 4) {
-      value = value.replace(/(\d{2})(\d{2})(\d+)/, '$1/$2/$3');
-    } else if (value.length > 2) {
-      value = value.replace(/(\d{2})(\d+)/, '$1/$2');
-    }
-
-    input.value = value;
+  private onSuccess(): void {
+    this.isLoading = false;
+    this.notificationService.success('Sucesso!', 'Processo concluído!');
+    window.electron.focusWindow();
+    this.cdr.markForCheck();
   }
 
-  openFiliaisModal() {
-    this.modalService.open({
-      component: FiliaisModal,
-      data: {
-        title: 'Seleção de filiais',
-        subtitle: 'Selecione os grupos ou filiais individuais para execução',
-        onConfirm: (branches: string[]) => {
-          this.selectedFiliais = [...branches];
-          this.cdr.detectChanges();
-        },
-      } as Partial<FiliaisModal>,
-    });
+  private onError(error: { error: { code: string; detail: string } }): void {
+    this.isLoading = false;
+    const isStopped = error?.error?.code === 'AUTOMATION_STOPPED';
+    const msg = isStopped
+      ? 'Processo interrompido.'
+      : (error?.error?.detail ?? 'Erro ao executar tarefas.');
+    const method = isStopped ? 'alert' : 'error';
+    const title = isStopped ? 'Atenção!' : 'Erro!';
+
+    this.notificationService[method](title, msg);
+    window.electron.focusWindow();
+    this.cdr.markForCheck();
   }
 
-  private formatDate(date: Date): string {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-
-    return `${day}/${month}/${year}`;
+  private finalizarComAlerta(msg: string): void {
+    this.isLoading = false;
+    this.notificationService.alert('Atenção!', msg);
+    this.cdr.markForCheck();
   }
 
-  private parseDate(value: string): Date | null {
-    const [day, month, year] = value.split('/').map(Number);
-
-    const date = new Date(year, month - 1, day);
-
-    // valida se a data realmente existe
-    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
-      return null;
-    }
-
-    return date;
+  private alerta(msg: string): false {
+    this.notificationService.alert('Atenção!', msg);
+    return false;
   }
 
   private async pickFolder(): Promise<string | null> {
     try {
       const path = await window.electron.invoke('select-directory', null);
-
-      if (path) {
-        this.selectedPath.set(path[0]);
-        return path[0];
+      console.log(path);
+      if (path && typeof path === 'string') {
+        this.selectedPath.set(path);
+        return path;
       }
       return null;
-    } catch (error) {
+    } catch {
       this.notificationService.error('Erro!', 'Erro ao selecionar pasta');
-      console.error(error);
       return null;
     }
   }
