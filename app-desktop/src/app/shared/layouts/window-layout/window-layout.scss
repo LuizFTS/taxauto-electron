@@ -2,20 +2,26 @@
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  background-color: oklch(27.9% 0.041 260.031);
 
   &__main {
     display: flex;
     width: 100%;
     height: 100%;
-    flex-direction: column;
+    flex-direction: row;
 
     &__content {
-      width: 100%;
+      width: calc(100% - 72px);
       height: 100%;
       padding: 20px;
       background-color: var(--bg-color);
       overflow-x: auto;
+      border-top-left-radius: 10px;
+
+      &.side-menu-open {
+        width: calc(100% - 220px);
+      }
     }
   }
 }

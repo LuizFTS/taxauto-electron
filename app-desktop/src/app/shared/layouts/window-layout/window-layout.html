@@ -1,8 +1,8 @@
 <div class="window">
-  <app-sidemenu />
+  <app-topbar />
   <div class="window__main">
-    <app-topbar />
-    <div class="window__main__content">
+    <app-sidemenu [isOpen]="sideMenuOpen" (toggleSideMenu)="toggleSideMenu()" />
+    <div [class]="'window__main__content' + (sideMenuOpen ? ' side-menu-open' : '')">
       <router-outlet />
     </div>
   </div>
