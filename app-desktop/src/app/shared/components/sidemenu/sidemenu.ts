@@ -16,20 +16,20 @@ export class Sidemenu {
       title: 'Automação',
       items: [
         {
-          title: 'Livros fiscais',
+          title: 'Gerar Relatórios',
           icon: 'book',
           route: '/taxauto/livros-fiscais',
         },
-        {
+        /* {
           title: 'Notas canceladas',
           icon: 'cancel',
-          route: '/notas-canceladas',
+          route: '/taxauto/cancelled-invoices',
         },
         {
           title: 'Congelar periodos',
           icon: 'lock',
-          route: '/congelar-periodos',
-        },
+          route: '/taxauto/congelar-periodos',
+        }, */
       ],
     },
     {

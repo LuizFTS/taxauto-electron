@@ -11,7 +11,11 @@ from core.database.connection import run_migrations
 from core.di.container import automation_state
 from core.http.exception_handlers import register_exception_handlers
 from modules.automation.automations.state.emergency_stop import setup_emergency_stop
-from modules.automation.presentation.routes import livros_fiscais_routes, merge_excel_files_routes
+from modules.automation.presentation.routes import (
+    cancelled_invoices_routes,
+    merge_excel_files_routes,
+    tax_reports_routes,
+)
 from modules.data_process.presentation.routes import periodo_routes
 from shared.presentation.routes import branch_group_routes, branch_routes, company_routes
 
@@ -70,7 +74,8 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 # app.include_router(automation.router)
 app.include_router(periodo_routes.router, prefix="/api/v1")
-app.include_router(livros_fiscais_routes.router, prefix="/api/v1/automation")
+app.include_router(tax_reports_routes.router, prefix="/api/v1/automation")
+app.include_router(cancelled_invoices_routes.router, prefix="/api/v1/automation")
 
 # utilities
 app.include_router(merge_excel_files_routes.router, prefix="/api/v1/utilities")
