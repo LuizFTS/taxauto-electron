@@ -1,0 +1,125 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.kanban-board {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  height: 100%;
+  width: 100%;
+  padding-bottom: 16px;
+
+  /* Smooth scrollbar */
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+  }
+}
+
+.kanban-column {
+  flex: 1 1 0; /* Grow exactly to cover full width equally */
+  min-width: 250px; /* Responsiveness lock limit */
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  background-color: #f8fafc; /* optional faint background for column */
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.kanban-column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 4px;
+
+  .kanban-column-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .kanban-column-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      letter-spacing: 0.5px;
+    }
+
+    .kanban-column-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 24px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 0 6px;
+
+      &.badge-pendente {
+        background-color: #e2e8f0;
+        color: #475569;
+      }
+      &.badge-em_andamento {
+        background-color: #eff6ff;
+        color: #3b82f6;
+      }
+      &.badge-entregue {
+        background-color: #f0fdf4;
+        color: #22c55e;
+      }
+      &.badge-atrasado {
+        background-color: #fef2f2;
+        color: #ef4444;
+      }
+    }
+  }
+
+  .kanban-add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 4px;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+
+    &:hover {
+      background-color: #e2e8f0;
+      color: #0f172a;
+    }
+
+    i {
+      font-size: 20px;
+    }
+  }
+}
+
+.kanban-column-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  flex: 1;
+  padding: 0 4px; /* Space for shadows */
+  margin: 0 -4px; /* Pull back padding visually */
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
+  }
+}

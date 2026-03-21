@@ -1,0 +1,25 @@
+<div class="kanban-board">
+  @for (col of columns; track col.title) {
+    <div class="kanban-column">
+      <div class="kanban-column-header">
+        <div class="kanban-column-title-group">
+          <span class="kanban-column-title">{{ col.title | uppercase }}</span>
+          <span class="kanban-column-badge" [ngClass]="['badge-' + col.status]">{{
+            col.items.length
+          }}</span>
+        </div>
+        @if (col.status === 'pendente') {
+          <button class="kanban-add-button" title="Adicionar item">
+            <i class="material-symbols-outlined">add</i>
+          </button>
+        }
+      </div>
+
+      <div class="kanban-column-content">
+        @for (item of col.items; track item.id) {
+          <app-kanban-card [item]="item"></app-kanban-card>
+        }
+      </div>
+    </div>
+  }
+</div>
