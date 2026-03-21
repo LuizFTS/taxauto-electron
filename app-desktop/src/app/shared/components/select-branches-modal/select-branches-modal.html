@@ -1,0 +1,74 @@
+<div class="modal-container">
+  <div class="modal-header">
+    <div class="header-titles">
+      <h2>{{ title }}</h2>
+      <p class="subtitle">{{ subtitle }}</p>
+    </div>
+  </div>
+
+  <div class="modal-body">
+    <div class="section-groups">
+      <h3 class="section-title">Grupos Pré-Configurados</h3>
+      <div class="groups-list">
+        @for (group of groups; track group.id) {
+          <label class="group-item" [class.selected]="selectedGroup === group.id">
+            <input
+              type="radio"
+              name="presetGroup"
+              [value]="group.id"
+              [checked]="selectedGroup === group.id"
+              (click)="toggleGroup(group.id)"
+            />
+            <span class="custom-radio"></span>
+            <span>{{ formatGroupName(group.analyst) }}</span>
+          </label>
+        }
+      </div>
+    </div>
+
+    <div class="section-branches">
+      <div class="branches-header">
+        <h3 class="section-title">Filiais</h3>
+        <div class="branches-actions">
+          <app-select
+            [options]="(tiposLivro$ | async) ?? []"
+            [(ngModel)]="selectedCompany"
+            (selectAction)="onCompanySelect($event)"
+            [placeholder]="(getNomeEmpresaSelecionada() | async) ?? ''"
+          ></app-select>
+          <div class="search-box">
+            <input
+              type="text"
+              placeholder="Buscar por número ou UF"
+              [(ngModel)]="searchQuery"
+              (ngModelChange)="onSearchChange($event)"
+            />
+          </div>
+          <button class="btn-link" (click)="selectAll()">Selecionar todas</button>
+          <button class="btn-link" (click)="clearSelection()">Limpar</button>
+        </div>
+      </div>
+
+      <div class="branches-list-container">
+        <div class="branches-grid">
+          @for (branch of branches$ | async; track branch.numero) {
+            <label class="branch-item" [class.selected]="selectedBranches.has(branch.numero)">
+              <input
+                type="checkbox"
+                [checked]="selectedBranches.has(branch.numero)"
+                (change)="toggleBranch(branch.numero)"
+              />
+              <span class="custom-checkbox"></span>
+              <span>{{ branch.numero }} - {{ branch.nome }}</span>
+            </label>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn-cancel" (click)="cancel()">Cancelar</button>
+    <button class="btn-confirm" (click)="confirm()">Confirmar Seleção</button>
+  </div>
+</div>
