@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { KanbanCard } from '../kanban-card/kanban-card';
 import { KanbanItem, KanbanStatus } from '../kanban-card/kanban-card.types';
@@ -16,14 +16,14 @@ interface KanbanColumn {
   templateUrl: './kanban.html',
   styleUrl: './kanban.scss',
 })
-export class Kanban implements OnInit {
+export class Kanban implements OnInit, OnChanges {
   @Input() items: KanbanItem[] = [];
 
   columns: KanbanColumn[] = [
-    { title: 'Pendente', status: 'pendente', items: [] },
-    { title: 'Em Andamento', status: 'em_andamento', items: [] },
-    { title: 'Entregue', status: 'entregue', items: [] },
-    { title: 'Atrasado', status: 'atrasado', items: [] },
+    { title: 'Vencidas', status: 'atrasado', items: [] },
+    { title: 'Vence Hoje', status: 'atrasado', items: [] },
+    { title: 'A Vencer', status: 'em_andamento', items: [] },
+    { title: 'Entregues', status: 'entregue', items: [] },
   ];
 
   ngOnInit() {
