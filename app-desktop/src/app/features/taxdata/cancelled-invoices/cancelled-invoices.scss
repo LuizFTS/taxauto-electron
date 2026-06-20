@@ -1,0 +1,419 @@
+/* Intent: Admin managing business hierarchy (Empresas → Filiais).
+   Tone: Refined & utilitarian — clean whitespace, crisp grid, obvious affordances.
+   Palette: Slate neutrals + a single blue accent (#4361ee). Status via semantic green/gray.
+   Spacing: 4px base grid. Rows breathe at 52px height.
+*/
+
+// ─── Tokens ───────────────────────────────────────────────────────────────────
+$accent: #4361ee;
+$accent-soft: rgba(67, 97, 238, 0.08);
+$accent-ring: rgba(67, 97, 238, 0.18);
+
+$text-primary: #0f172a;
+$text-muted: #64748b;
+$text-hint: #94a3b8;
+
+$border: rgba(0, 0, 0, 0.07);
+$border-strong: rgba(0, 0, 0, 0.12);
+
+$surface: #ffffff;
+$surface-alt: #f8fafc;
+$surface-edit: #f0f4ff;
+
+$green-bg: #dcfce7;
+$green-fg: #15803d;
+$gray-bg: #f1f5f9;
+$gray-fg: #475569;
+$red-bg: #fee2e2;
+$red-fg: #ef4444;
+
+$radius-sm: 4px;
+$radius-md: 6px;
+$radius-lg: 8px;
+$radius-pill: 999px;
+
+.livros-fiscais-container {
+  min-height: 100%;
+}
+
+// ─── Page Layout ─────────────────────────────────────────────────────────────
+
+.form-container {
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-color); /* Dark slate blue based on mockup title color */
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.parameters-row {
+  display: flex;
+  gap: 24px;
+  align-items: flex-end;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.field-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color); /* Gray label color */
+}
+
+/* Custom Form Inputs */
+.custom-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-color);
+  background-color: #ffffff;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  font-family: inherit;
+
+  &:focus {
+    border-color: oklch(55% 0.22 260);
+    box-shadow: 0 0 0 2px oklch(55% 0.22 260 / 20%);
+  }
+}
+
+.date-range-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .date-input {
+    min-width: 150px;
+  }
+}
+
+.date-separator {
+  color: var(--text-color);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Entities Section */
+.entities-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border: 1px dashed #e0e0e0;
+  border-radius: 8px;
+}
+
+.entities-info h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: oklch(35% 0.04 260);
+}
+/* Tasks Section (Pills) */
+.tasks-row {
+  display: flex;
+  gap: 16px;
+
+  &__button__container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+
+    &__checkbox {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+  }
+}
+
+.task-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 8px;
+  padding: 12px 24px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+  user-select: none;
+
+  span {
+    color: oklch(45% 0.02 260);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  &:hover {
+    border-color: #bdbdbd;
+  }
+
+  &.selected {
+    background-color: oklch(96% 0.04 260); /* Light blue tint */
+    border-color: oklch(55% 0.22 260); /* Solid blue border */
+
+    span {
+      color: oklch(35% 0.04 260);
+      font-weight: 600;
+    }
+  }
+}
+
+/* Actions Section */
+.actions-row {
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+// ─── Audit History ────────────────────────────────────────────────────────────
+.audit-history {
+  max-width: 900px;
+  margin: 16px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  &__title {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 700;
+    color: $text-primary;
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: 13px;
+    color: $text-muted;
+  }
+
+  &__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: $radius-pill;
+    background: $accent-soft;
+    color: $accent;
+    font-weight: 700;
+    font-size: 12px;
+  }
+}
+
+.audit-card {
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  border: 1px solid $border;
+
+  &--table {
+    overflow: hidden;
+  }
+
+  &--empty {
+    padding: 28px 24px;
+    text-align: center;
+  }
+}
+
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: inherit;
+
+  thead tr {
+    background: $surface-alt;
+    border-bottom: 1px solid $border;
+  }
+
+  th {
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid $border;
+    transition: background 0.12s ease;
+
+    &:hover {
+      background: $surface-alt;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  td {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: $text-primary;
+    vertical-align: middle;
+  }
+}
+
+.audit-file {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &__name {
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  &__path {
+    font-size: 11px;
+    color: $text-hint;
+  }
+}
+
+.audit-date {
+  font-size: 12px;
+  color: $text-muted;
+}
+
+.col-action {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.btn-detail,
+.btn-delete {
+  padding: 6px 12px;
+  border-radius: $radius-sm;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid $border-strong;
+  background: $surface;
+  color: $text-primary;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+
+  &:hover {
+    background: $surface-alt;
+    border-color: $border-strong;
+  }
+}
+
+.btn-delete {
+  margin-left: 8px;
+  border-color: $red-fg;
+  color: $red-fg;
+
+  &:hover {
+    background: $red-bg;
+    border-color: $red-fg;
+  }
+}
+
+.empty-msg {
+  margin: 0;
+  font-size: 13px;
+  color: $text-hint;
+}
+
+// ─── Footer ───────────────────────────────────────────────────────────────────
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background: $surface-alt;
+  border-top: 1px solid $border;
+  min-height: 52px;
+}
+
+.summary-text {
+  font-size: 12.5px;
+  color: $text-muted;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pagination-info {
+  font-size: 12.5px;
+  color: $text-muted;
+  font-weight: 500;
+}
+
+.page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: $surface;
+  border: 1px solid $border-strong;
+  border-radius: $radius-sm;
+  color: $text-muted;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    line-height: 1;
+  }
+
+  &:hover:not([disabled]) {
+    background: $gray-bg;
+    color: $text-primary;
+  }
+
+  &[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}

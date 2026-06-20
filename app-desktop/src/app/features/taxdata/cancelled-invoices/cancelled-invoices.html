@@ -1,0 +1,83 @@
+<div class="livros-fiscais-container">
+  <form class="form-container">
+    <!-- Seção 1: Parâmetros -->
+    <h3 class="section-title">Auditoria de Notas Canceladas</h3>
+    <app-drag-and-drop-area (filesValidated)="onFilesValidated($event)"></app-drag-and-drop-area>
+
+    <!-- Ações -->
+    <div class="actions-row">
+      <app-button
+        [loading]="isLoading()"
+        variant="solid"
+        size="md"
+        (click)="executar()"
+        [disabled]="!(livroEntradaPath || livroSaidaPath) || !notasCanceladasPath"
+      >
+        Executar
+      </app-button>
+    </div>
+  </form>
+
+  <section class="audit-history">
+    <div class="audit-history__header">
+      <div>
+        <h4 class="audit-history__title">Auditorias executadas</h4>
+        <p class="audit-history__subtitle">
+          Histórico das auditorias de notas canceladas já processadas.
+        </p>
+      </div>
+      <span class="audit-history__count">{{ auditHistory.length }}</span>
+    </div>
+
+    @if (auditHistory.length > 0) {
+      <div class="audit-card audit-card--table">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>Arquivo</th>
+              <th>Gerado em</th>
+              <th class="col-action">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let audit of paginatedAudits; trackBy: trackByReportPath">
+              <td class="audit-file">
+                <span class="audit-file__name">{{ audit.file_name }}</span>
+                <span class="audit-file__path">{{ audit.report_path }}</span>
+              </td>
+              <td class="audit-date">
+                {{ prepareAuditDate(audit.generated_at) | date: 'dd/MM/yyyy HH:mm' }}
+              </td>
+              <td class="col-action">
+                <button class="btn-detail" (click)="verDetalhamento(audit)">Detalhar</button>
+                <button class="btn-delete" (click)="excluirAuditoria(audit)">Excluir</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Footer -->
+        <div class="card-footer">
+          <span class="summary-text">
+            Exibindo {{ paginatedAudits.length }} de {{ auditHistory.length }} auditoria(s)
+          </span>
+
+          <div class="pagination" *ngIf="totalPages > 1">
+            <button class="page-btn" [disabled]="currentPage() === 1" (click)="previousPage()">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <span class="pagination-info">{{ currentPage() }} de {{ totalPages }}</span>
+            <button class="page-btn" [disabled]="currentPage() === totalPages" (click)="nextPage()">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+    @if (auditHistory.length === 0) {
+      <div class="audit-card audit-card--empty">
+        <p class="empty-msg">Nenhuma auditoria executada ainda.</p>
+      </div>
+    }
+  </section>
+</div>
