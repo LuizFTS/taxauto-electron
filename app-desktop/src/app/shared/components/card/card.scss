@@ -26,6 +26,12 @@ $radius-md: 6px;
 $radius-lg: 8px;
 $radius-pill: 999px;
 
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 .card {
   background: var(--card-bg);
   border-radius: $radius-lg;
@@ -36,4 +42,5 @@ $radius-pill: 999px;
     0 4px 16px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
