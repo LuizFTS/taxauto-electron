@@ -1,6 +1,19 @@
 from dataclasses import dataclass
 from typing import List
 
+from pydantic import BaseModel
+
+
+class ValidateFileDTO(BaseModel):
+    file_path: str
+    file_type: str
+
+
+class ValidateFileResponseDTO(BaseModel):
+    is_valid: bool
+    record_count: int
+    message: str
+
 
 @dataclass
 class CancelledInvoicesDTO:
@@ -8,7 +21,7 @@ class CancelledInvoicesDTO:
     start_date: str
     end_date: str
     filiais: List[str]
-    save_path: str | None
+    save_path: str
     login: str
     password: str
 
