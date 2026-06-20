@@ -14,8 +14,9 @@ if (Test-Path build) { Remove-Item build -Recurse -Force }
 
 # build com pyinstaller
 pyinstaller `
-  --onefile `
-  --name backend `
+  --onedir `
+  --clean `
+  --name taxbackend `
   --distpath dist `
   --noconfirm `
   main.py
