@@ -61,6 +61,7 @@ build/
 *.exe
 *.dmg
 *.app
+*.package-lock.json
 
 # --- Logs de Erro ---
 logs
