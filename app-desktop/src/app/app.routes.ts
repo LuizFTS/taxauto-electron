@@ -7,8 +7,10 @@ import { Processamento } from './features/taxdata/apuracao/components/processame
 import { Resultado } from './features/taxdata/apuracao/components/resultado/resultado';
 import { Difal } from './features/taxdata/difal/difal';
 import { MergeExcelFiles } from './features/utilities/merge-excel-files/merge-excel-files';
-import { CancelledInvoices } from './features/taxauto/cancelled-invoices/cancelled-invoices';
+import { CancelledInvoices } from './features/taxdata/cancelled-invoices/cancelled-invoices';
 import { Dashboard } from './features/taxtrack/dashboard/dashboard';
+import { ReportDetails } from './features/taxdata/cancelled-invoices/components/report-details/report-details';
+import { Workflow } from './features/taxdata/cancelled-invoices/components/workflow/workflow';
 
 export const routes: Routes = [
   {
@@ -22,10 +24,6 @@ export const routes: Routes = [
             path: 'livros-fiscais',
             component: LivrosFiscais,
           },
-          {
-            path: 'cancelled-invoices',
-            component: CancelledInvoices,
-          },
         ],
       },
       {
@@ -34,6 +32,18 @@ export const routes: Routes = [
           {
             path: 'difal',
             component: Difal,
+          },
+          {
+            path: 'cancelled-invoices',
+            component: CancelledInvoices,
+          },
+          {
+            path: 'cancelled-invoices/report-details/:fileName',
+            component: ReportDetails,
+          },
+          {
+            path: 'cancelled-invoices/workflow',
+            component: Workflow,
           },
           {
             path: 'apuracao',
