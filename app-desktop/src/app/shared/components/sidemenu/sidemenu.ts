@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { LoadingService } from '../../../core/services/loading.service';
 
 @Component({
   selector: 'app-sidemenu',
@@ -9,6 +10,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './sidemenu.scss',
 })
 export class Sidemenu {
+  private loadingService = inject(LoadingService);
   @Input() isOpen = false;
   @Output() toggleSideMenu = new EventEmitter<void>();
 
@@ -34,6 +36,16 @@ export class Sidemenu {
       ],
     },
     {
+      title: 'TaxData',
+      items: [
+        {
+          title: 'Notas canceladas',
+          icon: 'cancel',
+          route: '/taxdata/cancelled-invoices',
+        },
+      ],
+    },
+    /* {
       title: 'TaxTrack',
       items: [
         {
@@ -42,7 +54,7 @@ export class Sidemenu {
           route: '/taxtrack/dashboard',
         },
       ],
-    },
+    }, */
     {
       title: 'Utilitários',
       items: [
@@ -62,5 +74,9 @@ export class Sidemenu {
 
   toggleMenu(): void {
     this.toggleSideMenu.emit();
+  }
+
+  get isLoading(): boolean {
+    return this.loadingService.isLoading();
   }
 }

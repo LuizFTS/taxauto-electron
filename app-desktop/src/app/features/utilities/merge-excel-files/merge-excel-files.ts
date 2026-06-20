@@ -1,7 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
-import { Card, DragAndDropArea, Button } from '../../../shared';
-import { NotificationService, MergeExcelFilesService } from '../../../core';
+import { Card, Button } from '../../../shared';
+import { NotificationService, MergeExcelFilesService, LoadingService } from '../../../core';
 import type { MergeExcelFilesRequest } from '../../../core/models/automation/merge-excel-files-request.model';
+import { DragAndDropArea } from './components/drag-and-drop-area/drag-and-drop-area';
 
 @Component({
   selector: 'app-merge-excel-files',
@@ -12,9 +13,8 @@ import type { MergeExcelFilesRequest } from '../../../core/models/automation/mer
 export class MergeExcelFiles {
   private notificationService = inject(NotificationService);
   private mergeExcelFilesService = inject(MergeExcelFilesService);
+  private loadingService = inject(LoadingService);
   files = signal<string[]>([]);
-
-  isLoading = false;
 
   onFilesChanged(files: string[]) {
     this.files.set(files);
@@ -30,12 +30,11 @@ export class MergeExcelFiles {
       this.notificationService.alert('Atenção', 'Selecione pelo menos 2 arquivos.');
       return;
     }
-    this.isLoading = true;
 
     const output_path = await window.electron.invoke('select-directory', null);
     if (!output_path || typeof output_path !== 'string') {
       this.notificationService.alert('Atenção', 'Nenhum diretório foi selecionado.');
-      this.isLoading = false;
+      this.loadingService.hide();
       return;
     }
 
@@ -45,19 +44,24 @@ export class MergeExcelFiles {
     };
 
     try {
+      this.loadingService.show();
       this.mergeExcelFilesService.execute(payload).subscribe({
         next: () => {
           this.notificationService.success('Sucesso', 'Arquivos consolidados com sucesso.');
-          this.isLoading = false;
+          this.loadingService.hide();
         },
         error: (error) => {
           this.notificationService.error('Erro', error.message);
-          this.isLoading = false;
+          this.loadingService.hide();
         },
       });
     } catch {
       this.notificationService.error('Erro', 'Erro ao consolidar arquivos.');
-      this.isLoading = false;
+      this.loadingService.hide();
     }
+  }
+
+  get isLoading() {
+    return this.loadingService.isLoading();
   }
 }

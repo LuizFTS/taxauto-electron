@@ -3,7 +3,7 @@
     <button
       class="sidemenu__toggle"
       type="button"
-      (click)="toggleMenu()"
+      (click)="isLoading ? null : toggleMenu()"
       [attr.aria-expanded]="isOpen"
       aria-label="Toggle menu"
     >
@@ -22,7 +22,7 @@
           <ul>
             @for (item of section.items; track item.title) {
               <li
-                routerLink="{{ item.route }}"
+                [routerLink]="isLoading ? null : item.route"
                 routerLinkActive="active"
                 class="sidemenu__nav-item"
               >
