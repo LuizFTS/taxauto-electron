@@ -5,6 +5,8 @@ export { ApuracaoApiService } from './services/api/apuração-api.service';
 export { ModalService } from './services/modal.service';
 export { NotificationService } from './services/notification.service';
 export { MergeExcelFilesService } from './services/api/utilities/merge-excel-files.service';
+export { LoadingService } from './services/loading.service';
+export { AuditCancelledInvoicesService } from './services/api/data/audit-cancelled-invoices.service';
 
 // Types
 export type { ModalConfig } from './types/modal';

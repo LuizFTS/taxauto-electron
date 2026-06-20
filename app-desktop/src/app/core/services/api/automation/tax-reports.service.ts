@@ -17,4 +17,11 @@ export class TaxReportsService {
   generateCancelledInvoicesReport(request: CancelledInvoicesRequest): Observable<void> {
     return this.http.post<void>(`${this.backend.api}/automation/cancelled-invoices/run`, request);
   }
+
+  validateCancelledInvoiceFile(payload: { file_path: string; file_type: string }): Observable<{ is_valid: boolean; record_count: number; message: string }> {
+    return this.http.post<{ is_valid: boolean; record_count: number; message: string }>(
+      `${this.backend.api}/automation/cancelled-invoices/validate-file`,
+      payload
+    );
+  }
 }

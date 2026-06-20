@@ -7,4 +7,5 @@ export interface Filial {
   ie: string;
   empresaId: string;
   status: 'Ativo' | 'Inativo';
+  responsavel?: string;
 }
