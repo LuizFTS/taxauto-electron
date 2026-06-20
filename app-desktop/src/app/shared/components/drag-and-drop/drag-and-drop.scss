@@ -1,0 +1,134 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.drag-and-drop-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.drop-zone {
+  border: 2px dashed #d9d9d9;
+  border-radius: 8px;
+  padding: 32px 16px;
+  text-align: center;
+  background-color: #f7f9fc;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:hover,
+  &:focus-visible {
+    border-color: #bfbfbf;
+    background-color: #f0f2f5;
+  }
+
+  &.drag-over {
+    border-color: #0056b3;
+    background-color: #e6f0fa;
+  }
+
+  .drop-zone-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  .upload-icon {
+    font-size: 36px;
+    height: 36px;
+    width: 36px;
+    color: #4f5a6b;
+    margin-bottom: 8px;
+  }
+
+  .drop-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #262d3a;
+  }
+
+  .drop-subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: #6a7485;
+  }
+
+  .drop-link {
+    margin: 16px 0 0 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a6fa5;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  
+  .selected-file-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: default;
+
+    .selected-file-icon {
+      font-size: 36px;
+      height: 36px;
+      width: 36px;
+      color: #4f5a6b;
+      margin-bottom: 8px;
+    }
+
+    .selected-file-name {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: #262d3a;
+    }
+
+    .selected-file-info {
+      margin: 0;
+      font-size: 13px;
+      color: #6a7485;
+    }
+
+    .remove-btn-text {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #d32f2f;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-transform: uppercase;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      .remove-icon {
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
+      }
+    }
+  }
+}

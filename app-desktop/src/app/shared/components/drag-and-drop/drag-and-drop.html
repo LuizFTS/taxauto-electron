@@ -1,0 +1,33 @@
+<div class="drag-and-drop-container">
+  <div
+    class="drop-zone"
+    [class.drag-over]="isDragOver"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    (click)="openFileSelector()"
+    (keydown.enter)="openFileSelector()"
+    (keydown.space)="openFileSelector()"
+    tabindex="0"
+    role="button"
+  >
+    @if (!selectedFile) {
+      <div class="drop-zone-content">
+        <icon class="upload-icon">upload_file</icon>
+        <h3 class="drop-title">Arraste seus arquivos aqui</h3>
+        <p class="drop-subtitle">Formatos suportados: .csv, .xlsx</p>
+        
+        <p class="drop-link">ou procure no computador</p>
+      </div>
+    } @else {
+      <div class="selected-file-content">
+        <icon class="selected-file-icon">description</icon>
+        <h3 class="selected-file-name">{{ selectedFile.name }}</h3>
+        <p class="selected-file-info">{{ selectedFile.sizeStr }} &bull; {{ selectedFile.statusText }}</p>
+        <button class="remove-btn-text" (click)="onRemoveFile($event)">
+          <icon class="remove-icon">delete_outline</icon> REMOVER ARQUIVO
+        </button>
+      </div>
+    }
+  </div>
+</div>
