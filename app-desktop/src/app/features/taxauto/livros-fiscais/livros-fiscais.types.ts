@@ -1,4 +1,4 @@
-export interface TipoRelatorio {
+export interface SelectOptions {
   value: number;
   label: string;
 }
@@ -9,7 +9,7 @@ export interface Tarefa {
 }
 
 export interface LivroFiscalPayload {
-  book_type: 'entrada' | 'saida';
+  book_type: BookType;
   start_date: string;
   end_date: string;
   filiais: string[];
@@ -25,6 +25,8 @@ export interface LivroFiscalPayload {
 
 export type TarefaId = 'atualizar' | 'abrir' | 'fechar' | 'salvar_excel' | 'salvar_pdf';
 
+export type TipoRelatorioId = 1 | 2 | 3 | 4;
+
 export interface CancelledInvoicesPayload {
   start_date: string;
   end_date: string;
@@ -33,3 +35,15 @@ export interface CancelledInvoicesPayload {
   login: string;
   password: string;
 }
+export interface DownloadXmlsPayload {
+  start_date: string;
+  end_date: string;
+  filiais: string[];
+  save_path: string;
+  login: string;
+  password: string;
+  tipo_documento: number;
+  tipo_operacao: number;
+}
+
+export type BookType = 'entrada' | 'saida';
