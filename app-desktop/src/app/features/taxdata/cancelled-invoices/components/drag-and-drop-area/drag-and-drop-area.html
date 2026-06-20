@@ -1,0 +1,155 @@
+<div class="cards-container">
+  <div class="cards-left">
+    <app-card>
+      <div class="upload-card-header">
+        <div class="title-wrapper">
+          <div class="icon-wrapper default-icon"><icon>menu_book</icon></div>
+          <h3>Livro de Entradas</h3>
+        </div>
+      </div>
+
+      <div class="upload-card-body">
+        <app-drag-and-drop
+          [selectedFile]="livroEntradaMappedFile"
+          (filesChanged)="onLivroEntradaDropped($event.files)"
+          (fileRemoved)="onLivroEntradaRemoved()"
+        >
+        </app-drag-and-drop>
+      </div>
+
+      @if (livroEntradaLoading) {
+        <div class="upload-card-footer loading">
+          <div class="loading-content">
+            <icon class="spin-icon">sync</icon>
+            <span>Validando estrutura do arquivo...</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+        </div>
+      } @else if (livroEntradaMappedFile) {
+        @if (livroEntradaMappedFile.isValid) {
+          <div class="upload-card-footer success">
+            <div class="success-content">
+              <icon>check_circle</icon>
+              <div class="footer-text">
+                <strong>{{ livroEntradaMappedFile.statusText }}</strong>
+              </div>
+            </div>
+            <span class="status-badge success-badge">SUCESSO</span>
+          </div>
+        } @else {
+          <div class="upload-card-footer error">
+            <div class="error-content">
+              <icon>error</icon>
+              <div class="footer-text">
+                <strong>{{ livroEntradaMappedFile.statusText }}</strong>
+              </div>
+            </div>
+            <span class="status-badge error-badge">ERRO</span>
+          </div>
+        }
+      }
+    </app-card>
+
+    <app-card>
+      <div class="upload-card-header">
+        <div class="title-wrapper">
+          <div class="icon-wrapper default-icon"><icon>menu_book</icon></div>
+          <h3>Livro de Saídas</h3>
+        </div>
+      </div>
+
+      <div class="upload-card-body">
+        <app-drag-and-drop
+          [selectedFile]="livroSaidaMappedFile"
+          (filesChanged)="onLivroSaidaDropped($event.files)"
+          (fileRemoved)="onLivroSaidaRemoved()"
+        >
+        </app-drag-and-drop>
+      </div>
+
+      @if (livroSaidaLoading) {
+        <div class="upload-card-footer loading">
+          <div class="loading-content">
+            <icon class="spin-icon">sync</icon>
+            <span>Validando estrutura do arquivo...</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+        </div>
+      } @else if (livroSaidaMappedFile) {
+        @if (livroSaidaMappedFile.isValid) {
+          <div class="upload-card-footer success">
+            <div class="success-content">
+              <icon>check_circle</icon>
+              <div class="footer-text">
+                <strong>{{ livroSaidaMappedFile.statusText }}</strong>
+              </div>
+            </div>
+            <span class="status-badge success-badge">SUCESSO</span>
+          </div>
+        } @else {
+          <div class="upload-card-footer error">
+            <div class="error-content">
+              <icon>error</icon>
+              <div class="footer-text">
+                <strong>{{ livroSaidaMappedFile.statusText }}</strong>
+              </div>
+            </div>
+            <span class="status-badge error-badge">ERRO</span>
+          </div>
+        }
+      }
+    </app-card>
+  </div>
+
+  <div class="cards-right">
+    <app-card>
+      <div class="upload-card-header">
+        <div class="title-wrapper">
+          <div class="icon-wrapper error-icon-bg"><icon>event_busy</icon></div>
+          <h3 class="error-text">Notas Canceladas</h3>
+        </div>
+      </div>
+
+      <div class="upload-card-body">
+        <app-drag-and-drop
+          [selectedFile]="notasCanceladasMappedFile"
+          (filesChanged)="onNotasCanceladasDropped($event.files)"
+          (fileRemoved)="onNotasCanceladasRemoved()"
+        >
+        </app-drag-and-drop>
+      </div>
+
+      @if (notasCanceladasLoading) {
+        <div class="upload-card-footer loading">
+          <div class="loading-content">
+            <icon class="spin-icon">sync</icon>
+            <span>Validando estrutura do arquivo...</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+        </div>
+      } @else if (notasCanceladasMappedFile) {
+        @if (notasCanceladasMappedFile.isValid) {
+          <div class="upload-card-footer success">
+            <div class="success-content">
+              <icon>check_circle</icon>
+              <div class="footer-text">
+                <strong>{{ notasCanceladasMappedFile.statusText }}</strong>
+              </div>
+            </div>
+            <span class="status-badge success-badge">SUCESSO</span>
+          </div>
+        } @else {
+          <div class="upload-card-footer error">
+            <div class="error-content">
+              <icon>error</icon>
+              <div class="footer-text">
+                <strong>{{ notasCanceladasMappedFile.statusText }}</strong>
+              </div>
+            </div>
+            <span class="status-badge error-badge">ERRO</span>
+          </div>
+        }
+      }
+    </app-card>
+  </div>
+</div>
