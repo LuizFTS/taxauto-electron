@@ -17,14 +17,21 @@ import {
   TIPOS_RELATORIO,
   TAREFAS_DISPONIVEIS,
   TAREFAS_COM_DESTINO,
+  TIPOS_RELATORIO_COM_DESTINO,
+  TIPOS_OPERACAO,
+  TIPOS_DOCUMENTO,
 } from './livros-fiscais.constants';
 import {
   LivroFiscalPayload,
   TarefaId,
   type CancelledInvoicesPayload,
+  type DownloadXmlsPayload,
 } from './livros-fiscais.types';
 import { buildLivrosFiscaisForm, getSelectedTarefas } from './livros-fiscais.form';
 import { applyDateMask, formatDate, lastDayOfMonth, parseDate } from './livros-fiscais.utils';
+import { LoadingService } from '../../../core/services/loading.service';
+import { Router } from '@angular/router';
+import { DownloadXmlsService } from '../../../core/services/api/automation/download-xmls.service';
 
 @Component({
   selector: 'app-livros-fiscais',
@@ -38,15 +45,19 @@ export class LivrosFiscais {
   private fb = inject(FormBuilder);
   private modalService = inject(ModalService);
   private taxReportsService = inject(TaxReportsService);
+  private downloadXmlsService = inject(DownloadXmlsService);
   private cdr = inject(ChangeDetectorRef);
   private notificationService = inject(NotificationService);
+  private loadingService = inject(LoadingService);
+  private router = inject(Router);
 
   readonly tiposRelatorio = TIPOS_RELATORIO;
+  readonly tiposOperacao = TIPOS_OPERACAO;
+  readonly tiposDocumento = TIPOS_DOCUMENTO;
   readonly tarefasDisponiveis = TAREFAS_DISPONIVEIS;
 
   selectedPath = signal<string | null>(null);
   selectedFiliais: string[] = [];
-  isLoading = false;
 
   form: FormGroup = buildLivrosFiscaisForm(this.fb);
 
@@ -97,11 +108,12 @@ export class LivrosFiscais {
   async executar(): Promise<void> {
     if (!this.validarFormulario()) return;
 
-    this.isLoading = true;
+    this.loadingService.show();
 
     const selectedTarefas = getSelectedTarefas(this.form) as TarefaId[];
     const precisaDestino =
-      selectedTarefas.some((t) => TAREFAS_COM_DESTINO.has(t)) || this.form.value.tipoLivro === 3;
+      selectedTarefas.some((t) => TAREFAS_COM_DESTINO.has(t)) ||
+      TIPOS_RELATORIO_COM_DESTINO.has(this.form.value.tipoLivro);
 
     if (precisaDestino) {
       const path = await this.pickFolder();
@@ -111,7 +123,18 @@ export class LivrosFiscais {
       }
     }
 
-    if (this.form.value.tipoLivro === 3) {
+    if (this.form.value.tipoLivro === 5) {
+      this.router.navigate(['/taxdata/cancelled-invoices/workflow'], {
+        queryParams: {
+          start_date: this.form.value.periodo.start,
+          end_date: this.form.value.periodo.end,
+          filiais: this.selectedFiliais,
+        },
+      });
+      return;
+    }
+
+    if (this.form.value.tipoLivro === 3 || this.form.value.tipoLivro === 4) {
       if (this.form.value.lembrarSenha) {
         localStorage.setItem('portalged_login', this.form.value.login);
         localStorage.setItem('portalged_senha', this.form.value.senha);
@@ -122,13 +145,23 @@ export class LivrosFiscais {
         localStorage.removeItem('portalged_lembrar');
       }
 
-      this.taxReportsService
-        .generateCancelledInvoicesReport(this.buildPayloadCancelledInvoices())
-        .subscribe({
+      if (this.form.value.tipoLivro == 3) {
+        this.taxReportsService
+          .generateCancelledInvoicesReport(this.buildPayloadCancelledInvoices())
+          .subscribe({
+            next: () => this.onSuccess(),
+            error: (err) => this.onError(err),
+          });
+        return;
+      }
+
+      if (this.form.value.tipoLivro == 4) {
+        this.downloadXmlsService.execute(this.buildPayloadDownloadXmls()).subscribe({
           next: () => this.onSuccess(),
           error: (err) => this.onError(err),
         });
-      return;
+        return;
+      }
     }
 
     this.taxReportsService.execute(this.buildPayload(selectedTarefas)).subscribe({
@@ -143,18 +176,31 @@ export class LivrosFiscais {
     const selectedTarefas = getSelectedTarefas(this.form);
     const { start, end } = this.form.value.periodo;
 
-    if (this.form.value.tipoLivro === 3) {
+    const bookType = this.form.value.tipoLivro;
+
+    if (bookType === 3) {
       if (!this.form.value.login || !this.form.value.senha) {
         return this.alerta('Informe o usuário e a senha para acessar o PortalGED.');
       }
     }
 
-    if (selectedTarefas.length === 0 && this.form.value.tipoLivro !== 3)
+    if (bookType === 4) {
+      if (!this.form.value.login || !this.form.value.senha) {
+        return this.alerta('Informe o usuário e a senha para acessar o PortalGED.');
+      }
+
+      if (!this.form.value.tipoDocumento || !this.form.value.tipoOperacao) {
+        console.log(this.form.value.tipoDocumento, this.form.value.tipoOperacao);
+        return this.alerta('Informe o tipo de documento e operação.');
+      }
+    }
+
+    if (selectedTarefas.length === 0 && bookType !== 3 && bookType !== 4)
       return this.alerta('Selecione pelo menos uma tarefa para executar.');
     if (!start || !end) return this.alerta('Selecione o período de execução.');
     if (this.selectedFiliais.length === 0)
       return this.alerta('Selecione pelo menos uma filial para executar.');
-    if (this.form.value.tipoLivro === null) return this.alerta('Selecione o tipo de livro.');
+    if (bookType === null) return this.alerta('Selecione o tipo de livro.');
 
     return true;
   }
@@ -190,16 +236,30 @@ export class LivrosFiscais {
       password: senha,
     };
   }
+  private buildPayloadDownloadXmls(): DownloadXmlsPayload {
+    const { periodo, login, senha, tipoDocumento, tipoOperacao } = this.form.value;
+
+    return {
+      start_date: periodo.start,
+      end_date: periodo.end,
+      filiais: this.selectedFiliais,
+      save_path: this.selectedPath()!,
+      login: login,
+      password: senha,
+      tipo_documento: tipoDocumento,
+      tipo_operacao: tipoOperacao,
+    };
+  }
 
   private onSuccess(): void {
-    this.isLoading = false;
+    this.loadingService.hide();
     this.notificationService.success('Sucesso!', 'Processo concluído!');
     window.electron.focusWindow();
     this.cdr.markForCheck();
   }
 
   private onError(error: { error: { code: string; detail: string } }): void {
-    this.isLoading = false;
+    this.loadingService.hide();
     const isStopped = error?.error?.code === 'AUTOMATION_STOPPED';
     const msg = isStopped
       ? 'Processo interrompido.'
@@ -213,7 +273,7 @@ export class LivrosFiscais {
   }
 
   private finalizarComAlerta(msg: string): void {
-    this.isLoading = false;
+    this.loadingService.hide();
     this.notificationService.alert('Atenção!', msg);
     this.cdr.markForCheck();
   }
@@ -226,7 +286,6 @@ export class LivrosFiscais {
   private async pickFolder(): Promise<string | null> {
     try {
       const path = await window.electron.invoke('select-directory', null);
-      console.log(path);
       if (path && typeof path === 'string') {
         this.selectedPath.set(path);
         return path;
@@ -236,5 +295,9 @@ export class LivrosFiscais {
       this.notificationService.error('Erro!', 'Erro ao selecionar pasta');
       return null;
     }
+  }
+
+  get isLoading(): boolean {
+    return this.loadingService.isLoading();
   }
 }

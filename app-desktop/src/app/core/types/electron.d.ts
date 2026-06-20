@@ -4,6 +4,7 @@ export interface ElectronAPI {
   getPort: () => Promise<number>;
   focusWindow: () => void;
   getFilePath: (file: File) => string;
+  openExternal: (path: string) => void;
 }
 
 declare global {

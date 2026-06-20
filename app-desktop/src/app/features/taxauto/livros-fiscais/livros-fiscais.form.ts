@@ -19,7 +19,9 @@ export function buildLivrosFiscaisForm(fb: FormBuilder): FormGroup {
     tarefas: fb.array(TAREFAS_DISPONIVEIS.map(() => new FormControl(false))),
     login: [savedLogin],
     senha: [savedSenha],
-    lembrarSenha: [lembrar]
+    lembrarSenha: [lembrar],
+    tipoOperacao: [null],
+    tipoDocumento: [null],
   });
 }
 

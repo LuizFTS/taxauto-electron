@@ -60,7 +60,35 @@
       </div>
     </app-card>
 
-    <!-- Seção 3: Seleção de Tarefas ou Credenciais -->
+    <!-- Seção 3: Parâmetros de Download XMLs -->
+    @if (form.get('tipoLivro')?.value === 4) {
+      <app-card>
+        <h3 class="section-title">Parâmetros de Download XMLs</h3>
+
+        <div class="parameters-row">
+          <div class="field-group">
+            <label class="field-label" for="tipoLivroSelect">Tipo de operação</label>
+            <app-select
+              formControlName="tipoOperacao"
+              [options]="tiposOperacao"
+              [placeholder]="'Selecione o tipo de relatório'"
+              [autofocus]="true"
+            ></app-select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="tipoLivroSelect">Tipo de documento</label>
+            <app-select
+              formControlName="tipoDocumento"
+              [options]="tiposDocumento"
+              [placeholder]="'Selecione o tipo de relatório'"
+              [autofocus]="true"
+            ></app-select>
+          </div>
+        </div>
+      </app-card>
+    }
+
+    <!-- Seção 4: Seleção de Tarefas ou Credenciais -->
     @if (form.get('tipoLivro')?.value === 1 || form.get('tipoLivro')?.value === 2) {
       <app-card>
         <h3 class="section-title">Seleção de Tarefas</h3>
@@ -83,7 +111,7 @@
           }
         </div>
       </app-card>
-    } @else if (form.get('tipoLivro')?.value === 3) {
+    } @else if (form.get('tipoLivro')?.value === 3 || form.get('tipoLivro')?.value === 4) {
       <app-card>
         <h3 class="section-title">Credenciais de Acesso (PortalGED)</h3>
 
