@@ -1,7 +1,7 @@
 $body = @{
-    codigo = "4"
-    nome = "D"
-    analista = "D"
+    codigo = "5"
+    nome = "E"
+    analista = "PATRICIA"
 } | ConvertTo-Json
 
 Invoke-RestMethod `
