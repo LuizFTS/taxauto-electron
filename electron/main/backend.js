@@ -12,7 +12,7 @@ function getBackendPath() {
   if (isDev) {
     return path.join(__dirname, '../../local-backend/.venv/Scripts/python.exe');
   }
-  return path.join(process.resourcesPath, 'backend', 'backend.exe');
+  return path.join(process.resourcesPath, 'backend', 'taxbackend', 'taxbackend.exe');
 }
 
 function startBackend() {
