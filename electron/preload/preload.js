@@ -14,5 +14,9 @@ contextBridge.exposeInMainWorld('electron', {
 
   getFilePath: (file) => {
     return webUtils.getPathForFile(file);
-  }
+  },
+
+  openExternal: (path) => {
+    ipcRenderer.send('open-my-path', path)
+  },
 });

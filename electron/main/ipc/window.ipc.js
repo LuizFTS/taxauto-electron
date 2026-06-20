@@ -1,4 +1,4 @@
-const { ipcMain, app, dialog } = require('electron');
+const { ipcMain, app, dialog, shell } = require('electron');
 const { getWindow, getFocusedWindow, getAllWindows } = require('../window');
 const { getPort, stopBackend } = require('../backend');
 
@@ -79,6 +79,9 @@ function registerWindowIPC() {
     return getPort();
   });
 
+  ipcMain.on('open-my-path', (event, path) => {
+    shell.openPath(path);
+  });
 
 }
 
