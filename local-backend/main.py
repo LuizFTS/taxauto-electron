@@ -8,15 +8,16 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from core.config.settings import settings
 from core.database.connection import run_migrations
-from core.di.container import automation_state
+from core.di.automation_provider import get_automation_state
 from core.http.exception_handlers import register_exception_handlers
-from modules.automation.automations.state.emergency_stop import setup_emergency_stop
+from modules.automation.features.state.emergency_stop import setup_emergency_stop
 from modules.automation.presentation.routes import (
     cancelled_invoices_routes,
+    download_xmls_routes,
     merge_excel_files_routes,
     tax_reports_routes,
 )
-from modules.data_process.presentation.routes import periodo_routes
+from modules.data_process.presentation.routes import audit_cancelled_invoices_routes, periodo_routes
 from shared.presentation.routes import branch_group_routes, branch_routes, company_routes
 
 # ---------------------------------------------------------------------------
@@ -45,7 +46,7 @@ async def lifespan(app: FastAPI):
     logger.info("Encerrando aplicação.")
 
 
-setup_emergency_stop(automation_state)
+setup_emergency_stop(get_automation_state())
 
 # ---------------------------------------------------------------------------
 # App
@@ -76,6 +77,10 @@ app.add_middleware(
 app.include_router(periodo_routes.router, prefix="/api/v1")
 app.include_router(tax_reports_routes.router, prefix="/api/v1/automation")
 app.include_router(cancelled_invoices_routes.router, prefix="/api/v1/automation")
+app.include_router(download_xmls_routes.router, prefix="/api/v1/automation")
+
+# Data
+app.include_router(audit_cancelled_invoices_routes.router, prefix="/api/v1/taxdata")
 
 # utilities
 app.include_router(merge_excel_files_routes.router, prefix="/api/v1/utilities")

@@ -1,8 +1,7 @@
-from modules.automation.automations.state.automation_state import AutomationStoppedException
+from modules.automation.features.state.automation_state import AutomationStoppedException
 
 
 class AutomationRunner:
-
     def __init__(self, state):
         self.state = state
 

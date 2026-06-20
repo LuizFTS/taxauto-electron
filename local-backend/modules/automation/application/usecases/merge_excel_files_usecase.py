@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import List
 
 from modules.automation.application.dto.merge_excel_files_dto import MergeExcelFilesDTO
-from modules.automation.automations.merge_excel_files.services.merge_excel_files_service import (
+from modules.automation.features.merge_excel_files.merge_excel_files_service import (
     MergeExcelFilesService,
 )
 

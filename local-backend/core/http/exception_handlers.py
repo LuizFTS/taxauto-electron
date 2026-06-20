@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from starlette import status
 
-from modules.automation.automations.state.automation_state import AutomationStoppedException
+from modules.automation.features.state.automation_state import AutomationStoppedException
 
 
 def register_exception_handlers(app: FastAPI) -> None:

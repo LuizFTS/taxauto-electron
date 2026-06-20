@@ -1,17 +1,17 @@
 from datetime import datetime
 
 from modules.automation.application.dto.cancelled_invoices_dto import CancelledInvoicesDTO
-from modules.automation.automations.cancelled_tax_invoices.orchestrator.get_cancelled_report_orchestrator import (
-    GetCancelledReportOrchestrator,
+from modules.automation.features.cancelled_tax_invoices.orchestrator import (
+    Orchestrator,
 )
 
 
 class CancelledInvoicesUseCase:
     def __init__(
         self,
-        get_cancelled_report_orchestrator: GetCancelledReportOrchestrator,
+        orchestrator: Orchestrator,
     ):
-        self.orchestrator = get_cancelled_report_orchestrator
+        self.orchestrator = orchestrator
 
     def execute(self, dto: CancelledInvoicesDTO):
         if len(dto.filiais) == 0:

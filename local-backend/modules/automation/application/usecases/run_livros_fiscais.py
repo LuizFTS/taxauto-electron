@@ -1,14 +1,17 @@
 from datetime import datetime
 
-from core.di.container import automation_state
 from modules.automation.application.automation_runner import AutomationRunner
 from modules.automation.application.dto.livros_fiscais_dto import LivrosFiscaisDTO
-from modules.automation.automations.tax_reports.orchestrator.livros_fiscais_orchestrator import (
-    LivrosFiscaisOrchestrator,
+from modules.automation.features.state.automation_state import AutomationState
+from modules.automation.features.tax_reports.orchestrator.tax_books_orchestrator import (
+    TaxBooksOrchestrator,
 )
 
 
 class RunLivrosFiscaisUseCase:
+    def __init__(self, orchestrator: TaxBooksOrchestrator, automation_state: AutomationState):
+        self.orchestrator = orchestrator
+        self.automation_state = automation_state
 
     def execute(self, dto: LivrosFiscaisDTO):
 
@@ -24,13 +27,18 @@ class RunLivrosFiscaisUseCase:
         try:
             date_start = datetime.strptime(dto.start_date, "%d/%m/%Y")
             date_end = datetime.strptime(dto.end_date, "%d/%m/%Y")
+
+            """ periodos = (
+                pd.date_range(start=date_start, end=date_end, freq='MS')
+                .strftime('%m/%Y')
+                .tolist()
+            ) """
+
         except ValueError:
             raise Exception("Formato de data inválido. Use DD/MM/AAAA.")
 
         if date_end < date_start:
             raise ValueError("A data final não pode ser menor que a data inicial.")
 
-        orchestrator = LivrosFiscaisOrchestrator(automation_state)
-
-        runner = AutomationRunner(automation_state)
-        runner.run(orchestrator.execute, dto)
+        runner = AutomationRunner(self.automation_state)
+        runner.run(self.orchestrator.execute, dto)
