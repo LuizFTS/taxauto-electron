@@ -33,8 +33,8 @@
     ],
     "extraResources": [
       {
-        "from": "local-backend/dist",
-        "to": "backend",
+        "from": "local-backend/dist/taxbackend",
+        "to": "backend/taxbackend",
         "filter": [
           "**/*"
         ]
