@@ -9,9 +9,11 @@ logger = logging.getLogger(__name__)
 class GenerateReport:
     @staticmethod
     def _is_valid_excel(file_path: str):
+        print(os.path.exists(file_path))
         if not os.path.exists(file_path):
             return False
 
+        print(os.path.getsize(file_path) == 0)
         if os.path.getsize(file_path) == 0:
             return False
 
@@ -19,7 +21,9 @@ class GenerateReport:
             # Tenta ler apenas o cabeçalho para validar se o motor xlrd aceita o arquivo
             pd.read_excel(file_path, engine="xlrd", nrows=0)
             return True
-        except Exception:
+        except Exception as e:
+            logger.exception(f"Erro ao ler o arquivo: {file_path}")
+            logger.exception(e)
             # Se der erro (como o b'<!DOCTYP'), retornamos False para ser removido
             return False
 
