@@ -17,7 +17,7 @@ class OpenBook:
         self.state.check()
         a.press("tab")
         self.state.check()
-        sleep(0.3)
+        sleep(1)
         a.press("space")
         self.state.check()
         sleep(0.5)

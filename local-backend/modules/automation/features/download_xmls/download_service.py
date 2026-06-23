@@ -98,6 +98,7 @@ class DownloadService:
         )
         s.selecionar('//*[@id="globalForm:mainTable:tipoDoc:filter"]', str(tipo_documento))
         s.wait_overlay_status(d)
+        sleep(5)
 
         # Aguarda estabilização do total de registros
         total_registros_antes = self._get_total_records(d)
@@ -138,7 +139,7 @@ class DownloadService:
 
         # Aguarda todas as linhas carregarem
         inicio = time.time()
-        timeout = 60
+        timeout = 360
         logger.debug(
             f"[Filial {filial_str}] Aguardando carregamento das linhas (timeout: {timeout}s)"
         )
