@@ -4,7 +4,6 @@ from typing import List
 
 @dataclass
 class LivrosFiscaisTasksDTO:
-
     open_book: bool
     update_book: bool
     close_book: bool
@@ -14,7 +13,6 @@ class LivrosFiscaisTasksDTO:
 
 @dataclass
 class LivrosFiscaisDTO:
-
     start_date: str
     end_date: str
     filiais: List[str]
