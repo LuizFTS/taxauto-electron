@@ -111,7 +111,7 @@
           }
         </div>
       </app-card>
-    } @else if (form.get('tipoLivro')?.value === 3 || form.get('tipoLivro')?.value === 4) {
+    } @else if (TAREFAS_PORTALGED.has(form.get('tipoLivro')?.value)) {
       <app-card>
         <h3 class="section-title">Credenciais de Acesso (PortalGED)</h3>
 
