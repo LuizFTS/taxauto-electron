@@ -40,20 +40,50 @@ class DownloadReport:
         # 2. Montar o script PowerShell (usando f-string para inserir as variáveis)
         # Nota: Usamos @' ... '@ para strings de múltiplas linhas no PowerShell
         ps_script = f"""
-        $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-        $session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
-        $cookie = New-Object System.Net.Cookie("JSESSIONID", "{jsessionid}", "/", "100.126.64.15")
-        $session.Cookies.Add($cookie)
+            $baseUrl = "http://100.126.64.15:8080"
+            $url = "$baseUrl/adged/relatorio.xhtml"
 
-        $body = "formCadastro=formCadastro&formCadastro%3AbtnGerarRelatorio=&formCadastro%3AdtPeriodoInicio_input={data_inicio_encoded}&formCadastro%3AdtPeriodoFinal_input={data_fim_encoded}&formCadastro%3Arelatorio=STATUS_NFE&formCadastro%3Aj_idt83=2&formCadastro%3Astatus=2&formCadastro%3Astatus=3&formCadastro%3Astatus=4&formCadastro%3Astatus=5&formCadastro%3AtpDoc=XLSX&formCadastro%3ArelatorioTable%3Atable%3Aj_idt104%3Afilter=&formCadastro%3ArelatorioTable%3Atable_selection=20&formCadastro%3ArelatorioTable%3Atable_scrollState=0%2C0&javax.faces.ViewState={view_state}"
+            # Sessão
+            $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+            $session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+            $session.Cookies.Add(
+                (New-Object System.Net.Cookie("JSESSIONID", "{jsessionid}", "/", "100.126.64.15"))
+            )
 
-        Invoke-WebRequest -UseBasicParsing -Uri "http://100.126.64.15:8080/adged/relatorio.xhtml" `
-        -Method "POST" `
-        -WebSession $session `
-        -ContentType "application/x-www-form-urlencoded" `
-        -Body $body `
-        -OutFile "{file_path}"
-        """
+            # Body
+            $body = @{{
+                "formCadastro" = "formCadastro"
+                "formCadastro:btnGerarRelatorio" = ""
+                "formCadastro:dtPeriodoInicio_input" = "{start_date}"
+                "formCadastro:dtPeriodoFinal_input" = "{end_date}"
+                "formCadastro:relatorio" = "STATUS_NFE"
+                "formCadastro:j_idt83" = "2"
+                "formCadastro:tpDoc" = "XLSX"
+                "formCadastro:relatorioTable:table:j_idt104:filter" = ""
+                "formCadastro:relatorioTable:table_selection" = "27"
+                "formCadastro:relatorioTable:table_scrollState" = "0,0"
+                "javax.faces.ViewState" = "{view_state}"
+            }}
+
+            # Status múltiplos (JSF precisa repetir a chave)
+            $body.Add("formCadastro:status", "2")
+            $body.Add("formCadastro:status", "3")
+            $body.Add("formCadastro:status", "4")
+            $body.Add("formCadastro:status", "5")
+
+            # Request
+            Invoke-WebRequest `
+                -Uri $url `
+                -Method POST `
+                -WebSession $session `
+                -Headers @{{
+                    "Origin"  = $baseUrl
+                    "Referer" = $url
+                }} `
+                -ContentType "application/x-www-form-urlencoded" `
+                -Body $body `
+                -OutFile "{file_path}"
+            """
 
         # 3. Executar o PowerShell via Python
         try:
