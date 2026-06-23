@@ -1,3 +1,7 @@
+from core.di.data_process_provider import get_audit_cancelled_invoices_usecase
+from modules.automation.application.usecases.cancelled_invoices_flow_usecase import (
+    CancelledInvoicesFlowUseCase,
+)
 from modules.automation.application.usecases.cancelled_invoices_usecase import (
     CancelledInvoicesUseCase,
 )
@@ -124,7 +128,7 @@ def get_livros_fiscais_orchestrator():
     )
 
 
-def get_get_cancelled_report_orchestrator():
+def get_cancelled_report_orchestrator():
     return CancelledReportOrchestrator(
         get_browser_session(),
         get_navigate_to_report(),
@@ -133,7 +137,7 @@ def get_get_cancelled_report_orchestrator():
     )
 
 
-def get_get_xmls_orchestrator():
+def get_xmls_orchestrator():
     return GetXMLsOrchestrator(
         get_browser_session(),
         get_navigate_to_report_download_xmls(),
@@ -152,11 +156,20 @@ def get_merge_excel_files_usecase():
 
 def get_cancelled_invoices_usecase():
     return CancelledInvoicesUseCase(
-        get_get_cancelled_report_orchestrator(),
+        get_cancelled_report_orchestrator(),
+    )
+
+
+def get_cancelled_invoices_flow_usecase():
+    return CancelledInvoicesFlowUseCase(
+        get_livros_fiscais_orchestrator(),
+        get_cancelled_invoices_usecase(),
+        _merge_excel_files_service,
+        get_audit_cancelled_invoices_usecase(),
     )
 
 
 def get_download_xmls_usecase():
     return DownloadXmlsUseCase(
-        get_get_xmls_orchestrator(),
+        get_xmls_orchestrator(),
     )
