@@ -20,6 +20,7 @@ import {
   TIPOS_RELATORIO_COM_DESTINO,
   TIPOS_OPERACAO,
   TIPOS_DOCUMENTO,
+  TAREFAS_PORTALGED,
 } from './livros-fiscais.constants';
 import {
   LivroFiscalPayload,
@@ -123,18 +124,7 @@ export class LivrosFiscais {
       }
     }
 
-    if (this.form.value.tipoLivro === 5) {
-      this.router.navigate(['/taxdata/cancelled-invoices/workflow'], {
-        queryParams: {
-          start_date: this.form.value.periodo.start,
-          end_date: this.form.value.periodo.end,
-          filiais: this.selectedFiliais,
-        },
-      });
-      return;
-    }
-
-    if (this.form.value.tipoLivro === 3 || this.form.value.tipoLivro === 4) {
+    if (TAREFAS_PORTALGED.has(this.form.value.tipoLivro)) {
       if (this.form.value.lembrarSenha) {
         localStorage.setItem('portalged_login', this.form.value.login);
         localStorage.setItem('portalged_senha', this.form.value.senha);
@@ -145,22 +135,36 @@ export class LivrosFiscais {
         localStorage.removeItem('portalged_lembrar');
       }
 
-      if (this.form.value.tipoLivro == 3) {
-        this.taxReportsService
-          .generateCancelledInvoicesReport(this.buildPayloadCancelledInvoices())
-          .subscribe({
+      switch (this.form.value.tipoLivro) {
+        case 3:
+          this.taxReportsService
+            .generateCancelledInvoicesReport(this.buildPayloadCancelledInvoices())
+            .subscribe({
+              next: () => this.onSuccess(),
+              error: (err) => this.onError(err),
+            });
+          return;
+        case 4:
+          this.downloadXmlsService.execute(this.buildPayloadDownloadXmls()).subscribe({
             next: () => this.onSuccess(),
             error: (err) => this.onError(err),
           });
-        return;
-      }
+          return;
+        case 5:
+          this.taxReportsService
+            .generateCancelledInvoicesReportFlow(this.buildPayloadCancelledInvoices())
+            .subscribe({
+              next: (res) => {
+                this.onSuccess();
 
-      if (this.form.value.tipoLivro == 4) {
-        this.downloadXmlsService.execute(this.buildPayloadDownloadXmls()).subscribe({
-          next: () => this.onSuccess(),
-          error: (err) => this.onError(err),
-        });
-        return;
+                const fileName = res.report_path.split('/').pop();
+                this.router.navigate(['/taxdata/cancelled-invoices/report-details', fileName]);
+              },
+              error: (err) => this.onError(err),
+            });
+          return;
+        default:
+          return;
       }
     }
 
@@ -178,24 +182,15 @@ export class LivrosFiscais {
 
     const bookType = this.form.value.tipoLivro;
 
-    if (bookType === 3) {
-      if (!this.form.value.login || !this.form.value.senha) {
-        return this.alerta('Informe o usuário e a senha para acessar o PortalGED.');
-      }
+    if (TAREFAS_PORTALGED.has(bookType) && (!this.form.value.login || !this.form.value.senha)) {
+      return this.alerta('Informe o usuário e a senha para acessar o PortalGED.');
     }
 
-    if (bookType === 4) {
-      if (!this.form.value.login || !this.form.value.senha) {
-        return this.alerta('Informe o usuário e a senha para acessar o PortalGED.');
-      }
-
-      if (!this.form.value.tipoDocumento || !this.form.value.tipoOperacao) {
-        console.log(this.form.value.tipoDocumento, this.form.value.tipoOperacao);
-        return this.alerta('Informe o tipo de documento e operação.');
-      }
+    if (bookType === 4 && (!this.form.value.tipoDocumento || !this.form.value.tipoOperacao)) {
+      return this.alerta('Informe o tipo de documento e operação.');
     }
 
-    if (selectedTarefas.length === 0 && bookType !== 3 && bookType !== 4)
+    if (selectedTarefas.length === 0 && !TAREFAS_PORTALGED.has(bookType))
       return this.alerta('Selecione pelo menos uma tarefa para executar.');
     if (!start || !end) return this.alerta('Selecione o período de execução.');
     if (this.selectedFiliais.length === 0)
@@ -299,5 +294,9 @@ export class LivrosFiscais {
 
   get isLoading(): boolean {
     return this.loadingService.isLoading();
+  }
+
+  get TAREFAS_PORTALGED() {
+    return TAREFAS_PORTALGED;
   }
 }

@@ -4,6 +4,7 @@ import type { LivrosFiscaisRequest } from '../../../models/automation/livros-fis
 import type { Observable } from 'rxjs';
 import { BackendService } from '../backend.service';
 import type { CancelledInvoicesRequest } from '../../../models/automation/cancelled-invoices-request.model';
+import type { AuditCancelledInvoicesResponse } from '../../../models/api/response/cancelled-invoices/audit-cancelled-invoices.model';
 
 @Injectable({ providedIn: 'root' })
 export class TaxReportsService {
@@ -18,10 +19,22 @@ export class TaxReportsService {
     return this.http.post<void>(`${this.backend.api}/automation/cancelled-invoices/run`, request);
   }
 
-  validateCancelledInvoiceFile(payload: { file_path: string; file_type: string }): Observable<{ is_valid: boolean; record_count: number; message: string }> {
+  generateCancelledInvoicesReportFlow(
+    request: CancelledInvoicesRequest,
+  ): Observable<AuditCancelledInvoicesResponse> {
+    return this.http.post<AuditCancelledInvoicesResponse>(
+      `${this.backend.api}/automation/cancelled-invoices-flow/run`,
+      request,
+    );
+  }
+
+  validateCancelledInvoiceFile(payload: {
+    file_path: string;
+    file_type: string;
+  }): Observable<{ is_valid: boolean; record_count: number; message: string }> {
     return this.http.post<{ is_valid: boolean; record_count: number; message: string }>(
       `${this.backend.api}/automation/cancelled-invoices/validate-file`,
-      payload
+      payload,
     );
   }
 }
