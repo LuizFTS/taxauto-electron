@@ -81,9 +81,8 @@ class Orchestrator:
         end_date: str,
         login: str,
         password: str,
-        max_workers: int = 7,
+        max_workers: int = 1,
     ):
-
         date_string = f"{str(start_date.replace('/', ''))}_{str(end_date.replace('/', ''))}"
 
         parent_directory = os.path.join(output_dir, date_string)

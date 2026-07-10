@@ -11,16 +11,22 @@ export class ModalService {
 
   constructor() {
     effect(() => {
-      if (this._modal()) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = '';
-      }
+      document.body.style.overflow = this._modal() ? 'hidden' : '';
     });
   }
 
   open<T extends object>(config: ModalConfig<T>) {
     this._modal.set(config);
+  }
+
+  confirm(result: unknown) {
+    this._modal()?.onConfirm?.(result);
+    this.close();
+  }
+
+  cancel() {
+    this._modal()?.onCancel?.();
+    this.close();
   }
 
   close() {

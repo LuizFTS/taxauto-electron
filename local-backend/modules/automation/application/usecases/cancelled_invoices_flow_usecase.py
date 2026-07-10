@@ -1,4 +1,5 @@
 import os
+import shutil
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
@@ -36,11 +37,17 @@ class CancelledInvoicesFlowUseCase:
         self.mergeSpreadsheets = mergeSpreadsheets
         self.auditCancelledInvoicesUseCase = auditCancelledInvoicesUseCase
 
-    def _create_livros_fiscais_dto(self, dto: CancelledInvoicesFlowDTO, path: str):
+    def _create_livros_fiscais_dto(
+        self,
+        dto: CancelledInvoicesFlowDTO,
+        path: str,
+        update_book: bool = True,
+        close_book: bool = True,
+    ):
         tasks = LivrosFiscaisTasksDTO(
             open_book=False,
-            update_book=True,
-            close_book=False,
+            update_book=update_book,
+            close_book=close_book,
             save_spreadsheet=True,
             save_pdf=False,
         )
@@ -64,9 +71,11 @@ class CancelledInvoicesFlowUseCase:
             raise RuntimeError("LOCALAPPDATA não encontrado")
 
         temp_dir = Path(base) / "TaxAuto" / "Temp2"
-        temp_dir.mkdir(parents=True, exist_ok=True)
 
-        print(str(temp_dir))
+        if temp_dir.exists():
+            shutil.rmtree(temp_dir)
+
+        temp_dir.mkdir(parents=True, exist_ok=True)
 
         if len(dto.filiais) == 0:
             raise Exception("Selecione pelo menos uma filial para prosseguir.")
@@ -81,9 +90,19 @@ class CancelledInvoicesFlowUseCase:
             raise ValueError("A data final não pode ser menor que a data inicial.")
 
         with ThreadPoolExecutor(max_workers=2) as executor:
+            update_book = False
+            close_book = False
+            for task in dto.tasks:
+                if task.code == "atualizar-livro-saida":
+                    update_book = True
+                elif task.code == "fechar-livro-saida":
+                    close_book = True
+
             future_livros = executor.submit(
                 self.taxBooksOrchestrator.execute,
-                self._create_livros_fiscais_dto(dto, str(temp_dir)),
+                self._create_livros_fiscais_dto(
+                    dto, str(temp_dir), update_book=update_book, close_book=close_book
+                ),
             )
 
             future_cancelled_invoices = executor.submit(

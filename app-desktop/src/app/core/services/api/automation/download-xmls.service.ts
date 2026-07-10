@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import type { Observable } from 'rxjs';
 import { BackendService } from '../backend.service';
-import type { DownloadXMLsRequest } from '../../../models/automation/download-xmls-request.model copy';
+import type { DownloadXMLsRequest } from '../../../models/automation/download-xmls-request.model';
 
 @Injectable({ providedIn: 'root' })
 export class DownloadXmlsService {

@@ -15,14 +15,21 @@ class ValidateFileResponseDTO(BaseModel):
     message: str
 
 
+class FlowTask(BaseModel):
+    id: str
+    code: str
+    label: str
+    checked: bool
+
+
 @dataclass
 class CancelledInvoicesFlowDTO:
     start_date: str
     end_date: str
     filiais: List[str]
-    save_path: str
     login: str
     password: str
+    tasks: List[FlowTask]
 
     def __post_init__(self):
         if self.filiais:

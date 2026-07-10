@@ -3,7 +3,10 @@ import { inject, Injectable } from '@angular/core';
 import type { LivrosFiscaisRequest } from '../../../models/automation/livros-fiscais-request.model';
 import type { Observable } from 'rxjs';
 import { BackendService } from '../backend.service';
-import type { CancelledInvoicesRequest } from '../../../models/automation/cancelled-invoices-request.model';
+import type {
+  CancelledInvoicesFlowRequest,
+  CancelledInvoicesRequest,
+} from '../../../models/automation/cancelled-invoices-request.model';
 import type { AuditCancelledInvoicesResponse } from '../../../models/api/response/cancelled-invoices/audit-cancelled-invoices.model';
 
 @Injectable({ providedIn: 'root' })
@@ -20,7 +23,7 @@ export class TaxReportsService {
   }
 
   generateCancelledInvoicesReportFlow(
-    request: CancelledInvoicesRequest,
+    request: CancelledInvoicesFlowRequest,
   ): Observable<AuditCancelledInvoicesResponse> {
     return this.http.post<AuditCancelledInvoicesResponse>(
       `${this.backend.api}/automation/cancelled-invoices-flow/run`,

@@ -6,4 +6,7 @@ export interface ModalConfig<T extends object> {
   options?: {
     closeOnBackdrop?: boolean;
   };
+  inputs?: Partial<T>;
+  onConfirm?: (result: any) => void;
+  onCancel?: () => void;
 }

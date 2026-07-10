@@ -1,4 +1,5 @@
 import logging
+from time import sleep
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -12,10 +13,11 @@ logger = logging.getLogger(__name__)
 class Navigation:
     def execute(self, d: SeleniumDriver, filial: int):
         d.driver.get("http://100.126.64.15:8080/adged/login.xhtml")
-        wait = WebDriverWait(d.driver, 10)
+        wait = WebDriverWait(d.driver, 360)
 
         # Open menu
         menu_trigger = wait.until(EC.element_to_be_clickable((By.ID, "formLogin:empresa_label")))
+        sleep(2)
         menu_trigger.click()
 
         # Wait for panel to appear
@@ -38,11 +40,13 @@ class Navigation:
 
         if not encontrou:
             logger.warning(f"Filial {filial_str} não encontrada na lista!")
+            raise Exception(f"Filial {filial_str} não encontrada na lista!")
 
         # Clique no botão entrar (usando ID direto que é mais rápido que XPath)
         btn_entrar = wait.until(EC.element_to_be_clickable((By.ID, "formLogin:btnEntrar")))
 
         try:
+            sleep(2)
             btn_entrar.click()
         except Exception:
             # Se ainda assim der erro de interceptação, usa JS

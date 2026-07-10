@@ -25,14 +25,19 @@ import {
 import {
   LivroFiscalPayload,
   TarefaId,
+  type CancelledInvoicesFlowPayload,
   type CancelledInvoicesPayload,
   type DownloadXmlsPayload,
 } from './livros-fiscais.types';
 import { buildLivrosFiscaisForm, getSelectedTarefas } from './livros-fiscais.form';
 import { applyDateMask, formatDate, lastDayOfMonth, parseDate } from './livros-fiscais.utils';
 import { LoadingService } from '../../../core/services/loading.service';
-import { Router } from '@angular/router';
 import { DownloadXmlsService } from '../../../core/services/api/automation/download-xmls.service';
+import {
+  FlowTasksModal,
+  type FlowTask,
+} from '../../../shared/components/flow-tasks-modal/flow-tasks-modal';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-livros-fiscais',
@@ -151,17 +156,28 @@ export class LivrosFiscais {
           });
           return;
         case 5:
-          this.taxReportsService
-            .generateCancelledInvoicesReportFlow(this.buildPayloadCancelledInvoices())
-            .subscribe({
-              next: (res) => {
-                this.onSuccess();
-
-                const fileName = res.report_path.split('/').pop();
-                this.router.navigate(['/taxdata/cancelled-invoices/report-details', fileName]);
-              },
-              error: (err) => this.onError(err),
-            });
+          this.loadingService.hide();
+          this.modalService.open({
+            component: FlowTasksModal,
+            options: { closeOnBackdrop: true },
+            onConfirm: (selectedTasks: FlowTask[]) => {
+              this.loadingService.show();
+              this.taxReportsService
+                .generateCancelledInvoicesReportFlow(
+                  this.buildPayloadCancelledFlowInvoices(selectedTasks),
+                )
+                .subscribe({
+                  next: (res) => {
+                    this.onSuccess();
+                    this.router.navigate([
+                      '/taxdata/cancelled-invoices/report-details',
+                      res.report_path,
+                    ]);
+                  },
+                  error: (err) => this.onError(err),
+                });
+            },
+          });
           return;
         default:
           return;
@@ -231,6 +247,20 @@ export class LivrosFiscais {
       password: senha,
     };
   }
+
+  private buildPayloadCancelledFlowInvoices(tasks: FlowTask[]): CancelledInvoicesFlowPayload {
+    const { periodo, login, senha } = this.form.value;
+
+    return {
+      start_date: periodo.start,
+      end_date: periodo.end,
+      filiais: this.selectedFiliais,
+      login: login,
+      password: senha,
+      tasks,
+    };
+  }
+
   private buildPayloadDownloadXmls(): DownloadXmlsPayload {
     const { periodo, login, senha, tipoDocumento, tipoOperacao } = this.form.value;
 

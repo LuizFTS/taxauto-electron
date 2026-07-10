@@ -1,6 +1,7 @@
 import logging
 import os
 import subprocess
+from time import sleep
 from urllib.parse import quote
 
 from selenium.webdriver.common.by import By
@@ -14,11 +15,11 @@ class DownloadReport:
     def execute(
         self, driver: SeleniumDriver, output_dir: str, filial: int, start_date: str, end_date: str
     ):
-
         d = driver.driver
         # Go to Reports section
         d.get("http://100.126.64.15:8080/adged/relatorio.xhtml")
         logger.info(f"[Filial {filial}] Iniciando download do relatório")
+        sleep(2)
 
         # 1. Extrair os dados dinâmicos do Selenium
         jsessionid = ""
@@ -51,25 +52,10 @@ class DownloadReport:
             )
 
             # Body
-            $body = @{{
-                "formCadastro" = "formCadastro"
-                "formCadastro:btnGerarRelatorio" = ""
-                "formCadastro:dtPeriodoInicio_input" = "{start_date}"
-                "formCadastro:dtPeriodoFinal_input" = "{end_date}"
-                "formCadastro:relatorio" = "STATUS_NFE"
-                "formCadastro:j_idt83" = "2"
-                "formCadastro:tpDoc" = "XLSX"
-                "formCadastro:relatorioTable:table:j_idt104:filter" = ""
-                "formCadastro:relatorioTable:table_selection" = "27"
-                "formCadastro:relatorioTable:table_scrollState" = "0,0"
-                "javax.faces.ViewState" = "{view_state}"
-            }}
+            $status = "formCadastro%3Astatus=2&formCadastro%3Astatus=3&formCadastro%3Astatus=4&formCadastro%3Astatus=5"
 
-            # Status múltiplos (JSF precisa repetir a chave)
-            $body.Add("formCadastro:status", "2")
-            $body.Add("formCadastro:status", "3")
-            $body.Add("formCadastro:status", "4")
-            $body.Add("formCadastro:status", "5")
+            $body = "formCadastro=formCadastro&formCadastro%3AbtnGerarRelatorio=&formCadastro%3AdtPeriodoInicio_input={data_inicio_encoded}&formCadastro%3AdtPeriodoFinal_input={data_fim_encoded}&formCadastro%3Arelatorio=STATUS_NFE&formCadastro%3Aj_idt83=2&$status&formCadastro%3AtpDoc=XLSX&formCadastro%3ArelatorioTable%3Atable_selection=20&javax.faces.ViewState={view_state}"
+
 
             # Request
             Invoke-WebRequest `

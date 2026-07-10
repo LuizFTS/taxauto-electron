@@ -58,14 +58,12 @@ class Orchestrator:
             self.unzip_files.execute(path)
             print(f"Filial {filial} processado com sucesso")
             return filial, None
-        except Exception as e:
-            print(e)
-            return filial, e
+        except Exception:
+            return filial
         finally:
             try:
                 driver.quit()
-            except Exception as e:
-                print(e)
+            except Exception:
                 pass
 
     def execute(
@@ -80,7 +78,6 @@ class Orchestrator:
         tipo_operacao: int,
         max_workers: int = 7,
     ):
-
         # Does the parent folder exist? if it does add the number of the folder,
         # if folder one exists create a folder '_2' and so on
         tp_documento = "NFE" if tipo_documento == 1 else "CTE"

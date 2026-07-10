@@ -21,7 +21,7 @@ export const TAREFAS_PORTALGED = new Set<TipoRelatorioId>([3, 4, 5]);
 // Tarefas que exigem seleção de pasta de destino
 export const TAREFAS_COM_DESTINO = new Set<TarefaId>(['salvar_excel', 'salvar_pdf']);
 
-export const TIPOS_RELATORIO_COM_DESTINO = new Set<TipoRelatorioId>([3, 4, 5]);
+export const TIPOS_RELATORIO_COM_DESTINO = new Set<TipoRelatorioId>([3, 4]);
 
 export const TIPOS_OPERACAO: SelectOptions[] = [
   { value: 2, label: 'Entrada' },

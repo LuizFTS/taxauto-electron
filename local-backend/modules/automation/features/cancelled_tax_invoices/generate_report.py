@@ -1,5 +1,6 @@
 import logging
 import os
+from time import sleep
 
 import pandas as pd
 
@@ -9,11 +10,9 @@ logger = logging.getLogger(__name__)
 class GenerateReport:
     @staticmethod
     def _is_valid_excel(file_path: str):
-        print(os.path.exists(file_path))
         if not os.path.exists(file_path):
             return False
 
-        print(os.path.getsize(file_path) == 0)
         if os.path.getsize(file_path) == 0:
             return False
 
@@ -21,9 +20,7 @@ class GenerateReport:
             # Tenta ler apenas o cabeçalho para validar se o motor xlrd aceita o arquivo
             pd.read_excel(file_path, engine="xlrd", nrows=0)
             return True
-        except Exception as e:
-            logger.exception(f"Erro ao ler o arquivo: {file_path}")
-            logger.exception(e)
+        except Exception:
             # Se der erro (como o b'<!DOCTYP'), retornamos False para ser removido
             return False
 
@@ -61,6 +58,7 @@ class GenerateReport:
             df["Número do Doc"] = pd.to_numeric(df["Número do Doc"], errors="coerce").astype(
                 "Int64"
             )
+
         except Exception as e:
             logger.error(f"[Filial {filial}] Erro na conversão: {e}")
 
@@ -76,8 +74,10 @@ class GenerateReport:
 
         # Salvar e remover original
         if os.path.exists(file_path):
+            sleep(2)
             os.remove(file_path)
 
         new_path = file_path.replace(".xls", ".xlsx")
+        sleep(2)
         df.to_excel(new_path, index=False)
         logger.info(f"[Filial {filial}] Relatório gerado com sucesso!")
