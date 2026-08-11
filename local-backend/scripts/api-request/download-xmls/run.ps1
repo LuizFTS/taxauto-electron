@@ -1,7 +1,7 @@
 $body = @{
-    start_date = "01/06/2026"
-    end_date = "17/06/2026"
-    filiais = @("02")
+    start_date = "12/06/2026"
+    end_date = "27/07/2026"
+    filiais = @("45")
     save_path = "C:\Users\lu9887091\OneDrive - Nutrien\Área de Trabalho\Nova pasta (6)"
     login = "DEFIS_AUX20"
     password = "lfT#1020304050"
