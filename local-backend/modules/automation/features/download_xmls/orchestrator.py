@@ -55,10 +55,20 @@ class Orchestrator:
                 tipo_documento,
                 tipo_operacao,
             )
-            self.unzip_files.execute(path)
+
+            if len(path) > 1:
+                for p in path:
+                    self.unzip_files.execute(p)
+            elif len(path) == 0:
+                pass
+            else:
+                self.unzip_files.execute(path[0])
+
             print(f"Filial {filial} processado com sucesso")
             return filial, None
-        except Exception:
+        except Exception as e:
+            print(f"Filial {filial} processado com erro")
+            print(e)
             return filial
         finally:
             try:
@@ -76,7 +86,7 @@ class Orchestrator:
         password: str,
         tipo_documento: int,
         tipo_operacao: int,
-        max_workers: int = 7,
+        max_workers: int = 4,
     ):
         # Does the parent folder exist? if it does add the number of the folder,
         # if folder one exists create a folder '_2' and so on
@@ -128,10 +138,3 @@ class Orchestrator:
                 logging.error(f"Filial {filial} falhou com o erro: {error}")
         else:
             logging.info("Todos os filiais foram processados com sucesso")
-
-        """ for filial in filiais:
-            self.navigate_to_report.execute(int(filial))
-            path = self.download_report.execute(
-                parent_directory, int(filial), start_date, end_date, tipo_documento, tipo_operacao
-            )
-            self.unzip_files.execute(path) """
