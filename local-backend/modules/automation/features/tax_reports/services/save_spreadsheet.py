@@ -103,7 +103,7 @@ class SaveSpreadsheet:
 
         sleep(0.5)
         self.state.check()
-        a.press("tab", 2)
+        a.press("tab", 3)
         self.state.check()
 
         return new_file_path if new_file_path else None

@@ -27,6 +27,11 @@
       transform 0.2s ease;
   }
 
+  &__version {
+    color: oklch(92% 0.004 286.32);
+    font-size: 12px;
+  }
+
   &__toggle {
     width: 36px;
     height: 32px;
