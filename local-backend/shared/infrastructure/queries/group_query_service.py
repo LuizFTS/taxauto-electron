@@ -20,6 +20,7 @@ class GroupQueryService(BaseQueryService):
                 ON bgi.group_id = bg.id
             LEFT JOIN branch b
                 ON b.id = bgi.branch_id
+            WHERE bg.ativo = 1
             ORDER BY bg.nome, b.nome
             """
         )

@@ -1,6 +1,6 @@
 {
   "name": "app-desktop",
-  "version": "1.0.19",
+  "version": "1.0.192",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

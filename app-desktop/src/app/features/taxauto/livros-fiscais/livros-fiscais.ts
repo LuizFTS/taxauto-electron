@@ -112,6 +112,9 @@ export class LivrosFiscais {
   }
 
   async executar(): Promise<void> {
+    if (this.form.value.tipoLivro === 3) {
+      this.form.value.tarefas = [true, false, false, false, true];
+    }
     if (!this.validarFormulario()) return;
 
     this.loadingService.show();
@@ -141,7 +144,7 @@ export class LivrosFiscais {
       }
 
       switch (this.form.value.tipoLivro) {
-        case 3:
+        case 4:
           this.taxReportsService
             .generateCancelledInvoicesReport(this.buildPayloadCancelledInvoices())
             .subscribe({
@@ -149,7 +152,7 @@ export class LivrosFiscais {
               error: (err) => this.onError(err),
             });
           return;
-        case 4:
+        case 6:
           this.downloadXmlsService.execute(this.buildPayloadDownloadXmls()).subscribe({
             next: () => this.onSuccess(),
             error: (err) => this.onError(err),
@@ -184,6 +187,20 @@ export class LivrosFiscais {
       }
     }
 
+    if (this.form.value.tipoLivro === 3) {
+      this.taxReportsService
+        .generateTaxAssessmentReports({
+          date: this.form.value.periodo.start,
+          filiais: this.selectedFiliais,
+          save_path: this.selectedPath()!,
+        })
+        .subscribe({
+          next: () => this.onSuccess(),
+          error: (err) => this.onError(err),
+        });
+      return;
+    }
+
     this.taxReportsService.execute(this.buildPayload(selectedTarefas)).subscribe({
       next: () => this.onSuccess(),
       error: (err) => this.onError(err),
@@ -202,7 +219,7 @@ export class LivrosFiscais {
       return this.alerta('Informe o usuário e a senha para acessar o PortalGED.');
     }
 
-    if (bookType === 4 && (!this.form.value.tipoDocumento || !this.form.value.tipoOperacao)) {
+    if (bookType === 6 && (!this.form.value.tipoDocumento || !this.form.value.tipoOperacao)) {
       return this.alerta('Informe o tipo de documento e operação.');
     }
 

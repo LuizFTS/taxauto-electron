@@ -52,7 +52,7 @@ class TaxBooksOrchestrator:
         self.session.open()
         self.state.check()
 
-        self.navigator.execute()
+        self.navigator.execute("OBFI0200")
         self.state.check()
 
         if dto.tasks.open_book or dto.tasks.update_book or dto.tasks.close_book:

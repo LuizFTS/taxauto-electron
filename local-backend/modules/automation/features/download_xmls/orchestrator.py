@@ -76,6 +76,20 @@ class Orchestrator:
             except Exception:
                 pass
 
+    def _define_doc(self, type: int):
+        if type == 1:
+            return "NFE"
+        elif type == 30:
+            return "NFCE"
+        else:
+            return "CTE"
+
+    def _define_op(self, type: int):
+        if type == 1:
+            return "SAIDA"
+        else:
+            return "ENTRADA"
+
     def execute(
         self,
         output_dir: str,
@@ -86,12 +100,12 @@ class Orchestrator:
         password: str,
         tipo_documento: int,
         tipo_operacao: int,
-        max_workers: int = 4,
+        max_workers: int = 2,
     ):
         # Does the parent folder exist? if it does add the number of the folder,
         # if folder one exists create a folder '_2' and so on
-        tp_documento = "NFE" if tipo_documento == 1 else "CTE"
-        tp_operacao = "SAIDA" if tipo_operacao == 1 else "ENTRADA"
+        tp_documento = self._define_doc(tipo_documento)
+        tp_operacao = self._define_op(tipo_operacao)
 
         date_string = f"{str(start_date.replace('/', ''))}_{str(end_date.replace('/', ''))}"
 

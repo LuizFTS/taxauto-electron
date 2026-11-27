@@ -14,8 +14,16 @@ from modules.automation.application.usecases.merge_excel_files_usecase import (
 from modules.automation.application.usecases.run_livros_fiscais import (
     RunLivrosFiscaisUseCase,
 )
+from modules.automation.application.usecases.run_tax_reports import RunTaxReportsUseCase
 from modules.automation.features.cancelled_tax_invoices.download_report import (
     DownloadReport,
+)
+
+from modules.automation.application.usecases.run_tax_assessment import (
+    RunTaxAssessmentUseCase
+)
+from modules.automation.features.tax_assessment.orchestrator.save_assessment_report_orchestrator import (
+    SaveAssessmentReportOrchestrator,
 )
 from modules.automation.features.cancelled_tax_invoices.generate_report import (
     GenerateReport,
@@ -32,6 +40,9 @@ from modules.automation.features.download_xmls.download_service import (
 from modules.automation.features.download_xmls.navigation import (
     Navigation as NavigateToReportDownloadXMLs,
 )
+from modules.automation.features.tax_assessment.navigation import (
+    Navigation as NavigateToTaxAssessmentReports,
+)
 from modules.automation.features.download_xmls.orchestrator import (
     Orchestrator as GetXMLsOrchestrator,
 )
@@ -45,11 +56,16 @@ from modules.automation.features.state.automation_state import AutomationState
 from modules.automation.features.tax_reports.navigation import (
     Navigation as TaxReportsNavigation,
 )
+from modules.automation.features.tax_assessment.services.save_pdf import SavePDF as SavePDFFromTaxAssessment
+
 from modules.automation.features.tax_reports.orchestrator.save_books_orchestrator import (
     SaveBooksOrchestrator,
 )
 from modules.automation.features.tax_reports.orchestrator.tax_books_orchestrator import (
     TaxBooksOrchestrator,
+)
+from modules.automation.features.tax_reports.orchestrator.tax_reports_orchestrator import (
+    TaxReportsOrchestrator,
 )
 from modules.automation.features.tax_reports.services.close_book import CloseBook
 from modules.automation.features.tax_reports.services.open_book import OpenBook
@@ -79,6 +95,8 @@ _erp_session = ERPSession()
 _save_pdf = SavePDF(_erp_session, _automation_state)
 _save_spreadsheet = SaveSpreadsheet(_erp_session, _automation_state)
 
+_navigate_to_tax_assessment_reports = NavigateToTaxAssessmentReports()
+_save_pdf_tax_assessment = SavePDFFromTaxAssessment(_erp_session, _automation_state)
 
 def get_automation_state():
     return _automation_state
@@ -148,6 +166,28 @@ def get_xmls_orchestrator():
 
 def get_run_livros_fiscais_usecase():
     return RunLivrosFiscaisUseCase(get_livros_fiscais_orchestrator(), _automation_state)
+
+def get_run_tax_assessment_usecase():
+    return RunTaxAssessmentUseCase(get_tax_assessment_orchestrator(), _automation_state)
+
+
+def get_run_tax_reports_usecase():
+    return RunTaxReportsUseCase(get_tax_reports_orchestrator(), _automation_state)
+
+def get_tax_assessment_orchestrator():
+    return SaveAssessmentReportOrchestrator(
+        _erp_session,
+        _automation_state,
+        _save_pdf_tax_assessment,
+        _navigate_to_tax_assessment_reports,
+    )
+
+def get_tax_reports_orchestrator():
+    return TaxReportsOrchestrator(
+        _automation_state,
+        _navigate_to_livros_fiscais,
+        _erp_session,
+    )
 
 
 def get_merge_excel_files_usecase():

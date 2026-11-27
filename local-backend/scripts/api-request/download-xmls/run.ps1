@@ -1,12 +1,12 @@
 $body = @{
-    start_date = "12/06/2026"
-    end_date = "27/07/2026"
-    filiais = @("45")
-    save_path = "C:\Users\lu9887091\OneDrive - Nutrien\Área de Trabalho\Nova pasta (6)"
+    start_date = "01/10/2026"
+    end_date = "10/10/2026"
+    filiais = @("02")
+    save_path = "C:\Users\lu9887091\AppData\Local\Temp"
     login = "DEFIS_AUX20"
     password = "lfT#1020304050"
-    tipo_documento = 1
-    tipo_operacao = 2
+    tipo_documento = 30
+    tipo_operacao = 1
 } | ConvertTo-Json
 
 Invoke-RestMethod `

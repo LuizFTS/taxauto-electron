@@ -27,7 +27,7 @@ export interface LivroFiscalPayload {
 
 export type TarefaId = 'atualizar' | 'abrir' | 'fechar' | 'salvar_excel' | 'salvar_pdf';
 
-export type TipoRelatorioId = 1 | 2 | 3 | 4 | 5;
+export type TipoRelatorioId = 1 | 2 | 3 | 4 | 5 | 6;
 
 export interface CancelledInvoicesPayload {
   start_date: string;

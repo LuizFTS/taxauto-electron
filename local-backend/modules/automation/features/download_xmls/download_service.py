@@ -66,6 +66,12 @@ class DownloadService:
         d,
         total_registros,
     ) -> str:
+        def get_next_zip_path(output_dir):
+            n = 1
+            while os.path.exists(os.path.join(output_dir, f"{n}.zip")):
+                n += 1
+            return os.path.join(output_dir, f"{n}.zip")
+
         # Seleciona todos via checkbox
         logger.debug(f"[Filial {filial_str}] Selecionando todos os registros via checkbox")
         checkbox_box = d.find_element(
@@ -73,6 +79,7 @@ class DownloadService:
             "//input[@name='globalForm:mainTable_checkbox']/../../div[contains(@class,'ui-chkbox-box')]",
         )
         checkbox_box.click()
+        sleep(4)
 
         # Extrai cookies e ViewState
         logger.debug(f"[Filial {filial_str}] Extraindo JSESSIONID e ViewState")
@@ -91,7 +98,7 @@ class DownloadService:
         if total_registros == 1:
             file_path = os.path.join(output_dir, f"{filial_str}.xml")
         else:
-            file_path = os.path.join(output_dir, f"{filial_str}.zip")
+            file_path = get_next_zip_path(output_dir)
         logger.info(f"[Filial {filial_str}] Iniciando download via PowerShell → {file_path}")
 
         ps_script = f"""
@@ -126,15 +133,23 @@ class DownloadService:
         """
 
         try:
+            sleep(2)
             result = subprocess.run(
-                ["powershell", "-Command", ps_script], capture_output=True, text=True
+                ["powershell", "-Command", ps_script], capture_output=True, text=True, timeout=360
             )
 
+            logger.debug(f"[Filial {filial_str}] PowerShell STDOUT: {result.stdout.strip()}")
             if result.returncode != 0:
                 logger.error(
                     f"[Filial {filial_str}] PowerShell retornou erro (code {result.returncode}): {result.stderr.strip()}"
                 )
                 raise Exception(f"PowerShell falhou com código {result.returncode}")
+
+            p = Path(file_path)
+            with open(p, "rb") as f:
+                header = f.read(4)
+
+            logger.info(f"Header do arquivo: {header}")
 
             checkbox_box.click()
 
@@ -188,13 +203,15 @@ class DownloadService:
         end_date: str,
         tipo_documento: int,
         tipo_operacao: int,
-        first_time: bool = False,
-    ):
+    ) -> list[str]:
         filial_str = str(filial).zfill(2)
         logger.info(f"[Filial {filial_str}] Iniciando download do relatório")
         logger.debug(
             f"[Filial {filial_str}] Parâmetros: start_date={start_date}, end_date={end_date}, tipo_documento={tipo_documento}, tipo_operacao={tipo_operacao}"
         )
+
+        if tipo_documento == 30:
+            self.files_per_download = 1000
 
         s = driver
         d = s.driver
@@ -317,10 +334,6 @@ class DownloadService:
         parent_dir.mkdir(exist_ok=True)
 
         if total_paginas == 1:
-            parent_dir = os.path.join(parent_dir, f"{1}")
-            parent_dir = Path(parent_dir)
-            parent_dir.mkdir(exist_ok=True)
-
             path = self._download(
                 filial_str,
                 start_date,
@@ -335,37 +348,45 @@ class DownloadService:
             return paths
 
         for i in range(total_paginas):
-            parent_dir = os.path.join(parent_dir, f"{i+1}")
-            parent_dir = Path(parent_dir)
-            parent_dir.mkdir(exist_ok=True)
-            print("i = ", i)
-            if i == 12:
-                print("12")
-
+            logger.info("Iniciando página %d de %d", i + 1, total_paginas + 1)
             if i != 0:
+                logger.info("1 - Aguardando atualização da página anterior")
                 nnf_before = d.find_element(
                     By.XPATH, '//*[@id="globalForm:mainTable_data"]/tr[1]/td[2]/div'
                 ).text
+                sleep(3)
 
                 s.wait_overlay_status(d)
-                # s.clicar(f'//*[@id="globalForm:mainTable_paginator_bottom"]/span[4]/span[{i + 1}]')
-                s.clicar('//*[@id="globalForm:mainTable_paginator_bottom"]/span[5]/span')
+
+                logger.info("2 - Clicando para ir para a próxima página")
+
+                next_button = d.find_element(
+                    By.XPATH, '//*[@id="globalForm:mainTable_paginator_bottom"]/span[5]/span'
+                )
+
+                d.execute_script(
+                    """
+                    arguments[0].click();
+                    """,
+                    next_button,
+                )
 
                 while True:
-                    nnf_after = d.find_element(
-                        By.XPATH, '//*[@id="globalForm:mainTable_data"]/tr[1]/td[2]/div'
+                    logger.info("nnf_before - %s", nnf_before)
+                    sleep(1.5)
+                    nnf_after = s.get_element(
+                        '//*[@id="globalForm:mainTable_data"]/tr[1]/td[2]/div'
                     ).text
-                    print("nnf_after - ", nnf_after)
+
+                    logger.info("nnf_after - %s", nnf_after)
 
                     if nnf_after != nnf_before:
                         nnf_before = nnf_after
-                        print("nnf_after - ", nnf_after)
-
+                        logger.info("3 - Página atualizada")
                         break
-                    print("nnf_before - ", nnf_before)
-                    sleep(1)
 
             # tem que retornar um array de strings nesse caso
+            logger.info("4 - Iniciando download da página")
             path = self._download(
                 filial_str,
                 start_date,
@@ -377,6 +398,5 @@ class DownloadService:
                 total_registros,
             )
             paths.append(path)
-            parent_dir = os.path.join(output_dir, f"{filial_str}")
 
         return paths

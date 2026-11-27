@@ -8,6 +8,7 @@ import type {
   CancelledInvoicesRequest,
 } from '../../../models/automation/cancelled-invoices-request.model';
 import type { AuditCancelledInvoicesResponse } from '../../../models/api/response/cancelled-invoices/audit-cancelled-invoices.model';
+import type { TaxAssessmentReportRequest } from '../../../models/automation/tax-assessment-report-request.model';
 
 @Injectable({ providedIn: 'root' })
 export class TaxReportsService {
@@ -15,7 +16,11 @@ export class TaxReportsService {
   private readonly backend = inject(BackendService);
 
   execute(request: LivrosFiscaisRequest): Observable<void> {
-    return this.http.post<void>(`${this.backend.api}/automation/tax-reports/run`, request);
+    return this.http.post<void>(`${this.backend.api}/automation/tax-books/run`, request);
+  }
+
+  generateTaxAssessmentReports(request: TaxAssessmentReportRequest): Observable<void> {
+    return this.http.post<void>(`${this.backend.api}/automation/tax-reports/assessment`, request);
   }
 
   generateCancelledInvoicesReport(request: CancelledInvoicesRequest): Observable<void> {

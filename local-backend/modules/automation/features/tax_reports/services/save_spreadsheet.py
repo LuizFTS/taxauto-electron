@@ -81,10 +81,12 @@ class SaveSpreadsheet:
         self.state.check()
 
         # Open save spreadsheet dialog
-        a.press("tab", 2)
+        a.press("tab", 3)
         a.press("space")
         self.state.check()
-        sleep(1)
+        sleep(1.5)
+        a.press("tab")
+        a.press("space")
 
         # Fill save path in save dialog
         a.wait_for(self.t.dialog_ok)
@@ -103,7 +105,7 @@ class SaveSpreadsheet:
 
         sleep(0.5)
         self.state.check()
-        a.press("tab", 3)
+        a.press("tab", 2)
         self.state.check()
 
         return new_file_path if new_file_path else None

@@ -84,4 +84,4 @@ class SavePDF:
 
         self.session.focus()
         sleep(0.5)
-        a.press("tab", 3)
+        a.press("tab", 4)
